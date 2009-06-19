@@ -1,0 +1,1 @@
+mxmlc -load-config flex-config.xml ./src/com/example/quickstart/Greeter_mx.mxml -output ./bin/Greeter_mx.swf
