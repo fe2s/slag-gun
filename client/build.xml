@@ -17,11 +17,11 @@
     </target>
 
     <target name="main" depends="init">
-        <mxmlc file="${SRC_DIR}/com/example/quickstart/Greeter_mx.mxml"
-               output="${BIN_DIR}/Greeter_mx.swf"
+        <mxmlc file="${SRC_DIR}/com/slaggun/Luncher.mxml"
+               output="${BIN_DIR}/Luncher.swf"
                keep-generated-actionscript="false"
                fork="true">
-            <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+            <load-config filename="${APP_ROOT}/flex-config.xml"/>
             <source-path path-element="${FLEX_HOME}/frameworks"/>
             <source-path path-element="${SRC_DIR}"/>
 	    <compiler.debug>true</compiler.debug>
