@@ -19,7 +19,7 @@
     <target name="main" depends="init">
         <mxmlc file="${SRC_DIR}/com/example/quickstart/Greeter_mx.mxml"
                output="${BIN_DIR}/Greeter_mx.swf"
-               keep-generated-actionscript="true"
+               keep-generated-actionscript="false"
                fork="true">
             <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
             <source-path path-element="${FLEX_HOME}/frameworks"/>
