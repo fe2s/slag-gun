@@ -26,7 +26,7 @@ public interface AmfSerializer {
      * @return Base64 encoded string
      * @throws AmfSerializerException error during serialization
      */
-    <T> String toAmfAsString(T source) throws AmfSerializerException;
+    <T> String toAmfString(T source) throws AmfSerializerException;
 
 
     /**
@@ -37,7 +37,7 @@ public interface AmfSerializer {
      * @return AMF as array of bytes
      * @throws AmfSerializerException error during serialization
      */
-    <T> byte[] toAmf(T source) throws AmfSerializerException;
+    <T> byte[] toAmfBytes(T source) throws AmfSerializerException;
 
 
     /**
@@ -48,7 +48,7 @@ public interface AmfSerializer {
      * @return java object that represents given string
      * @throws AmfSerializerException error during serialization
      */
-    <T> T fromAmf(String amf) throws AmfSerializerException;
+    <T> T fromAmfString(String amf) throws AmfSerializerException;
 
 
     /**
@@ -59,6 +59,6 @@ public interface AmfSerializer {
      * @return java object that represents given string
      * @throws AmfSerializerException error during serialization
      */
-    <T> T fromAmf(byte[] amfBytes) throws AmfSerializerException;
+    <T> T fromAmfBytes(byte[] amfBytes) throws AmfSerializerException;
 
 }

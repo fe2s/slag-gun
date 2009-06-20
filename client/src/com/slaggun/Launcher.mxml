@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2009 SlagGunTeam
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+  ~ Unless required by applicable law or agreed to in writing, software distributed under the
+  ~ License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+  ~ either express or implied. See the License for the specific language governing permissions
+  ~ and limitations under the License.
+  -->
+
 <mx:Application layout="absolute"
                 initialize="initApp();"
                 enterFrame="enterFrame()"
@@ -18,10 +29,10 @@
 
         import mx.core.Application;
 
-        private var luncher:LuncherClass
+        private var luncher:LauncherClass
 
-        private function enterFrame():void{
-            luncher.enterFrame(output.graphics)            
+        private function enterFrame():void {
+            luncher.enterFrame(output.graphics)
         }
 
         private function hookKeyboard():void {
@@ -30,43 +41,43 @@
         }
 
         private function initApp():void {
-            luncher = new LuncherClass()
+            luncher = new LauncherClass()
             luncher.resize(Application.application.width, Application.application.height);
             luncher.inititalize()
         }
 
-        private function getButtonConst(leftMouseButton:Boolean):Number{
-            if(leftMouseButton){
+        private function getButtonConst(leftMouseButton:Boolean):Number {
+            if (leftMouseButton) {
                 return InputState.MOUSE_LEFT
-            }else{
+            } else {
                 return InputState.MOUSE_RIGHT
             }
         }
 
-        private function keyDown(event:KeyboardEvent):void{
+        private function keyDown(event:KeyboardEvent):void {
             luncher.buttonDown(event.keyCode);
         }
 
-        private function keyUp(event:KeyboardEvent):void{
+        private function keyUp(event:KeyboardEvent):void {
             luncher.buttonUp(event.keyCode);
         }
 
-        private function mouseDown(event:MouseEvent):void{
+        private function mouseDown(event:MouseEvent):void {
             luncher.buttonDown(getButtonConst(event.buttonDown));
             luncher.mouseMove(event.localX, event.localY)
         }
 
-        private function mouseUp(event:MouseEvent):void{
+        private function mouseUp(event:MouseEvent):void {
             luncher.buttonUp(getButtonConst(event.buttonDown));
             luncher.mouseMove(event.localX, event.localY)
         }
 
-        private function mouseMove(event:MouseEvent):void{
+        private function mouseMove(event:MouseEvent):void {
             luncher.mouseMove(event.localX, event.localY)
         }
 
-        private function resize():void{
-            if(output != null)
+        private function resize():void {
+            if (output != null)
                 luncher.resize(output.width, output.height);
         }
 

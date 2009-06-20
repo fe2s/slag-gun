@@ -31,13 +31,13 @@
         <taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar"/>
 
         <!-- Load the flexunit task definition -->
-        <taskdef resource="com/adobe/ac/ant/tasks/tasks.properties" classpath="${LIB_DIR}/FlexAntTasks.jar" />
+        <taskdef resource="com/adobe/ac/ant/tasks/tasks.properties" classpath="${LIB_DIR}/FlexAntTasks.jar"/>
     </target>
 
     <target name="main" depends="init" description="Compile MXML to SWF">
         <echo>Compile MXML to SWF ...</echo>
-        <mxmlc file="${SRC_DIR}/com/slaggun/Luncher.mxml"
-               output="${BIN_DIR}/Luncher.swf"
+        <mxmlc file="${SRC_DIR}/com/slaggun/Launcher.mxml"
+               output="${BIN_DIR}/Launcher.swf"
                keep-generated-actionscript="false"
                fork="true">
             <load-config filename="${APP_ROOT}/flex-config.xml"/>
@@ -47,23 +47,33 @@
         </mxmlc>
     </target>
 
-    <target name="tests" depends="init" description="run tests">
-        <echo>Running tests ...</echo>
+    <target name="compile.tests" depends="init" description="Compile Flex unit tests">
+        <delete dir="${TEST_REPORTS_DIR}"/>
+        <echo>Compiling Flex unit tests to TestRunner.swf ...</echo>
         <mxmlc file="${TEST_DIR}/TestRunner.mxml"
-               output="${BIN_DIR}/TestRunner.swf">
+               output="${BIN_DIR}/TestRunner.swf"
+               keep-generated-actionscript="false"
+               fork="true">
             <library-path dir="${LIB_DIR}" append="true">
                 <include name="**/*.swc"/>
             </library-path>
             <source-path path-element="${SRC_DIR}"/>
             <source-path path-element="${TEST_DIR}"/>
+            <compiler.debug>true</compiler.debug>
         </mxmlc>
+    </target>
 
+    <target name="run.tests" depends="compile.tests" description="Run Flex unit tests">
+        <echo>Runnig Flex unit tests (TestRunner.swf) ...</echo>
         <flexunit swf="${BIN_DIR}/TestRunner.swf"
-                  toDir="${TEST_REPORTS_DIR}"
                   haltonfailure="false"
                   verbose="true"
                   failureproperty="flexunit.failed"/>
-
+    </target>
+    
+    <target name="clean" depends="init" description="Clean up">
+        <echo>Cleaning up ...</echo>
+        <delete dir="${BIN_DIR}"/>
     </target>
 
 </project>

@@ -11,7 +11,6 @@
 
 package com.slaggun.amf;
 
-import org.junit.Test;
 import junit.framework.TestCase;
 
 /**
@@ -27,16 +26,17 @@ public class Amf3SerializerTest extends TestCase {
         testBean = new SerializeTestBean("vasiliy", 25);
     }
 
-    public void testToFromAmfBytes() throws AmfSerializerException {
+    public void testAmfBytesRoundTrip() throws AmfSerializerException {
         AmfSerializer serializer = Amf3Factory.instance().getAmfSerializer();
-        byte[] amf = serializer.toAmf(testBean);
-        assertEquals(testBean, serializer.fromAmf(amf));
+        byte[] amf = serializer.toAmfBytes(testBean);
+        assertEquals(testBean, serializer.fromAmfBytes(amf));
     }
 
-    public void testToFromAmfString() throws AmfSerializerException {
+    public void testAmfStringRoundTrip() throws AmfSerializerException {
         AmfSerializer serializer = Amf3Factory.instance().getAmfSerializer();
-        String amf = serializer.toAmfAsString(testBean);
-        assertEquals(testBean, serializer.fromAmf(amf));
+        String amf = serializer.toAmfString(testBean);
+        System.out.println(amf);
+        assertEquals(testBean, serializer.fromAmfString(amf));
     }
 
 }

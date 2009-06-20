@@ -9,23 +9,36 @@
  * and limitations under the License.
  */
 
-package com.slaggun {
-import flexunit.framework.TestCase;
-
+package com.slaggun.amf {
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public class SimpleTest extends TestCase {
-    public function SimpleTest() {
+
+[Bindable]
+[RemoteClass(alias="com.slaggun.amf.SerializeTestBean")]
+public class SerializeTestBean {
+
+    private var _name:String;
+    private var _age:int;
+
+    public function SerializeTestBean() {
     }
 
-    public function testSuccess() : void {
-        assertEquals(1, 1);
+    public function get name():String {
+        return _name;
     }
 
-    public function testFail() : void {
-        assertEquals(1, 2);
+    public function set name(value:String):void {
+        _name = value;
     }
 
+    public function get age():int {
+        return _age;
+    }
+
+    public function set age(value:int):void {
+        _age = value;
+    }
+    
 }
 }

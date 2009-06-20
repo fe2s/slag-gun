@@ -48,9 +48,9 @@ public class Amf3Serializer implements AmfSerializer {
      * @return Base64 encoded string
      * @throws AmfSerializerException error during serialization
      */
-    public <T> String toAmfAsString(T source) throws AmfSerializerException {
+    public <T> String toAmfString(T source) throws AmfSerializerException {
         BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(this.<T>toAmf(source));
+        return encoder.encode(this.<T>toAmfBytes(source));
     }
 
     /**
@@ -61,7 +61,7 @@ public class Amf3Serializer implements AmfSerializer {
      * @return AMF3 as array of bytes
      * @throws AmfSerializerException error during serialization
      */
-    public <T> byte[] toAmf(T source) throws AmfSerializerException {
+    public <T> byte[] toAmfBytes(T source) throws AmfSerializerException {
         if (source == null) {
             throw new NullArgumentException("source must not be null");
         }
@@ -93,7 +93,7 @@ public class Amf3Serializer implements AmfSerializer {
      * @return java object that represents given string
      * @throws AmfSerializerException error during serialization
      */
-    public <T> T fromAmf(String amf) throws AmfSerializerException {
+    public <T> T fromAmfString(String amf) throws AmfSerializerException {
         if (amf == null) {
             throw new NullArgumentException("amf must not be null");
         }
@@ -105,7 +105,7 @@ public class Amf3Serializer implements AmfSerializer {
         } catch (IOException e) {
             throw new AmfSerializerException(e);
         }
-        return this.<T>fromAmf(input);
+        return this.<T>fromAmfBytes(input);
     }
 
     /**
@@ -116,7 +116,7 @@ public class Amf3Serializer implements AmfSerializer {
      * @return java object that represents given string
      * @throws AmfSerializerException error during serialization
      */
-    public <T> T fromAmf(byte[] amfBytes) throws AmfSerializerException {
+    public <T> T fromAmfBytes(byte[] amfBytes) throws AmfSerializerException {
         if (amfBytes == null) {
             throw new NullArgumentException("amfBytes must not be null");
         }

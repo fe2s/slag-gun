@@ -27,14 +27,14 @@ import mx.collections.ArrayCollection;
  *
  * @see PhysicalWorld
  */
-public class LuncherClass {
+public class LauncherClass {
     
         private var gamePaused:Boolean = true;
         private var lastTime:Date;
         private var world:PhysicalWorld = new PhysicalWorld();
 
 
-        public function LuncherClass() {
+        public function LauncherClass() {
         }
 
         /**
