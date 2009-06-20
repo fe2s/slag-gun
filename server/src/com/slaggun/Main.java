@@ -9,7 +9,7 @@
  * and limitations under the License.
  */
 
-package com.slaggun.test;
+package com.slaggun;
 
 
 /**

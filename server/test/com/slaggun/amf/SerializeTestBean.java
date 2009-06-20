@@ -27,10 +27,6 @@ public class SerializeTestBean {
         this.age = age;
     }
 
-    public SerializeTestBean(String name) {
-        this.name = name;
-    }
-
     public String getName() {
         return name;
     }
