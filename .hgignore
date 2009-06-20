@@ -1,2 +1,2 @@
-syntax: glob
-glob:*.swf
+﻿syntax: glob
+glob:client/bin
