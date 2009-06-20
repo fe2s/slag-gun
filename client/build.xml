@@ -1,22 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2009 SlagGunTeam
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+  ~ Unless required by applicable law or agreed to in writing, software distributed under the
+  ~ License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+  ~ either express or implied. See the License for the specific language governing permissions
+  ~ and limitations under the License.
+  -->
+
 <project name="Slag-Gun client" default="main" basedir=".">
 
 
-    <!-- Initialisation -->
-    <target name="init">
+    <target name="init" description="Properties and tasks initialisation">
+        <echo>Initialize properties ...</echo>
         <!-- provides all environment variables as Ant properties prefixed by "env." -->
         <property environment="env"/>
         <property name="APP_ROOT" value="."/>
         <property name="FLEX_HOME" value="${env.FLEX_HOME}"/>
         <property name="BIN_DIR" value="${APP_ROOT}/bin"/>
         <property name="SRC_DIR" value="${APP_ROOT}/src"/>
+        <property name="TEST_DIR" value="${APP_ROOT}/test"/>
+        <property name="LIB_DIR" value="${APP_ROOT}/lib"/>
+        <property name="TEST_REPORTS_DIR" value="${APP_ROOT}/test_reports"/>
 
-        <echo>FLEX_HOME:        ${FLEX_HOME}</echo>
+        <echo>FLEX_HOME: ${FLEX_HOME}</echo>
 
+        <!-- Load core flex task definitions -->
         <taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar"/>
+
+        <!-- Load the flexunit task definition -->
+        <taskdef resource="com/adobe/ac/ant/tasks/tasks.properties" classpath="${LIB_DIR}/FlexAntTasks.jar" />
     </target>
 
-    <target name="main" depends="init">
+    <target name="main" depends="init" description="Compile MXML to SWF">
+        <echo>Compile MXML to SWF ...</echo>
         <mxmlc file="${SRC_DIR}/com/slaggun/Luncher.mxml"
                output="${BIN_DIR}/Luncher.swf"
                keep-generated-actionscript="false"
@@ -24,8 +43,27 @@
             <load-config filename="${APP_ROOT}/flex-config.xml"/>
             <source-path path-element="${FLEX_HOME}/frameworks"/>
             <source-path path-element="${SRC_DIR}"/>
-	    <compiler.debug>true</compiler.debug>
+            <compiler.debug>true</compiler.debug>
         </mxmlc>
+    </target>
+
+    <target name="tests" depends="init" description="run tests">
+        <echo>Running tests ...</echo>
+        <mxmlc file="${TEST_DIR}/TestRunner.mxml"
+               output="${BIN_DIR}/TestRunner.swf">
+            <library-path dir="${LIB_DIR}" append="true">
+                <include name="**/*.swc"/>
+            </library-path>
+            <source-path path-element="${SRC_DIR}"/>
+            <source-path path-element="${TEST_DIR}"/>
+        </mxmlc>
+
+        <flexunit swf="${BIN_DIR}/TestRunner.swf"
+                  toDir="${TEST_REPORTS_DIR}"
+                  haltonfailure="false"
+                  verbose="true"
+                  failureproperty="flexunit.failed"/>
+
     </target>
 
 </project>
