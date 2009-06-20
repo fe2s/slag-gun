@@ -1,5 +1,4 @@
-package com.example.quickstart
-{
+package com.example.quickstart{
 public class Greeter
 {
     public var name:String;

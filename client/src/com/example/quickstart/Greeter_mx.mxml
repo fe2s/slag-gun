@@ -4,9 +4,7 @@
 
 
 <![CDATA[
-import com.example.quickstart.Greeter;
-
-        private function initApp():void {
+ private function initApp():void {
             var myGreeter:Greeter = new Greeter();
             output.text = myGreeter.sayHello();
             output.text += "\n";
