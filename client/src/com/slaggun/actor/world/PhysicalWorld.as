@@ -38,7 +38,7 @@ import flash.geom.Rectangle;
          * @param width - screen width
          * @param height - screen height
          */
-        public function updateBitMapSize(width:Number, height:Number){
+        public function updateBitMapSize(width:Number, height:Number):void{
             _bitmap = new BitmapData(width, height);
         }
 

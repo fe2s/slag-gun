@@ -65,7 +65,7 @@ public class LuncherClass {
             if (!gamePaused) {
                 var nowTime:Date = new Date();
                 var mils:Number = (nowTime.getTime() - lastTime.getTime());
-                if (mils > 3)
+                if (mils > 50)
                 {
                     lastTime = nowTime;
                     world.live(mils);
@@ -111,7 +111,7 @@ public class LuncherClass {
          * @param width - screen width
          * @param height - screen hright
          */
-        function resize(width:Number, height:Number):void {
+        public function resize(width:Number, height:Number):void {
             world.updateBitMapSize(width, height);
         }
     }
