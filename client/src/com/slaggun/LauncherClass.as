@@ -10,7 +10,10 @@
  */
 
 package com.slaggun {
+import com.slaggun.actor.base.Actor;
+import com.slaggun.actor.base.ActorPackage;
 import com.slaggun.actor.player.simple.SimplePlayerPackage;
+import com.slaggun.actor.player.simple.bot.BotPackage;
 import com.slaggun.actor.world.InputState;
 import com.slaggun.actor.world.PhysicalWorld;
 
@@ -42,8 +45,17 @@ public class LauncherClass {
          * @return
          */
         public function inititalize():void {
-            var actorPackage:SimplePlayerPackage = new SimplePlayerPackage();
-            world.add(actorPackage.createPlayer());
+            var playerPackage:ActorPackage = new SimplePlayerPackage();
+            var botPackage:ActorPackage = new BotPackage();
+
+            world.add(playerPackage.createPlayer());
+
+            trace('before add')
+            for(var i:int=0; i < 50; i++){
+                trace('add')
+                world.add(botPackage.createPlayer());
+            }
+            trace('after add')
             
             start();
         }
@@ -61,11 +73,11 @@ public class LauncherClass {
          * @param g - graphics
          * @return nothing
          */
-        public function enterFrame(g:Graphics):void {
+        public function enterFrame(g:Graphics):Number {
             if (!gamePaused) {
                 var nowTime:Date = new Date();
                 var mils:Number = (nowTime.getTime() - lastTime.getTime());
-                if (mils > 50)
+                if (mils > 1)
                 {
                     lastTime = nowTime;
                     world.live(mils);
@@ -75,7 +87,11 @@ public class LauncherClass {
                 g.beginBitmapFill(bitmapData)
                 g.drawRect(0, 0, bitmapData.rect.width, bitmapData.rect.height)
                 g.endFill()
+
+                return mils
             }
+
+            return 0
         }
 
         /**

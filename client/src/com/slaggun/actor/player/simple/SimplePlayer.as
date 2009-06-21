@@ -25,20 +25,33 @@ import com.slaggun.actor.base.ActorRenderer;
      */
     public class SimplePlayer implements Actor{
 
-        private const _physics:SimplePlayerPhysics = new SimplePlayerPhysics();
-        private const _renderer:SimplePlayerRenderer = new SimplePlayerRenderer();
-        private const _model:SimplePlayerModel = new SimplePlayerModel();
+        private var _physics:ActorPhysics = new SimplePlayerPhysics();
+        private var _renderer:ActorRenderer = new SimplePlayerRenderer();
+        private var _model:ActorModel = new SimplePlayerModel();
 
         public function get model():ActorModel {
             return _model;
+        }
+
+        public function set model(value:ActorModel):void {
+            _model = value;
         }
 
         public function get renderer():ActorRenderer {
             return _renderer;
         }
 
+        public function set renderer(value:ActorRenderer):void {
+            _renderer = value;
+        }
+
         public function get physics():ActorPhysics {
             return _physics;
+        }
+
+
+        public function set physics(value:ActorPhysics):void {
+            _physics = value;
         }
     }
 }

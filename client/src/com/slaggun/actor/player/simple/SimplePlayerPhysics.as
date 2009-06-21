@@ -12,6 +12,7 @@
 package com.slaggun.actor.player.simple {
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorPhysics;
+import com.slaggun.actor.player.PlayerConstants;
 import com.slaggun.actor.world.InputState;
 import com.slaggun.actor.world.PhysicalWorld;
 
@@ -26,7 +27,7 @@ import flash.ui.Keyboard;
      */
     public class SimplePlayerPhysics implements ActorPhysics{
 
-        public function live(deltaTime:Number,actor:Actor, world:PhysicalWorld):void {
+        public function live(timePass:Number,actor:Actor, world:PhysicalWorld):void {
             var x:Number = 0;
             var y:Number = 0;
 
@@ -53,14 +54,14 @@ import flash.ui.Keyboard;
 
             // update actor model
             var actorModel:SimplePlayerModel = SimplePlayerModel(myActor.model);
-            actorModel.vx = x * deltaTime
-            actorModel.vy = y * deltaTime
+            actorModel.vx = x * PlayerConstants.PLAER_SPEED_PER_MS;
+            actorModel.vy = y * PlayerConstants.PLAER_SPEED_PER_MS;
 
-            actorModel.x += actorModel.vx * 0.02;
-            actorModel.y += actorModel.vy * 0.02;
+            actorModel.x += actorModel.vx * timePass
+            actorModel.y += actorModel.vy * timePass 
 
-            actorModel.lookX = world.inputStates.mousePosition.x - actorModel.x
-            actorModel.lookY = world.inputStates.mousePosition.y - actorModel.y
+            actorModel.lookX = -(world.inputStates.mousePosition.x - actorModel.x)
+            actorModel.lookY = -(world.inputStates.mousePosition.y - actorModel.y)
         }
     }
 }

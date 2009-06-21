@@ -67,8 +67,8 @@ import flash.geom.Point;
         private function drawLow(deltaTime:Number, model:SimplePlayerModel, bitmap:BitmapData):void {
             var matrix:Matrix = new Matrix();
 
-            xFrame+=model.vx*deltaTime*0.00005
-            yFrame+=model.vy*deltaTime*0.00005
+            xFrame+=model.vx*deltaTime*0.1
+            yFrame+=model.vy*deltaTime*0.1
 
             if(yFrame > 2*Math.PI )
             {
@@ -108,7 +108,7 @@ import flash.geom.Point;
 
 
             // draw triangle
-            var point:Point = new Point(model.lookX, model.lookY + YSTART + SIZE);
+            var point:Point = new Point(model.lookX, model.lookY - (YSTART + SIZE));
             var length:Number = point.length;            
             point.x /= length
             point.y /= length

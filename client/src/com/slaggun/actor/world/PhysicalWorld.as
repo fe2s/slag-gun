@@ -30,6 +30,10 @@ import flash.geom.Rectangle;
         private var toBeAdded:Array = [];
         private var toBeRemoved:Array = [];
 
+        private var _worldWidth:Number
+        private var _worldHeight:Number
+
+
         public function PhysicalWorld() {
         }
 
@@ -40,6 +44,24 @@ import flash.geom.Rectangle;
          */
         public function updateBitMapSize(width:Number, height:Number):void{
             _bitmap = new BitmapData(width, height);
+            _worldWidth = width
+            _worldHeight = height
+        }
+
+        /**
+         * Returns world width 
+         * @return world width
+         */
+        public function get width():Number {
+            return _worldWidth;
+        }
+
+        /**
+         * Returns world height
+         * @return world height
+         */
+        public function get height():Number {
+            return _worldHeight;
         }
 
         /**
@@ -49,6 +71,7 @@ import flash.geom.Rectangle;
          * @return
          */
         public function add(actor:Actor):void {
+            trace("New actor " + actor)
             toBeAdded.push(actor)
         }
 
@@ -90,6 +113,7 @@ import flash.geom.Rectangle;
             for (actorName in toBeAdded)
             {
                 actors.push(toBeAdded[actorName])
+                trace("New actor pushed" + toBeAdded[actorName])
             }
 
             toBeAdded = []
@@ -105,8 +129,8 @@ import flash.geom.Rectangle;
         }
 
         /**
-         *
          * Proccess worl live iteration
+         * @param deltaTime - time pass
          */
         public function live(deltaTime:Number):void {
             addAll()

@@ -24,7 +24,7 @@ public interface ActorRenderer {
 
         /**
          * Render actor on specified bitmap
-         * @param deltaTime - time pasts
+         * @param deltaTime - time pass
          * @param actor     - actow to be drawn
          * @param bitmap    - bitmap that will be drawn on.
          */

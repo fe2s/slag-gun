@@ -23,7 +23,7 @@ import com.slaggun.actor.world.PhysicalWorld;
 
         /**
          * Process world iteration
-         * @param deltaTime - time pasts
+         * @param deltaTime - time pass
          * @param actor     - actor to be proccessed
          * @param world     - game world
          */

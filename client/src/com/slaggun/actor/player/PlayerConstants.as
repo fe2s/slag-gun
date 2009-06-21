@@ -9,28 +9,8 @@
  * and limitations under the License.
  */
 
-package com.example.quickstart{
-public class Greeter
-{
-    public var name:String;
-    private var secretValue:Number;
-
-    public function Greeter(initialName:String = "Agus")
-    {
-        name = initialName;
+package com.slaggun.actor.player {
+    public class PlayerConstants {
+        public static const PLAER_SPEED_PER_MS:Number = 0.3
     }
-
-    public function sayHello():String
-    {
-        var result:String;
-
-        if (name != null && name.length > 0) {
-            result = "Hello there, " + name + ".";
-        } else {
-            result = "Hello there, anonymous.";
-        }
-
-        return result;
-    }
-}
 }

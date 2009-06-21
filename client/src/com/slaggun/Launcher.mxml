@@ -32,7 +32,7 @@
         private var luncher:LauncherClass
 
         private function enterFrame():void {
-            luncher.enterFrame(output.graphics)
+            fpsOut.text = "fps: " + 1000 / luncher.enterFrame(output.graphics)
         }
 
         private function hookKeyboard():void {
@@ -84,6 +84,7 @@
 ]]>
 </mx:Script>
 
+    <mx:Text x="0" y = "0" id="fpsOut"/> 
     <mx:Canvas id="output" x = "0" y = "0" width = "100%" height = "100%"/>
 
 </mx:Application>

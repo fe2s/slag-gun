@@ -9,27 +9,17 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player.simple {
+package com.slaggun.actor.player.simple.bot {
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorPackage;
+import com.slaggun.actor.player.simple.SimplePlayer;
+import com.slaggun.actor.player.simple.SimplePlayerPackage;
 
-    /**
-     * This is package with SimplePlayer.
-     * It must be used to create SimplePlayer
-     *
-     * Author Dmitry Brazhnik (amid.ukr@gmail.com)
-     *
-     * @see SimplePlayer
-     */
-    public class SimplePlayerPackage implements ActorPackage{
-        public function SimplePlayerPackage() {
-            super();
-        }
-
+public class BotPackage implements ActorPackage{
         public function createPlayer():Actor {
-            var simplePlayer:SimplePlayer = new SimplePlayer();
-
-            return simplePlayer;
+            var actor:SimplePlayer = SimplePlayer(new SimplePlayerPackage().createPlayer())
+            actor.physics = new BotPhysics() 
+            return actor
         }
     }
 }
