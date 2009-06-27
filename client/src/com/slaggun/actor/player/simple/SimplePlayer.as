@@ -15,7 +15,7 @@ import com.slaggun.actor.base.ActorModel;
 import com.slaggun.actor.base.ActorPhysics;
 import com.slaggun.actor.base.ActorRenderer;
 
-    /**
+/**
      * This is the first implementation of user controlled game character
      *
      * Author Dmitry Brazhnik (amid.ukr@gmail.com)

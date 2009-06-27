@@ -24,6 +24,7 @@
         <property name="TEST_DIR" value="${APP_ROOT}/test"/>
         <property name="LIB_DIR" value="${APP_ROOT}/lib"/>
         <property name="TEST_REPORTS_DIR" value="${APP_ROOT}/test_reports"/>
+        <property name="OUTPUT_SWF" value="${BIN_DIR}/Launcher.swf"/>
 
         <echo>FLEX_HOME: ${FLEX_HOME}</echo>
 
@@ -34,10 +35,15 @@
         <taskdef resource="com/adobe/ac/ant/tasks/tasks.properties" classpath="${LIB_DIR}/FlexAntTasks.jar"/>
     </target>
 
-    <target name="main" depends="init" description="Compile MXML to SWF">
+    <target name="clean" depends="init" description="Clean up">
+        <echo>Cleaning up ...</echo>
+        <delete dir="${BIN_DIR}"/>
+    </target>
+
+    <target name="main" depends="init, clean" description="Compile MXML to SWF">
         <echo>Compile MXML to SWF ...</echo>
         <mxmlc file="${SRC_DIR}/com/slaggun/Launcher.mxml"
-               output="${BIN_DIR}/Launcher.swf"
+               output="${OUTPUT_SWF}"
                keep-generated-actionscript="false"
                fork="true">
             <load-config filename="${APP_ROOT}/flex-config.xml"/>
@@ -70,10 +76,4 @@
                   verbose="true"
                   failureproperty="flexunit.failed"/>
     </target>
-    
-    <target name="clean" depends="init" description="Clean up">
-        <echo>Cleaning up ...</echo>
-        <delete dir="${BIN_DIR}"/>
-    </target>
-
 </project>

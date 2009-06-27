@@ -12,7 +12,9 @@
 package com.slaggun.actor.player.simple {
 import com.slaggun.actor.base.ActorModel;
 
-    /**
+import flash.geom.Point;
+
+/**
      * This is model for the SimplePlayer
      *
      * Author Dmitry Brazhnik (amid.ukr@gmail.com)
@@ -21,111 +23,57 @@ import com.slaggun.actor.base.ActorModel;
      */
     public class SimplePlayerModel implements ActorModel{
 
-        private var _x:Number = 50;
-        private var _y:Number = 50;
-
-        private var _vx:Number;
-        private var _vy:Number;
-
-        private var _lookX:Number;
-        private var _lookY:Number;
+        private var _position:Point = new Point(50, 50);
+        private var _velocity:Point = new Point;
+        private var _look:Point     = new Point;
 
 
         /**
-         * Returns x actor coord
-         * @return x actor coord
+         * Return player position
+         * @return player position
          */
-        public function get x():Number {
-            return _x;
+        public function get position():Point {
+            return _position;
         }
 
         /**
-         * Set x actor coord
-         * @param value - new x coord value
+         * Sets player position
+         * @param value - new position
          */
-        public function set x(value:Number):void {
-            _x = value;
+        public function set position(value:Point):void {
+            _position = value;
         }
 
         /**
-         * Returns y actor coord
-         * @return y actor coord
+         * Returns velocity vector.
+         * @return velocity vector.
          */
-        public function get y():Number {
-            return _y;
+        public function get velocity():Point {
+            return _velocity;
         }
 
         /**
-         * Set y actor coord
-         * @param value - new y coord value
+         * Sets velocity vector
+         * @param value - new velocity vector
          */
-        public function set y(value:Number):void {
-            _y = value;
+        public function set velocity(value:Point):void {
+            _velocity = value;
         }
 
         /**
-         * Returns x actor velocity
-         * @return x actor velocity
+         * Return coordinate where user look
+         * @return coordinate where user look
          */
-        public function get vx():Number {
-            return _vx;
+        public function get look():Point {
+            return _look;
         }
 
         /**
-         * Set x actor velocity
-         * @param vx - new x actor velocity
+         * Sets coordinate where user looks.
+         * @param value - look coordinate
          */
-        public function set vx(vx:Number):void {
-            _vx = vx;
-        }
-
-        /**
-         * Returns y actor velocity
-         * @return y actor velocity
-         */
-        public function get vy():Number {
-            return _vy;
-        }
-
-        /**
-         * Set y actor velocity
-         * @param value - new y actor velocity
-         */
-        public function set vy(vy:Number):void {
-            _vy = vy;
-        }
-
-        /**
-         * Returns x actor look vector
-         * @return x actor look vector
-         */
-        public function get lookX():Number {
-            return _lookX;
-        }
-
-
-        /**
-         * Set x coordinate of actor look vector
-         * @param value - new x actor look vector coordinate
-         */
-        public function set lookX(value:Number):void {
-            _lookX = value;
-        }
-
-        /**
-         * Returns y actor look vector
-         * @return y actor look vector
-         */
-        public function get lookY():Number {
-            return _lookY;
-        }
-
-        /**
-         * Set y coordinate of actor look vector
-         * @param value - new y actor look vector coordinate
-         */
-        public function set lookY(value:Number):void {
-            _lookY = value;
+        public function set look(value:Point):void {
+            _look = value;
         }
     }
 }

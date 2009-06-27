@@ -11,6 +11,6 @@
 
 package com.slaggun.actor.player {
     public class PlayerConstants {
-        public static const PLAER_SPEED_PER_MS:Number = 0.3
+        public static const PLAER_SPEED_PER_MS:Number = 0.3;
     }
 }

@@ -41,11 +41,11 @@ import flash.geom.Point;
             triangleBlue = new Shape();
             triangleRed = new Shape();
 
-            triangleBlue.graphics.beginFill(0x000000FF)
-            triangleBlue.graphics.lineStyle(1, 0x0000AA)
+            triangleBlue.graphics.beginFill(0x000000FF);
+            triangleBlue.graphics.lineStyle(1, 0x0000AA);
 
-            triangleRed.graphics.beginFill(0xFF0000)
-            triangleRed.graphics.lineStyle(1, 0xAA0000)
+            triangleRed.graphics.beginFill(0xFF0000);
+            triangleRed.graphics.lineStyle(1, 0xAA0000);
 
             buildShape(triangleBlue);
             buildShape(triangleRed);
@@ -53,9 +53,9 @@ import flash.geom.Point;
 
         private static function buildShape(trinalge:Shape):void{
 
-            trinalge.graphics.moveTo(    0, -H + YSTART)
-            trinalge.graphics.lineTo (SIZE,    + YSTART)
-            trinalge.graphics.lineTo(-SIZE,    + YSTART)
+            trinalge.graphics.moveTo(    0, -H + YSTART);
+            trinalge.graphics.lineTo (SIZE,    + YSTART);
+            trinalge.graphics.lineTo(-SIZE,    + YSTART);
         }
 
         /**
@@ -65,35 +65,42 @@ import flash.geom.Point;
          * @param bitmap    - offscreen buffer
          */
         private function drawLow(deltaTime:Number, model:SimplePlayerModel, bitmap:BitmapData):void {
+
+            var x:Number = model.position.x;
+            var y:Number = model.position.y;
+
+            var vx:Number = model.velocity.x;
+            var vy:Number = model.velocity.y;
+
             var matrix:Matrix = new Matrix();
 
-            xFrame+=model.vx*deltaTime*0.1
-            yFrame+=model.vy*deltaTime*0.1
+            xFrame+=vx*deltaTime*0.1;
+            yFrame+=vy*deltaTime*0.1;
 
             if(yFrame > 2*Math.PI )
             {
-                yFrame -= 2*Math.PI
+                yFrame -= 2*Math.PI;
             }
 
             if(yFrame < 0 )
             {
-                yFrame += 2*Math.PI
+                yFrame += 2*Math.PI;
             }
 
             var triangleShape:Shape;
 
             if((yFrame < Math.PI/2) || (yFrame > 3*Math.PI/2)){
-                triangleShape = triangleBlue
+                triangleShape = triangleBlue;
             }else{
-                triangleShape = triangleRed
+                triangleShape = triangleRed;
             }
 
-            matrix.rotate(xFrame)
-            matrix.scale(1, Math.cos(yFrame))
-            matrix.scale(0.2*Math.sin(-yFrame)+1.0, 1)            
-            matrix.translate(model.x, model.y-YSTART)
+            matrix.rotate(xFrame);
+            matrix.scale(1, Math.cos(yFrame));
+            matrix.scale(0.2*Math.sin(-yFrame)+1.0, 1);
+            matrix.translate(x, y - YSTART);
 
-            bitmap.draw(triangleShape, matrix)
+            bitmap.draw(triangleShape, matrix);
         }
 
         /**
@@ -106,35 +113,38 @@ import flash.geom.Point;
         private function drawMedium(deltaTime:Number, model:SimplePlayerModel, bitmap:BitmapData):void {
             var matrix:Matrix = new Matrix();
 
+            var x:Number = model.position.x;
+            var y:Number = model.position.y;
+
+            var lx:Number = model.look.x;
+            var ly:Number = model.look.y;
 
             // draw triangle
-            var point:Point = new Point(model.lookX, model.lookY - (YSTART + SIZE));
-            var length:Number = point.length;            
-            point.x /= length
-            point.y /= length
+            var point:Point = new Point(lx, ly - (YSTART + SIZE));
+            point.normalize(1);
 
             var angle:Number = point.x*Math.PI/2;
 
-            matrix.scale(Math.cos(angle),1)
-            matrix.translate(model.x , model.y - YSTART - SIZE)
+            matrix.scale(Math.cos(angle),1);
+            matrix.translate(x , y - YSTART - SIZE);
 
             bitmap.draw(triangleBlue, matrix);
 
             var gun:Shape = new Shape();
 
-            gun.graphics.lineStyle(3, 0)
-            gun.graphics.moveTo(0,0)
-            gun.graphics.lineTo(2*SIZE*point.x, 2*SIZE*point.y)
+            gun.graphics.lineStyle(3, 0);
+            gun.graphics.moveTo(0,0);
+            gun.graphics.lineTo(2*SIZE*point.x, 2*SIZE*point.y);
 
             // draw cannon
             matrix = new Matrix();
 
-            matrix.translate(model.x , model.y - YSTART - SIZE)
+            matrix.translate(x , y - YSTART - SIZE);
             bitmap.draw(gun, matrix);
         }
 
         public function draw(deltaTime:Number, actor:Actor, bitmap:BitmapData):void {
-            var model:SimplePlayerModel = SimplePlayerModel(actor.model)
+            var model:SimplePlayerModel = SimplePlayerModel(actor.model);
 
             drawLow(deltaTime, model, bitmap);
             drawMedium(deltaTime, model, bitmap);

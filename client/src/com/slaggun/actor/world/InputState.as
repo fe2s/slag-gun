@@ -38,7 +38,7 @@ public class InputState{
         {
             keyboard = [];
 
-            keyboard.length = LAST
+            keyboard.length = LAST;
 
             for(var s:String in keyboard){
                 keyboard[s] = false;
@@ -51,7 +51,7 @@ public class InputState{
          * @return
          */
         public function pressDown(keyNumber:Number):void{
-            keyboard[keyNumber]  = true
+            keyboard[keyNumber]  = true;
         }
 
         /**
@@ -60,7 +60,7 @@ public class InputState{
          * @return
          */
         public function pressUp(keyNumber:Number):void{
-            keyboard[keyNumber]  = false
+            keyboard[keyNumber]  = false;
         }
 
         /**

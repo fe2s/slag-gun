@@ -10,18 +10,13 @@
  */
 
 package com.slaggun {
-import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorPackage;
 import com.slaggun.actor.player.simple.SimplePlayerPackage;
 import com.slaggun.actor.player.simple.bot.BotPackage;
-import com.slaggun.actor.world.InputState;
 import com.slaggun.actor.world.PhysicalWorld;
 
 import flash.display.BitmapData;
 import flash.display.Graphics;
-import flash.events.DataEvent;
-
-import mx.collections.ArrayCollection;
 
 /**
  * Lucnher class that integrates game engine and mxml
@@ -45,17 +40,18 @@ public class LauncherClass {
          * @return
          */
         public function inititalize():void {
+            
             var playerPackage:ActorPackage = new SimplePlayerPackage();
             var botPackage:ActorPackage = new BotPackage();
 
             world.add(playerPackage.createPlayer());
 
-            trace('before add')
-            for(var i:int=0; i < 50; i++){
-                trace('add')
+            trace('before add');
+            var i: int;
+            for(i = 0; i < 30; i++){
                 world.add(botPackage.createPlayer());
             }
-            trace('after add')
+            trace('after add');
             
             start();
         }
@@ -83,15 +79,15 @@ public class LauncherClass {
                     world.live(mils);
                 }
 
-                var bitmapData:BitmapData = world.bitmap
-                g.beginBitmapFill(bitmapData)
-                g.drawRect(0, 0, bitmapData.rect.width, bitmapData.rect.height)
-                g.endFill()
+                var bitmapData:BitmapData = world.bitmap;
+                g.beginBitmapFill(bitmapData);
+                g.drawRect(0, 0, bitmapData.rect.width, bitmapData.rect.height);
+                g.endFill();
 
-                return mils
+                return mils;
             }
 
-            return 0
+            return 0;
         }
 
         /**
@@ -110,7 +106,7 @@ public class LauncherClass {
          * @see Keyboard
          */
         public function buttonDown(keyCode:Number):void {            
-            world.inputStates.pressDown(keyCode)
+            world.inputStates.pressDown(keyCode);
         }
 
         /**
@@ -119,7 +115,7 @@ public class LauncherClass {
          * @return
          */
         public function buttonUp(keyCode:Number):void {
-            world.inputStates.pressUp(keyCode)
+            world.inputStates.pressUp(keyCode);
         }
 
         /**

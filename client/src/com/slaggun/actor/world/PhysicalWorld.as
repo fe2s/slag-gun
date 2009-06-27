@@ -13,16 +13,15 @@ package com.slaggun.actor.world {
 import com.slaggun.actor.base.Actor;
 
 import flash.display.BitmapData;
-import flash.geom.Rectangle;
 
-    /**
+/**
      * This is core world engine class
      *
      * Author Dmitry Brazhnik (amid.ukr@gmail.com)
      */
     public class PhysicalWorld {
 
-        private var _inputStates:InputState = new InputState()
+        private var _inputStates:InputState = new InputState();
         private var _bitmap:BitmapData;
     
         private var actors:Array = [];
@@ -30,8 +29,8 @@ import flash.geom.Rectangle;
         private var toBeAdded:Array = [];
         private var toBeRemoved:Array = [];
 
-        private var _worldWidth:Number
-        private var _worldHeight:Number
+        private var _worldWidth:Number;
+        private var _worldHeight:Number;
 
 
         public function PhysicalWorld() {
@@ -44,8 +43,8 @@ import flash.geom.Rectangle;
          */
         public function updateBitMapSize(width:Number, height:Number):void{
             _bitmap = new BitmapData(width, height);
-            _worldWidth = width
-            _worldHeight = height
+            _worldWidth = width;
+            _worldHeight = height;
         }
 
         /**
@@ -70,9 +69,8 @@ import flash.geom.Rectangle;
          * @param actor
          * @return
          */
-        public function add(actor:Actor):void {
-            trace("New actor " + actor)
-            toBeAdded.push(actor)
+        public function add(actor:Actor):void {            
+            toBeAdded.push(actor);
         }
 
         /**
@@ -82,7 +80,7 @@ import flash.geom.Rectangle;
          * @return
          */
         public function remove(actor:Actor):void {
-            toBeRemoved.push(actor)
+            toBeRemoved.push(actor);
         }
 
         /**
@@ -110,22 +108,25 @@ import flash.geom.Rectangle;
 
             var actorName:String;
 
-            for (actorName in toBeAdded)
+            var len:int = toBeAdded.length;
+            var i:int;
+
+            for (i = 0; i < len; i++)
             {
-                actors.push(toBeAdded[actorName])
-                trace("New actor pushed" + toBeAdded[actorName])
+                actors.push(toBeAdded[i]);
             }
 
-            toBeAdded = []
+            toBeAdded = [];
 
-            for (actorName in toBeRemoved)
+            len = toBeRemoved.length;
+            for (i = 0; i < len; i++)
             {
-                var actor:Actor = toBeRemoved[actorName]
-                var actorIndex:Number = toBeRemoved.indexOf(actor)
-                actors.push(toBeRemoved[actorIndex])
+                var actor:Actor = toBeRemoved[i];
+                var actorIndex:Number = actors.indexOf(actor);
+                actors.splice(actorIndex, 1);
             }
 
-            toBeRemoved = []
+            toBeRemoved = [];
         }
 
         /**
@@ -133,22 +134,26 @@ import flash.geom.Rectangle;
          * @param deltaTime - time pass
          */
         public function live(deltaTime:Number):void {
-            addAll()
+            addAll();
 
             var actorName:String;
             var actor:Actor;
 
-            for (actorName in actors)
+            var i:int;
+
+            var len:int = actors.length;
+            for (i = 0; i < len; i++)
             {
-                actor = actors[actorName]
-                actor.physics.live(deltaTime, actor, this)
+                actor = actors[i];
+                actor.physics.live(deltaTime, actor, this);
             }
 
-            _bitmap.fillRect(_bitmap.rect, 0xFFFFFF)
+            _bitmap.fillRect(_bitmap.rect, 0xFFFFFF);            
 
-            for (actorName in actors)
+            len = actors.length;
+            for (i = 0; i < len; i++)
             {
-                actor = actors[actorName]
+                actor = actors[i];
                 actor.renderer.draw(deltaTime, actor, _bitmap);
             }
         }

@@ -18,64 +18,77 @@ import com.slaggun.actor.world.PhysicalWorld;
 
 import flash.geom.Rectangle;
 
-public class BotPhysics implements ActorPhysics{
+    public class BotPhysics implements ActorPhysics{
 
-    private var timePass:Number = 1001;
+        private var timePass:Number = 1001;
 
-    private function randV():Number{
-        var number:Number = Math.random()
-            if(number < 0.33){
-                return -1;
-            }else if (number > 0.66){
-                return 1
-            }else{
-                return 0;
+        private static function randV():Number{
+            var number:Number = Math.random();
+                if(number < 0.33){
+                    return -1;
+                }else if (number > 0.66){
+                    return 1;
+                }else{
+                    return 0;
+                }
+        }
+
+        public function BotPhysics() {
+        }
+
+        public function live(deltaTime:Number, actor:Actor, world:PhysicalWorld):void {
+            var actorModel:SimplePlayerModel = SimplePlayerModel(actor.model);
+
+            timePass+=deltaTime;
+
+            var vx:Number = actorModel.velocity.x;
+            var vy:Number = actorModel.velocity.y;
+
+            var x:Number = actorModel.position.x;
+            var y:Number = actorModel.position.y;
+
+            if(x <0 || x > world.width){
+
+                if(actorModel.position.x <0){
+                    x = 0;
+                }else{
+                    x = world.width - 1;
+                }
+
+                vx = - actorModel.velocity.x;
             }
+
+            if(y <0 || y > world.height){
+
+                if(y <0){
+                    y = 0;
+                }else{
+                    y = world.height - 1;
+                }
+
+                vy = - actorModel.velocity.y;
+            }
+
+            if(timePass > 100){
+                timePass-=100;
+
+                vx = randV() * PlayerConstants.PLAER_SPEED_PER_MS;
+                vy = randV() * PlayerConstants.PLAER_SPEED_PER_MS;
+
+                var rect:Rectangle = world.bitmap.rect;
+
+                actorModel.look.x = Math.random()*world.width;
+                actorModel.look.y = Math.random()*world.height;
+            }
+
+            x += vx*deltaTime;
+            y += vy*deltaTime;
+
+            actorModel.velocity.x = vx;
+            actorModel.velocity.y = vy;
+
+            actorModel.position.x = x;
+            actorModel.position.y = y;
+        }
     }
-
-    public function live(deltaTime:Number, actor:Actor, world:PhysicalWorld):void {
-        var actorModel:SimplePlayerModel = SimplePlayerModel(actor.model)
-
-        timePass+=deltaTime
-
-        var vx:Number = 0;
-        var vy:Number = 0;
-
-        if(timePass > 1000){
-            timePass-=1000;
-            actorModel.vx = randV() * PlayerConstants.PLAER_SPEED_PER_MS
-            actorModel.vy = randV() * PlayerConstants.PLAER_SPEED_PER_MS
-
-            var rect:Rectangle = world.bitmap.rect;
-
-            actorModel.lookX = -(Math.random()*world.width - actorModel.x)
-            actorModel.lookY = -(Math.random()*world.height - actorModel.y)
-        }
-
-        if(actorModel.x <0 || actorModel.x > world.width){
-
-            if(actorModel.x <0){
-                actorModel.x = 0;
-            }else{
-                actorModel.x = world.width - 1;
-            }
-
-            actorModel.vx = - actorModel.vx;
-        }
-
-        if(actorModel.y <0 || actorModel.y > world.height){
-
-            if(actorModel.y <0){
-                actorModel.y = 0;
-            }else{
-                actorModel.y = world.height - 1;
-            }
-
-            actorModel.vy = - actorModel.vy; 
-        }
-
-        actorModel.x += actorModel.vx * deltaTime
-        actorModel.y += actorModel.vy * deltaTime
-    }
-}
 }

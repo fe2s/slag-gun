@@ -10,7 +10,6 @@
  */
 
 package com.slaggun.amf {
-import flash.net.registerClassAlias;
 import flash.utils.ByteArray;
 
 import mx.utils.Base64Decoder;

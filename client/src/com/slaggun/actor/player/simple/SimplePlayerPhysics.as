@@ -18,7 +18,7 @@ import com.slaggun.actor.world.PhysicalWorld;
 
 import flash.ui.Keyboard;
 
-    /**
+/**
      * This is physical calculator for the SimplePlayer
      *
      * Author Dmitry Brazhnik (amid.ukr@gmail.com)
@@ -28,40 +28,54 @@ import flash.ui.Keyboard;
     public class SimplePlayerPhysics implements ActorPhysics{
 
         public function live(timePass:Number,actor:Actor, world:PhysicalWorld):void {
-            var x:Number = 0;
-            var y:Number = 0;
-
             var myActor:SimplePlayer = SimplePlayer(actor);
+            var actorModel:SimplePlayerModel = SimplePlayerModel(myActor.model);
+
+            var clickX:Number = 0;
+            var clickY:Number = 0;
+
+            var vx:Number = 0;
+            var vy:Number = 0;
+
+            var x:Number = actorModel.position.x;
+            var y:Number = actorModel.position.y;
+
+            var mouseX:Number = world.inputStates.mousePosition.x;
+            var mouseY:Number = world.inputStates.mousePosition.y;
 
             var inputState:InputState = world.inputStates;
 
             // procces key events
             if(inputState.isPressed(Keyboard.LEFT)){
-                x -= 1;
+                clickX -= 1;
             }
 
             if(inputState.isPressed(Keyboard.RIGHT)){
-                x += 1;
+                clickX += 1;
             }
 
             if(inputState.isPressed(Keyboard.UP)){
-                y -= 1;
+                clickY -= 1;
             }
 
             if(inputState.isPressed(Keyboard.DOWN)){
-                y += 1;
+                clickY += 1;
             }
 
             // update actor model
-            var actorModel:SimplePlayerModel = SimplePlayerModel(myActor.model);
-            actorModel.vx = x * PlayerConstants.PLAER_SPEED_PER_MS;
-            actorModel.vy = y * PlayerConstants.PLAER_SPEED_PER_MS;
 
-            actorModel.x += actorModel.vx * timePass
-            actorModel.y += actorModel.vy * timePass 
 
-            actorModel.lookX = -(world.inputStates.mousePosition.x - actorModel.x)
-            actorModel.lookY = -(world.inputStates.mousePosition.y - actorModel.y)
+            vx = clickX * PlayerConstants.PLAER_SPEED_PER_MS;
+            vy = clickY * PlayerConstants.PLAER_SPEED_PER_MS;
+
+            actorModel.velocity.x = vx;
+            actorModel.velocity.y = vy;
+
+            actorModel.position.x = x + vx*timePass;
+            actorModel.position.y = y + vy*timePass;
+
+            actorModel.look.x = x - mouseX;
+            actorModel.look.y = y - mouseY;
         }
     }
 }

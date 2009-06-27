@@ -26,10 +26,8 @@ import com.slaggun.actor.base.ActorPackage;
             super();
         }
 
-        public function createPlayer():Actor {
-            var simplePlayer:SimplePlayer = new SimplePlayer();
-
-            return simplePlayer;
+        public function createPlayer():Actor {            
+            return new SimplePlayer();
         }
     }
 }

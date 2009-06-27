@@ -20,7 +20,7 @@
  * @see ActorPackage
  */
 package com.slaggun.actor.base {
-    public interface Actor {
+public interface Actor {
 
         /**
          * Return actor game model
@@ -42,6 +42,6 @@ package com.slaggun.actor.base {
          * @return actor physics processor
          * @see ActorPhysics
          */
-        function get physics():ActorPhysics;        
+        function get physics():ActorPhysics;
     }
 }

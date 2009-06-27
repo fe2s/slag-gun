@@ -29,10 +29,10 @@
 
         import mx.core.Application;
 
-        private var luncher:LauncherClass
+        private var luncher:LauncherClass;
 
         private function enterFrame():void {
-            fpsOut.text = "fps: " + 1000 / luncher.enterFrame(output.graphics)
+            fpsOut.text = "fps: " + 1000 / luncher.enterFrame(output.graphics);
         }
 
         private function hookKeyboard():void {
@@ -41,16 +41,16 @@
         }
 
         private function initApp():void {
-            luncher = new LauncherClass()
+            luncher = new LauncherClass();
             luncher.resize(Application.application.width, Application.application.height);
-            luncher.inititalize()
+            luncher.inititalize();
         }
 
         private function getButtonConst(leftMouseButton:Boolean):Number {
             if (leftMouseButton) {
-                return InputState.MOUSE_LEFT
+                return InputState.MOUSE_LEFT;
             } else {
-                return InputState.MOUSE_RIGHT
+                return InputState.MOUSE_RIGHT;
             }
         }
 
@@ -64,16 +64,16 @@
 
         private function mouseDown(event:MouseEvent):void {
             luncher.buttonDown(getButtonConst(event.buttonDown));
-            luncher.mouseMove(event.localX, event.localY)
+            luncher.mouseMove(event.localX, event.localY);
         }
 
         private function mouseUp(event:MouseEvent):void {
             luncher.buttonUp(getButtonConst(event.buttonDown));
-            luncher.mouseMove(event.localX, event.localY)
+            luncher.mouseMove(event.localX, event.localY);
         }
 
         private function mouseMove(event:MouseEvent):void {
-            luncher.mouseMove(event.localX, event.localY)
+            luncher.mouseMove(event.localX, event.localY);
         }
 
         private function resize():void {

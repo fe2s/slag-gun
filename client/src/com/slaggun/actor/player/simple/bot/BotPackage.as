@@ -17,9 +17,9 @@ import com.slaggun.actor.player.simple.SimplePlayerPackage;
 
 public class BotPackage implements ActorPackage{
         public function createPlayer():Actor {
-            var actor:SimplePlayer = SimplePlayer(new SimplePlayerPackage().createPlayer())
-            actor.physics = new BotPhysics() 
-            return actor
+            var actor:SimplePlayer = SimplePlayer(new SimplePlayerPackage().createPlayer());
+            actor.physics = new BotPhysics();
+            return actor;
         }
     }
 }
