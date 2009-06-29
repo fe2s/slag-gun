@@ -11,6 +11,7 @@
 
 package com.slaggun.amf;
 
+import static com.slaggun.util.Assert.notNull;
 import flex.messaging.io.SerializationContext;
 import flex.messaging.io.amf.Amf3Input;
 import flex.messaging.io.amf.Amf3Output;
@@ -22,8 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.lang.NullArgumentException;
-
 /**
  * Serializer to/from AMF3 format.
  *
@@ -34,9 +33,7 @@ public class Amf3Serializer implements AmfSerializer {
     private SerializationContext context;
 
     public Amf3Serializer(SerializationContext context) {
-        if (context == null) {
-            throw new NullArgumentException("context must not be null");
-        }
+        notNull(context, "context must not be null");
         this.context = context;
     }
 
@@ -62,9 +59,7 @@ public class Amf3Serializer implements AmfSerializer {
      * @throws AmfSerializerException error during serialization
      */
     public <T> byte[] toAmfBytes(T source) throws AmfSerializerException {
-        if (source == null) {
-            throw new NullArgumentException("source must not be null");
-        }
+        notNull(source, "source must not be null");
 
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         Amf3Output amf3Output = new Amf3Output(context);
@@ -94,9 +89,7 @@ public class Amf3Serializer implements AmfSerializer {
      * @throws AmfSerializerException error during serialization
      */
     public <T> T fromAmfString(String amf) throws AmfSerializerException {
-        if (amf == null) {
-            throw new NullArgumentException("amf must not be null");
-        }
+        notNull(amf, "amf must not be null");
 
         BASE64Decoder decoder = new BASE64Decoder();
         byte[] input;
@@ -117,9 +110,7 @@ public class Amf3Serializer implements AmfSerializer {
      * @throws AmfSerializerException error during serialization
      */
     public <T> T fromAmfBytes(byte[] amfBytes) throws AmfSerializerException {
-        if (amfBytes == null) {
-            throw new NullArgumentException("amfBytes must not be null");
-        }
+        notNull(amfBytes, "amfBytes must not be null");
 
         InputStream byteStream = new ByteArrayInputStream(amfBytes);
         Amf3Input amf3Input = new Amf3Input(context);

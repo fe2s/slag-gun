@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <!-- Preserve messages in a local file -->
+    <appender name="FILE" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="slag-gun-server.log"/>
+        <param name="MaxFileSize" value="1MB"/>
+        <param name="MaxBackupIndex" value="4"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%p %d{ISO8601} %c{1} - %m%n"/>
+        </layout>
+    </appender>
+
+    <!-- Append messages to the console -->
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%p %d{ISO8601} %c{1} - %m%n"/>
+        </layout>
+    </appender>
+
+    <!--<category name="" additivity="true">-->
+        <!--<priority value="INFO"/>-->
+    <!--</category>-->
+
+    <!-- Setup the Root category -->
+    <root>
+        <priority value="DEBUG"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</log4j:configuration>

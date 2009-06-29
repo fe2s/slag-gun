@@ -11,12 +11,40 @@
 
 package com.slaggun;
 
+import com.slaggun.server.GameServer;
+import com.slaggun.server.ServerProperties;
+import com.slaggun.util.LoggerUtils;
+import org.apache.log4j.Logger;
+
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
 public class Main {
-    public static void main(String[] args) throws Exception {
-        
+
+    private static Logger log = Logger.getLogger(Main.class);
+
+    public static void main(String[] args)  {
+        Main main = new Main();
+        try {
+            main.start();
+        } catch (Throwable e) {
+            log.error("Error occured", e);
+        }
     }
+
+    public void start() throws Exception {
+        LoggerUtils.initializeLogger();
+
+        GameServer server;
+        try {
+            ServerProperties serverProperties = new ServerProperties().initialize();
+            server = new GameServer(serverProperties).initialize();
+        } catch (Exception e) {
+            throw new Exception("Error during server initialization", e);
+        }
+
+        server.acceptConnections();
+    }
+
 }
