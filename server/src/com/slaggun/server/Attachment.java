@@ -33,11 +33,15 @@ public class Attachment {
     private ByteBuffer readBuff;
     private int readBufferSize;
 
-    public Attachment(int readBufferSize) {
+    // associated session
+    private int sessionId;
+
+    public Attachment(int readBufferSize, int sessionId) {
         this.readBufferSize = readBufferSize;
         // TODO : allocate direct buffer in production
         // TODO : heap buffer is used now for debug purpose
         this.readBuff = ByteBuffer.allocate(readBufferSize);
+        this.sessionId = sessionId;
     }
 
     public boolean isHeaderReadCompletely() {
@@ -100,5 +104,13 @@ public class Attachment {
 
     public void setReadBufferSize(int readBufferSize) {
         this.readBufferSize = readBufferSize;
+    }
+
+    public int getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(int sessionId) {
+        this.sessionId = sessionId;
     }
 }

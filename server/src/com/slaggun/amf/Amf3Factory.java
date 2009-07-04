@@ -19,6 +19,7 @@ import flex.messaging.io.SerializationContext;
 public class Amf3Factory implements AmfFactory {
 
     private static Amf3Factory instance = null;
+    private static Amf3Serializer serializer = null;
 
     private Amf3Factory() {
     }
@@ -31,7 +32,10 @@ public class Amf3Factory implements AmfFactory {
     }
 
     public AmfSerializer getAmfSerializer() {
-        return new Amf3Serializer(SerializationContext.getSerializationContext());
+        if (serializer == null){
+            serializer = new Amf3Serializer(SerializationContext.getSerializationContext());;
+        }
+        return serializer;
     }
 
 

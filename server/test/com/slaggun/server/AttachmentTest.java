@@ -32,7 +32,7 @@ public class AttachmentTest extends TestCase {
      */
     @Test
     public void testCutOff_oneSession() {
-        Attachment attachment = new Attachment(512);
+        Attachment attachment = new Attachment(512, 1);
 
         int firstEventBodySize = 10;
         int secondEventBodySize = 7;
@@ -75,7 +75,7 @@ public class AttachmentTest extends TestCase {
      * Cutt off complete events.
      */
     public void testCutOff_twoSessions() {
-        Attachment attachment = new Attachment(512);
+        Attachment attachment = new Attachment(512, 1);
 
         int firstEventBodySize = 10;
         int secondEventBodySize = 7;

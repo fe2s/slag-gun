@@ -9,14 +9,14 @@
         <param name="MaxFileSize" value="1MB"/>
         <param name="MaxBackupIndex" value="4"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%p %d{ISO8601} %c{1} - %m%n"/>
+            <param name="ConversionPattern" value="%p %d{ISO8601} [%t]: %c{1} - %m%n"/>
         </layout>
     </appender>
 
     <!-- Append messages to the console -->
     <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%p %d{ISO8601} %c{1} - %m%n"/>
+            <param name="ConversionPattern" value="%p %d{ISO8601} [%t]: %c{1} - %m%n"/>
         </layout>
     </appender>
 

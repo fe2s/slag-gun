@@ -24,6 +24,10 @@ public class UtilsTest extends TestCase{
         int num = 142423423;
         byte[] bytes = Utils.toBytes(num);
         assertEquals(num, Utils.toInt(bytes));
+
+        num = -23423463;
+        bytes = Utils.toBytes(num);
+        assertEquals(num, Utils.toInt(bytes));
     }
 
 

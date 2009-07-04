@@ -11,7 +11,9 @@
 
 package com.slaggun.events;
 
-import java.util.Arrays;
+import com.slaggun.util.Assert;
+
+import java.nio.ByteBuffer;
 
 /**
  * Binary representation of the event.
@@ -28,8 +30,11 @@ public class EventPacket {
     private EventBody body;
 
     public EventPacket(EventHeader header, EventBody body) {
+        Assert.notNull(header, "header must not be null");
+        Assert.notNull(body, "body must not be null");
         this.header = header;
         this.body = body;
+        validate();
     }
 
     /**
@@ -44,6 +49,22 @@ public class EventPacket {
         System.arraycopy(header.getContent(), 0, content, 0, EventHeader.BINARY_SIZE);
         System.arraycopy(body.getContent(), 0, content, EventHeader.BINARY_SIZE, body.getSize());
         return content;
+    }
+
+    public ByteBuffer getContentAsBuffer(){
+        byte[] header = this.header.getContent();
+        byte[] body = this.body.getContent();
+        ByteBuffer buffer = ByteBuffer.allocateDirect(header.length + body.length);
+        buffer.put(header);
+        buffer.put(body);
+        return buffer;
+    }
+
+    protected void validate(){
+        if (body.getSize() != header.getBodySize()){
+            throw new IllegalStateException("Declared body size in header " + header.getBodySize() + "" +
+                    ", at the same time real body size " + body.getSize());
+        }
     }
 
     public EventHeader getHeader() {

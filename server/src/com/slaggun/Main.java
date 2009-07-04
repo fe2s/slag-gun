@@ -31,6 +31,7 @@ public class Main {
         } catch (Throwable e) {
             log.error("Error occured", e);
         }
+
     }
 
     public void start() throws Exception {

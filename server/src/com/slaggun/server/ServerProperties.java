@@ -26,20 +26,27 @@ public class ServerProperties {
 
     private static Logger log = Logger.getLogger(ServerProperties.class);
 
+    // properties from file
+    private Properties properties;
+
     private static String SERVER_PROPERTIES_FILE_NAME = "server.properties";
     private static String SERVER_PORT_KEY = "server.port";
-    private static String READ_BUFFER_SIZE_KEY = "server.read.buffer.size";
+    private static String READ_BUFFER_SIZE_KEY = "read.buffer.size";
+    private static String PACKET_HANDLERS_QUEUE_SIZE_KEY = "packet.handlers.queue.size";
+    private static String OUTGOING_PACKETS_QUEUE_SIZE_KEY = "outgoing.packets.queue.size";
 
     private int gameServerPort;
     private int availableProcessors;
     private int readBufferSize;
+    private int packetHandlersQueueSize;
+    private int outgoingPacketsQueueSize;
 
 
     /**
-     *  Initialize server properties
+     * Initialize server properties
      *
-     * @throws ServerInitializationException -
      * @return itself
+     * @throws ServerInitializationException -
      */
     public ServerProperties initialize() throws ServerInitializationException {
         readPropertiesFromFile();
@@ -53,12 +60,12 @@ public class ServerProperties {
      * Load server properties from file.
      *
      * @throws ServerInitializationException problems with loading
-     * property file or reading some properties
+     *                                       property file or reading some properties
      */
     private void readPropertiesFromFile() throws ServerInitializationException {
         // read property file
         InputStream propertiesStream = this.getClass().getResourceAsStream("/" + SERVER_PROPERTIES_FILE_NAME);
-        Properties properties = new Properties();
+        properties = new Properties();
         try {
             properties.load(propertiesStream);
         } catch (Exception e) {
@@ -67,22 +74,29 @@ public class ServerProperties {
         }
 
         // get server.port property
-        String gameServerPortStr = properties.getProperty(SERVER_PORT_KEY);
-        if (StringUtils.isEmpty(gameServerPortStr)) {
-            throw new ServerInitializationException("Can't find property " + SERVER_PORT_KEY + " in file " +
-                    SERVER_PROPERTIES_FILE_NAME);
-        }
-        gameServerPort = Integer.parseInt(gameServerPortStr);
+        gameServerPort = Integer.parseInt(findProperty(SERVER_PORT_KEY));
         log.info("Server port: " + gameServerPort);
 
         // get read buffer size
-        String readBufferSizeStr = properties.getProperty(READ_BUFFER_SIZE_KEY);
-        if (StringUtils.isEmpty(readBufferSizeStr)) {
-            throw new ServerInitializationException("Can't find property " + SERVER_PORT_KEY + " in file " +
+        readBufferSize = Integer.parseInt(findProperty(READ_BUFFER_SIZE_KEY));
+        log.info("Read buffer size: " + readBufferSize);
+
+        // get event handlers queue size
+        packetHandlersQueueSize = Integer.parseInt(findProperty(PACKET_HANDLERS_QUEUE_SIZE_KEY));
+        log.info("packet handlers queue size: " + packetHandlersQueueSize);
+
+         // get the outgoing packets queue size
+        outgoingPacketsQueueSize = Integer.parseInt(findProperty(OUTGOING_PACKETS_QUEUE_SIZE_KEY));
+        log.info("outgoing packets queue size: " + outgoingPacketsQueueSize);
+    }
+
+    private String findProperty(String propertyKey) throws ServerInitializationException {
+        String foundProperty = properties.getProperty(propertyKey);
+        if (StringUtils.isEmpty(foundProperty)) {
+            throw new ServerInitializationException("Can't find property " + propertyKey + " in file " +
                     SERVER_PROPERTIES_FILE_NAME);
         }
-        readBufferSize = Integer.parseInt(readBufferSizeStr);
-        log.info("Read buffer size: " + readBufferSize);
+        return foundProperty;
     }
 
     public int getGameServerPort() {
@@ -107,6 +121,22 @@ public class ServerProperties {
 
     public void setReadBufferSize(int readBufferSize) {
         this.readBufferSize = readBufferSize;
+    }
+
+    public int getPacketHandlersQueueSize() {
+        return packetHandlersQueueSize;
+    }
+
+    public void setPacketHandlersQueueSize(int packetHandlersQueueSize) {
+        this.packetHandlersQueueSize = packetHandlersQueueSize;
+    }
+
+    public int getOutgoingPacketsQueueSize() {
+        return outgoingPacketsQueueSize;
+    }
+
+    public void setOutgoingPacketsQueueSize(int outgoingPacketsQueueSize) {
+        this.outgoingPacketsQueueSize = outgoingPacketsQueueSize;
     }
 
     @Override
