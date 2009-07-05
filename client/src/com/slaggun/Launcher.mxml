@@ -86,5 +86,6 @@
 
     <mx:Text x="0" y = "0" id="fpsOut"/> 
     <mx:Canvas id="output" x = "0" y = "0" width = "100%" height = "100%"/>
+    <mx:Button label="connect" click="luncher.connect()" x="0" y="20"/>
 
 </mx:Application>
