@@ -15,18 +15,19 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import java.io.File;
+import java.net.URL;
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
 public class LoggerUtils {
 
-    private static final String LOGGER_CONFIG_FILE = "./config/log4j.xml";
+    private static final String LOGGER_CONFIG_FILE = "config/log4j.xml";
 
     public static void initializeLogger() {
-        File loggerConfigFile = new File(LOGGER_CONFIG_FILE);
-        System.out.println("Initializing lo4j, reading from " + loggerConfigFile.getAbsolutePath());
-        DOMConfigurator.configure(loggerConfigFile.getAbsolutePath());
+        URL loggerConfigURL = ClassLoader.getSystemResource(LOGGER_CONFIG_FILE);
+        System.out.println("Initializing lo4j, reading from " + loggerConfigURL);
+        DOMConfigurator.configure(loggerConfigURL);
     }
 
     public static <T extends Throwable> void logAndThrow(Logger logger, T throwable, String message) throws T {

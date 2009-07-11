@@ -29,7 +29,7 @@ public class ServerProperties {
     // properties from file
     private Properties properties;
 
-    private static String SERVER_PROPERTIES_FILE_NAME = "server.properties";
+    private static String SERVER_PROPERTIES_FILE_NAME = "config/server.properties";
     private static String SERVER_PORT_KEY = "server.port";
     private static String READ_BUFFER_SIZE_KEY = "read.buffer.size";
     private static String PACKET_HANDLERS_QUEUE_SIZE_KEY = "packet.handlers.queue.size";
