@@ -77,9 +77,8 @@ public class GameServer {
 
         // bind to localhost:port
         int port = serverProperties.getGameServerPort();
-        InetAddress localhost = InetAddress.getLocalHost();
-        log.info("Binding game server to localhost: " + localhost.getHostAddress() + ":" + port);
-        serverSocketChannel.socket().bind(new InetSocketAddress(localhost, port));
+        log.info("Listening port: " + port);        
+	    serverSocketChannel.socket().bind(new InetSocketAddress(port));
 
         // register the channel with the selector to handle new socket connections
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
