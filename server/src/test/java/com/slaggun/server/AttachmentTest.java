@@ -41,17 +41,17 @@ public class AttachmentTest extends TestCase {
 
         ByteBuffer readBuffer = attachment.getReadBuff();
 
-        // add event packets
+        // add events packets
         readBuffer.put(createEventPacket(firstEventBodySize).getContent());
         readBuffer.put(createEventPacket(secondEventBodySize).getContent());
         readBuffer.put(createEventPacket(thirdEventBodySize).getContent());
 
-        // add last non-complete event
+        // add last non-complete events
         byte[] fourthEvent = createEventPacket(fourthEventBodySize).getContent();
         int fourthEventFirstPartSize = 14;
         readBuffer.put(fourthEvent, 0, fourthEventFirstPartSize);
 
-        // cut off complete event packets
+        // cut off complete events packets
         List<EventPacket> packets = attachment.cutOffEventPackets();
 
         // test number of packets
@@ -84,7 +84,7 @@ public class AttachmentTest extends TestCase {
 
         ByteBuffer readBuffer = attachment.getReadBuff();
 
-        // add event packets
+        // add events packets
         readBuffer.put(createEventPacket(firstEventBodySize).getContent());
         readBuffer.put(createEventPacket(secondEventBodySize).getContent());
         readBuffer.put(createEventPacket(thirdEventBodySize).getContent());
@@ -95,7 +95,7 @@ public class AttachmentTest extends TestCase {
         int fourthEventFirstPartSize = 14;
         readBuffer.put(fourthEventContent, 0, fourthEventFirstPartSize);
 
-        // cut off complete event packets
+        // cut off complete events packets
         List<EventPacket> packets = attachment.cutOffEventPackets();
 
         // test number of packets
@@ -104,7 +104,7 @@ public class AttachmentTest extends TestCase {
         // write the second part of the fourth packet in another session
         readBuffer.put(fourthEventContent, fourthEventFirstPartSize, fourthEvent.getSize() - fourthEventFirstPartSize);
 
-        // cut off complete event packets
+        // cut off complete events packets
         packets = attachment.cutOffEventPackets();
 
         // test number of packets

@@ -11,23 +11,15 @@
 
 package com.slaggun.events;
 
-import org.junit.Test;
-import junit.framework.TestCase;
-
 /**
+ * Visitor pattern
+ *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public class EventTypesTest extends TestCase{
+public interface EventVisitor {
 
-    @Test
-    public void testGetType() {
-        HzEvent hzEvent = new HzEvent(1, 1);
-        assertEquals(0, EventTypes.getType(hzEvent));
-    }
+    void visit(SnapshotEvent event);
 
-    @Test
-    public void testGetEvent() {
-        Class<? extends GameEvent> event = EventTypes.getEvent(0);
-        assertEquals(event, HzEvent.class);
-    }
+    void visit(HzEvent event);
+
 }

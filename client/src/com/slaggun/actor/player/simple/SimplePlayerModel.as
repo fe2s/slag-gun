@@ -11,69 +11,77 @@
 
 package com.slaggun.actor.player.simple {
 import com.slaggun.actor.base.ActorModel;
+import com.slaggun.geom.Point;
 
-import flash.geom.Point;
 
 /**
-     * This is model for the SimplePlayer
-     *
-     * Author Dmitry Brazhnik (amid.ukr@gmail.com)
-     *
-     * @see SimplePlayer
+ * This is model for the SimplePlayer
+ *
+ * Author Dmitry Brazhnik (amid.ukr@gmail.com)
+ *
+ * @see SimplePlayer
+ */
+[RemoteClass(alias="com.slaggun.actor.player.simple.SimplePlayerModel")]
+public class SimplePlayerModel implements ActorModel{
+
+    private var _position:Point = new Point(50, 50);
+    private var _velocity:Point = new Point;
+    private var _look:Point = new Point;
+
+
+    /**
+     * Return player position
+     * @return player position
      */
-    public class SimplePlayerModel implements ActorModel{
-
-        private var _position:Point = new Point(50, 50);
-        private var _velocity:Point = new Point;
-        private var _look:Point     = new Point;
-
-
-        /**
-         * Return player position
-         * @return player position
-         */
-        public function get position():Point {
-            return _position;
-        }
-
-        /**
-         * Sets player position
-         * @param value - new position
-         */
-        public function set position(value:Point):void {
-            _position = value;
-        }
-
-        /**
-         * Returns velocity vector.
-         * @return velocity vector.
-         */
-        public function get velocity():Point {
-            return _velocity;
-        }
-
-        /**
-         * Sets velocity vector
-         * @param value - new velocity vector
-         */
-        public function set velocity(value:Point):void {
-            _velocity = value;
-        }
-
-        /**
-         * Return coordinate where user look
-         * @return coordinate where user look
-         */
-        public function get look():Point {
-            return _look;
-        }
-
-        /**
-         * Sets coordinate where user looks.
-         * @param value - look coordinate
-         */
-        public function set look(value:Point):void {
-            _look = value;
-        }
+    public function get position():Point {
+        return _position;
     }
+
+    /**
+     * Sets player position
+     * @param value - new position
+     */
+    public function set position(value:Point):void {
+        _position = value;
+    }
+
+    /**
+     * Returns velocity vector.
+     * @return velocity vector.
+     */
+    public function get velocity():Point {
+        return _velocity;
+    }
+
+    /**
+     * Sets velocity vector
+     * @param value - new velocity vector
+     */
+    public function set velocity(value:Point):void {
+        _velocity = value;
+    }
+
+    /**
+     * Return coordinate where user look
+     * @return coordinate where user look
+     */
+    public function get look():Point {
+        return _look;
+    }
+
+    /**
+     * Sets coordinate where user looks.
+     * @param value - look coordinate
+     */
+    public function set look(value:Point):void {
+        _look = value;
+    }
+
+
+    public function toString():String {
+        return "SimplePlayerModel{_position=" + String(_position) +
+               ",_velocity=" + String(_velocity) +
+               ",_look=" + String(_look) + "}";
+    }
+}
 }

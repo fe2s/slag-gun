@@ -12,150 +12,245 @@
 package com.slaggun.actor.world {
 import com.slaggun.actor.base.Actor;
 
+import com.slaggun.actor.player.simple.SimplePlayerModel;
+import com.slaggun.actor.player.simple.SimplePlayerPackage;
+import com.slaggun.events.IdentifiedActorModel;
+import com.slaggun.events.SnapshotEvent;
+
 import flash.display.BitmapData;
 
+import flash.events.EventDispatcher;
+
+import flash.utils.Dictionary;
+
+import mx.collections.ArrayCollection;
+
 /**
-     * This is core world engine class
-     *
-     * Author Dmitry Brazhnik (amid.ukr@gmail.com)
+ * This is core world engine class
+ *
+ * Author Dmitry Brazhnik (amid.ukr@gmail.com)
+ */
+public class PhysicalWorld extends EventDispatcher {
+
+    private var _inputStates:InputState = new InputState();
+    private var _bitmap:BitmapData;
+
+    private var actors:Array = [];
+
+    // belong to myself
+    private var mineActors:Array = [];
+
+    // actors grouped by owner, key - owner id, value - Array<Actor>
+    private var actorsByOwner:Dictionary = new Dictionary();
+
+    private var toBeAdded:Array = [];
+    private var toBeRemoved:Array = [];
+
+    private var _worldWidth:Number;
+    private var _worldHeight:Number;
+
+
+    public function PhysicalWorld() {
+        addEventListener(SnapshotEvent.INCOMING, handleSnapshot);
+    }
+
+    /**
+     * Recreate offscreen buffer
+     * @param width - screen width
+     * @param height - screen height
      */
-    public class PhysicalWorld {
+    public function updateBitMapSize(width:Number, height:Number):void {
+        _bitmap = new BitmapData(width, height);
+        _worldWidth = width;
+        _worldHeight = height;
+    }
 
-        private var _inputStates:InputState = new InputState();
-        private var _bitmap:BitmapData;
-    
-        private var actors:Array = [];
+    /**
+     * Returns world width
+     * @return world width
+     */
+    public function get width():Number {
+        return _worldWidth;
+    }
 
-        private var toBeAdded:Array = [];
-        private var toBeRemoved:Array = [];
+    /**
+     * Returns world height
+     * @return world height
+     */
+    public function get height():Number {
+        return _worldHeight;
+    }
 
-        private var _worldWidth:Number;
-        private var _worldHeight:Number;
-
-
-        public function PhysicalWorld() {
+    /**
+     * Add actor to the world.
+     * If actor is adding during loop it will be active in the next loop
+     * @param actor
+     * @param mine belongs to myself
+     * @return
+     */
+    public function add(actor:Actor, mine:Boolean):void {
+        toBeAdded.push(actor);
+        if (mine){
+            mineActors.push(actor);
         }
+    }
 
-        /**
-         * Recreate offscreen buffer
-         * @param width - screen width
-         * @param height - screen height
-         */
-        public function updateBitMapSize(width:Number, height:Number):void{
-            _bitmap = new BitmapData(width, height);
-            _worldWidth = width;
-            _worldHeight = height;
-        }
+    /**
+     * Remove actor to the world.
+     * If actor is removing during loop it will be remove in the next loop
+     * @param actor
+     * @return
+     */
+    public function remove(actor:Actor):void {
+        toBeRemoved.push(actor);
+    }
 
-        /**
-         * Returns world width 
-         * @return world width
-         */
-        public function get width():Number {
-            return _worldWidth;
-        }
+    /**
+     * Returns input states
+     * @return input states
+     * @see InputState
+     */
+    public function get inputStates():InputState {
+        return _inputStates;
+    }
 
-        /**
-         * Returns world height
-         * @return world height
-         */
-        public function get height():Number {
-            return _worldHeight;
-        }
+    /**
+     * Returns offscreen buffer
+     * @return offscreen buffer
+     */
+    public function get bitmap():BitmapData {
+        return _bitmap;
+    }
 
-        /**
-         * Add actor to the world.
-         * If actor is adding during loop it will be active in the next loop
-         * @param actor
-         * @return
-         */
-        public function add(actor:Actor):void {            
-            toBeAdded.push(actor);
-        }
+    /**
+     * Add all actors that are waiting
+     */
+    private function addAll():void {
 
-        /**
-         * Remove actor to the world.
-         * If actor is removing during loop it will be remove in the next loop
-         * @param actor
-         * @return
-         */
-        public function remove(actor:Actor):void {
-            toBeRemoved.push(actor);
-        }
+        var actorName:String;
 
-        /**
-         * Returns input states
-         * @return input states
-         * @see InputState
-         */
-        public function get inputStates():InputState
+        var len:int = toBeAdded.length;
+        var i:int;
+
+        for (i = 0; i < len; i++)
         {
-            return _inputStates;
+            actors.push(toBeAdded[i]);
         }
 
-        /**
-         * Returns offscreen buffer
-         * @return offscreen buffer
-         */
-        public function get bitmap():BitmapData {
-            return _bitmap;
+        toBeAdded = [];
+
+        len = toBeRemoved.length;
+        for (i = 0; i < len; i++)
+        {
+            var actor:Actor = toBeRemoved[i];
+            var actorIndex:Number = actors.indexOf(actor);
+            actors.splice(actorIndex, 1);
         }
 
-        /**
-         * Add all actors that are waiting
-         */
-        private function addAll():void {
+        toBeRemoved = [];
+    }
 
-            var actorName:String;
+    /**
+     * Process world live iteration
+     * @param deltaTime - time pass
+     */
+    public function live(deltaTime:Number):void {
+        addAll();
 
-            var len:int = toBeAdded.length;
-            var i:int;
+        var actorName:String;
+        var actor:Actor;
 
-            for (i = 0; i < len; i++)
-            {
-                actors.push(toBeAdded[i]);
-            }
+        var i:int;
 
-            toBeAdded = [];
-
-            len = toBeRemoved.length;
-            for (i = 0; i < len; i++)
-            {
-                var actor:Actor = toBeRemoved[i];
-                var actorIndex:Number = actors.indexOf(actor);
-                actors.splice(actorIndex, 1);
-            }
-
-            toBeRemoved = [];
+        var len:int = actors.length;
+        for (i = 0; i < len; i++)
+        {
+            actor = actors[i];
+            actor.physics.live(deltaTime, actor, this);
         }
 
-        /**
-         * Proccess worl live iteration
-         * @param deltaTime - time pass
-         */
-        public function live(deltaTime:Number):void {
-            addAll();
+        _bitmap.fillRect(_bitmap.rect, 0xFFFFFF);
 
-            var actorName:String;
-            var actor:Actor;
+        len = actors.length;
+        for (i = 0; i < len; i++)
+        {
+            actor = actors[i];
+            actor.renderer.draw(deltaTime, actor, _bitmap);
+        }
+    }
 
-            var i:int;
+    /**
+     * Snapshot of 'my' world, i.e. all my models.
+     * @return snapshot event
+     */
+    public function get snapshot(): SnapshotEvent {
+        var mineModels:ArrayCollection = new ArrayCollection();
+        for each (var actor:Actor in mineActors) {
+            var idActorModel:IdentifiedActorModel = new IdentifiedActorModel();
+            idActorModel.actorModel = actor.model;
+            idActorModel.actorId = actor.id;
 
-            var len:int = actors.length;
-            for (i = 0; i < len; i++)
-            {
-                actor = actors[i];
-                actor.physics.live(deltaTime, actor, this);
-            }
+            mineModels.addItem(idActorModel);
+        }
 
-            _bitmap.fillRect(_bitmap.rect, 0xFFFFFF);            
+        var snapshot:SnapshotEvent = new SnapshotEvent(SnapshotEvent.OUTGOING);
+        snapshot.actorModels = mineModels;
 
-            len = actors.length;
-            for (i = 0; i < len; i++)
-            {
-                actor = actors[i];
-                actor.renderer.draw(deltaTime, actor, _bitmap);
+        return snapshot;
+    }
+
+    /**
+     * Handles incoming snapshots
+     */
+    public function handleSnapshot(snapshotEvent:SnapshotEvent):void {
+        var playerPackage:SimplePlayerPackage = new SimplePlayerPackage();
+
+        var newActorModels:ArrayCollection = snapshotEvent.actorModels;
+
+        for each (var newActorModel:IdentifiedActorModel in newActorModels) {
+            var owner:int = newActorModel.actorOwner;
+            var existingActors:Array = actorsByOwner[owner];
+
+            trace("owner:" + owner + ", id" + newActorModel.actorId);
+
+            var newActor:Actor;
+            if (existingActors == null) {
+                trace("unknown owner");
+                // unknown owner
+                // assume we use SimplePlayer only for now
+                newActor = playerPackage.createPlayer(false);
+                newActor.model = newActorModel.actorModel;
+                newActor.id = newActorModel.actorId;
+
+                // add to the world
+                add(newActor, false);
+                actorsByOwner[owner] = [newActor];
+            } else {
+                trace("known owner");
+                // known owner
+                // try to find given actor
+                for each (var existingActor:Actor in existingActors) {
+                    if (existingActor.id == newActorModel.actorId) {
+                        trace("known actor");
+                        // found model, update it
+                        existingActor.model = newActorModel.actorModel;
+                    } else {
+                        trace("new actor");
+                        // create new actor
+
+                        // assume we use SimplePlayer only for now
+                        newActor = playerPackage.createPlayer(false);
+                        newActor.model = newActorModel.actorModel;
+                        newActor.owner = newActorModel.actorOwner;
+                        newActor.id = newActorModel.actorId;
+
+                        // add to the world
+                        add(newActor, false);
+                        actorsByOwner[owner].push(newActor);
+                    }
+                }
             }
         }
     }
+}
 }

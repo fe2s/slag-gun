@@ -9,13 +9,30 @@
  * and limitations under the License.
  */
 
-package com.slaggun.events;
+package com.slaggun.net {
+import flash.utils.ByteArray;
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public interface GameEvent {
+public class EventBody {
 
-    void accept(EventVisitor visitor);
+    private var _content:ByteArray;
 
+    public function EventBody(content:ByteArray) {
+        _content = content;
+    }
+
+    public function get size():int {
+        return _content.length;
+    }
+
+    public function get content():ByteArray {
+        return _content;
+    }
+
+    public function set content(value:ByteArray):void {
+        _content = value;
+    }
+}
 }

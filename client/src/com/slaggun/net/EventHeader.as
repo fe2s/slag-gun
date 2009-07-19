@@ -9,13 +9,34 @@
  * and limitations under the License.
  */
 
-package com.slaggun.events;
+package com.slaggun.net {
+import flash.utils.ByteArray;
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public interface GameEvent {
+public class EventHeader {
 
-    void accept(EventVisitor visitor);
+    public static const BINARY_SIZE:int = 4;
 
+    private var _bodySize:int;
+
+    public function EventHeader(bodySize:int) {
+        _bodySize = bodySize;
+    }
+
+    public function get content():ByteArray {
+        var content:ByteArray = new ByteArray();
+        content.writeInt(_bodySize);
+        return content;
+    }
+
+    public function get bodySize():int {
+        return _bodySize;
+    }
+
+    public function set bodySize(value:int):void {
+        _bodySize = value;
+    }
+}
 }

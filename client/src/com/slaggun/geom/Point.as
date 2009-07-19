@@ -9,13 +9,17 @@
  * and limitations under the License.
  */
 
-package com.slaggun.events;
+package com.slaggun.geom {
+import flash.geom.Point;
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public interface GameEvent {
+[RemoteClass(alias="com.slaggun.geom.Point")]
+public class Point extends flash.geom.Point{
 
-    void accept(EventVisitor visitor);
-
+    public function Point(x:Number = 0, y:Number = 0) {
+        super(x, y);
+    }
+}
 }

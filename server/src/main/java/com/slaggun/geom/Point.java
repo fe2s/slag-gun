@@ -9,29 +9,19 @@
  * and limitations under the License.
  */
 
-package com.slaggun.events;
-
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
+package com.slaggun.geom;
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public class EventTypes {
+public class Point {
 
-    private static BiMap<Class<? extends GameEvent>, Integer> eventTypes;
+    public double x;
 
-    static {
-        eventTypes = HashBiMap.create();
-        eventTypes.put(HzEvent.class, 0);
+    public double y;
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ")";
     }
-
-    public static int getType(GameEvent event){
-        return eventTypes.get(event.getClass());
-    }
-
-    public static Class<? extends GameEvent> getEvent(int type){
-        return eventTypes.inverse().get(type);
-    }
-
 }

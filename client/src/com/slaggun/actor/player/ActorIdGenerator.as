@@ -9,13 +9,23 @@
  * and limitations under the License.
  */
 
-package com.slaggun.events;
-
+package com.slaggun.actor.player {
 /**
+ * Actor id generator. Actor id is unique in the scope of owner
+ *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public interface GameEvent {
+public class ActorIdGenerator {
 
-    void accept(EventVisitor visitor);
+    private static var _nextId:int = 1;
 
+    public function ActorIdGenerator() {
+        throw Error("not instanceable");
+    }
+
+    public static function nextId():int {
+        return _nextId++;
+    }
+
+}
 }

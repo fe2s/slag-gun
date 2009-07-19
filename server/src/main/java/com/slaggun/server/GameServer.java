@@ -15,19 +15,17 @@ import static com.slaggun.util.Assert.notNull;
 import com.slaggun.events.EventPacket;
 import com.slaggun.events.EventPacketsHandler;
 import com.slaggun.events.OutgoingEventPacket;
+import com.slaggun.actor.world.PhysicalWorld;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.Buffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -45,10 +43,10 @@ public class GameServer {
     private Selector selector;
     private boolean running;
 
-    // blocking queue to hold submitted tasks of incoming event packets processing
+    // blocking queue to hold submitted tasks of incoming events packets processing
     private ArrayBlockingQueue<Runnable> packetHandlers;
 
-    // executes submitted tasks of incoming event packets processing
+    // executes submitted tasks of incoming events packets processing
     private ThreadPoolExecutor workersPool;
 
     // ids of sessions which are currently connected to this server
@@ -57,18 +55,35 @@ public class GameServer {
     // used to generate session id for newcomer connection
     private int sessionIdGenerator = 1;
 
+    // holds outgoing binary packets that are waiting for being sent
     private ArrayBlockingQueue<OutgoingEventPacket> outgoingPackets;
+
+    private PhysicalWorld world;
 
     public GameServer(ServerProperties serverProperties) {
         notNull(serverProperties, "serverProperties must not be null");
         this.serverProperties = serverProperties;
     }
 
+    /**
+     * Start game server, so it will be ready to accept connections
+     *
+     * @throws IOException problems with server initializtion
+     */
     public void start() throws IOException {
         initialize();
         acceptConnections();
     }
 
+    /**
+     * Prepare game server:
+     * - listen socket
+     * - prepare workers thread pool
+     * - create game world from scratch
+     *
+     * @return game server
+     * @throws IOException error during attempt to listen socket
+     */
     public GameServer initialize() throws IOException {
         log.info("Initializing game server");
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
@@ -77,22 +92,25 @@ public class GameServer {
 
         // bind to localhost:port
         int port = serverProperties.getGameServerPort();
-        log.info("Listening port: " + port);        
-	    serverSocketChannel.socket().bind(new InetSocketAddress(port));
+        log.info("Listening port: " + port);
+        serverSocketChannel.socket().bind(new InetSocketAddress(port));
 
         // register the channel with the selector to handle new socket connections
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-        // blocking bounded queue to hold submitted tasks of incoming event packets processing
+        // blocking bounded queue to hold submitted tasks of incoming events packets processing
         int packetHandlersQueueSize = serverProperties.getPacketHandlersQueueSize();
         packetHandlers = new ArrayBlockingQueue<Runnable>(packetHandlersQueueSize);
 
-        // blocking bounded queue to hold outgoing event packets
+        // blocking bounded queue to hold outgoing events packets
         int outgoingPacketsQueueSize = serverProperties.getOutgoingPacketsQueueSize();
         outgoingPackets = new ArrayBlockingQueue<OutgoingEventPacket>(outgoingPacketsQueueSize);
 
-        // thread pool for event packets processing
+        // thread pool for events packets processing
         initializeWorkersPool();
+
+        // create world
+        world = new PhysicalWorld();
 
         // no live sessions yet
         liveSessionIds = new HashSet<Integer>();
@@ -100,6 +118,9 @@ public class GameServer {
         return this;
     }
 
+    /**
+     * Accept connections. Main loop of the server.
+     */
     public void acceptConnections() {
         running = true;
         log.debug("Accept connections");
@@ -128,9 +149,11 @@ public class GameServer {
 
                     if (key.isAcceptable()) {
                         accept(key);
-                    } else if (key.isReadable()) {
+                    }
+                    if (key.isReadable()) {
                         read(key);
-                    } else if (key.isWritable()) {
+                    }
+                    if (key.isWritable()) {
                         write(key);
                     }
                 }
@@ -142,6 +165,9 @@ public class GameServer {
 
     }
 
+    /**
+     * Initialize workers thread pool with server properties
+     */
     private void initializeWorkersPool() {
         int availableProcessors = serverProperties.getAvailableProcessors();
         int ioThreadsNumber = 1;
@@ -160,12 +186,20 @@ public class GameServer {
         log.info("Keep alive time: " + "10 " + unit);
     }
 
+    /**
+     * Accept new connection
+     *
+     * @param key represents channel of new connection
+     * @throws IOException -
+     */
     private void accept(SelectionKey key) throws IOException {
         log.debug("Accepting new connection ...");
         ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
 
         // accept new connection
         SocketChannel socketChannel = serverSocketChannel.accept();
+        // turn Nagle's algorithm off, use non blocking socket
+        socketChannel.socket().setTcpNoDelay(true);
         socketChannel.configureBlocking(false);
 
         // issue a session id
@@ -174,9 +208,16 @@ public class GameServer {
         Attachment attachement = new Attachment(serverProperties.getReadBufferSize(), sessionId);
 
         // we'd like to be notified when there's data waiting to be read
-        socketChannel.register(this.selector, SelectionKey.OP_READ, attachement);
+        socketChannel.register(this.selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE, attachement);
     }
 
+    /**
+     * Reads from channel, hands the data off to the worker threads
+     * If we've managed to read at least one complete event, set interest in OP_WRITE
+     *
+     * @param key represents channel of the connection
+     * @throws IOException -
+     */
     private void read(SelectionKey key) throws IOException {
         log.debug("reading from channel ...");
         SocketChannel socketChannel = (SocketChannel) key.channel();
@@ -213,24 +254,35 @@ public class GameServer {
         if (attachment.isHeaderReadCompletely()) {
 
             List<EventPacket> eventPackets = attachment.cutOffEventPackets();
+            log.debug("read " + eventPackets.size() + " event packets");
             log.debug("Enqueue new incoming event packets");
 
-            // shouldn't pass liveSessionIds directly, as it will be modified
-            Set<Integer> recipiets = new HashSet<Integer>(liveSessionIds);
-            // send to everybody except myself
-            recipiets.remove(sessionId);
-            EventPacketsHandler handler = new EventPacketsHandler(eventPackets, recipiets, outgoingPackets);
+            // protect from modifying
+            HashSet<Integer> liveSessionIds = new HashSet<Integer>(this.liveSessionIds);
+
+            EventPacketsHandler handler = new EventPacketsHandler(world, eventPackets, sessionId, liveSessionIds, outgoingPackets);
 
             // Hands the data off to our worker threads
             packetHandlers.add(handler);
             log.debug("Packet handlers queue size: " + packetHandlers.size());
 
             // set interest in OP_WRITE (interest in OP_READ is removed)
-            key.interestOps(SelectionKey.OP_WRITE);
+//            key.interestOps(SelectionKey.OP_WRITE);
         }
         log.debug("reading done");
     }
 
+    /**
+     * Writes to channel.
+     * Look at the head packet of outgoing queue.
+     * If we intersted in it, send to client.
+     * <p/>
+     * TODO: for now, it peeks only the one, head packet.
+     * TODO: consider to change the number of packets being analyzed
+     *
+     * @param key represents channel of the connection
+     * @throws IOException -
+     */
     private void write(SelectionKey key) throws IOException {
         log.debug("writing to channel...");
         SocketChannel socketChannel = (SocketChannel) key.channel();
@@ -266,14 +318,23 @@ public class GameServer {
         }
 
         // resume interest in OP_READ (interest in OP_WRITE is removed)
-        key.interestOps(SelectionKey.OP_READ);
+//        key.interestOps(SelectionKey.OP_READ);
     }
 
+    /**
+     * Genereates session id for new connection
+     *
+     * @return session id
+     */
     private int nextSessionId() {
         return sessionIdGenerator++;
     }
 
-
+    /**
+     * Notify game server about session disconnect
+     *
+     * @param sessionId id of the session that was disconnected
+     */
     private void sessionWasDisconnected(int sessionId) {
         boolean wasRemoved = liveSessionIds.remove(sessionId);
         if (!wasRemoved) {

@@ -15,6 +15,7 @@ import com.slaggun.actor.player.simple.SimplePlayerPackage;
 import com.slaggun.actor.player.simple.bot.BotPackage;
 import com.slaggun.actor.world.PhysicalWorld;
 
+import com.slaggun.events.SnapshotEvent;
 import com.slaggun.net.GameClient;
 
 import flash.display.BitmapData;
@@ -32,7 +33,7 @@ public class LauncherClass {
     private var gamePaused:Boolean = true;
     private var lastTime:Date;
     private var world:PhysicalWorld = new PhysicalWorld();
-    private var gameClinet:GameClient = new GameClient();
+    private var gameClient:GameClient = new GameClient(world);
 
 
     public function LauncherClass() {
@@ -47,16 +48,23 @@ public class LauncherClass {
         var playerPackage:ActorPackage = new SimplePlayerPackage();
         var botPackage:ActorPackage = new BotPackage();
 
-        world.add(playerPackage.createPlayer());
+        var mineActor:Boolean = true;
+        world.add(playerPackage.createPlayer(mineActor), mineActor);
 
-        trace('before add');
-        var i: int;
-        for (i = 0; i < 30; i++) {
-            world.add(botPackage.createPlayer());
-        }
-        trace('after add');
+        //        addBots(30, botPackage);
 
         start();
+    }
+
+    /**
+     * add a number of bots
+     */
+    private function addBots(number:int, botPackage:ActorPackage): void {
+        var mineActor:Boolean = true;
+        var i: int;
+        for (i = 0; i < number; i++) {
+            world.add(botPackage.createPlayer(), mineActor);
+        }
     }
 
     /**
@@ -94,22 +102,24 @@ public class LauncherClass {
     }
 
     /**
-     * Handle mouse move event.
+     * Handle mouse move events.
      * @param localX - x mouse coordinate
      * @param localY - y mouse coordinate
      * @return
      */
     public function mouseMove(localX:Number, localY:Number):void {
         world.inputStates.updateMousePosition(localX, localY);
+        fireEvent();
     }
 
     /**
-     * Handle keyboard/mouse press down event
+     * Handle keyboard/mouse press down events
      * @param keyCode - keycode
      * @see Keyboard
      */
     public function buttonDown(keyCode:Number):void {
         world.inputStates.pressDown(keyCode);
+        fireEvent();
     }
 
     /**
@@ -119,6 +129,7 @@ public class LauncherClass {
      */
     public function buttonUp(keyCode:Number):void {
         world.inputStates.pressUp(keyCode);
+        fireEvent();
     }
 
     /**
@@ -135,7 +146,14 @@ public class LauncherClass {
      * @return
      */
     public function connect() : void {
-        gameClinet.connect();
+        gameClient.connect();
+    }
+
+    /**
+     * Fire event
+     */
+    private function fireEvent():void {
+        gameClient.notify();
     }
 }
 }

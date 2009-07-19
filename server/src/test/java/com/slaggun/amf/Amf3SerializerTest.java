@@ -14,9 +14,12 @@ package com.slaggun.amf;
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.ArrayList;
 
-import com.slaggun.util.Utils;
+import com.slaggun.events.SnapshotEvent;
+import com.slaggun.events.IdentifiedActorModel;
+import com.slaggun.actor.player.simple.SimplePlayerModel;
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
@@ -46,14 +49,32 @@ public class Amf3SerializerTest extends TestCase {
         assertEquals(testBean, serializer.fromAmfString(amf));
     }
 
-    public void testTemp() throws AmfSerializerException {
-//        ByteBuffer buffer = ByteBuffer.allocate(5);
-//        buffer.put((byte )1);
-//        buffer.put((byte )2);
-//        buffer.put((byte )3);
-//        buffer.put((byte )4);
-//        buffer.position(2);
-//        buffer.compact();
+    public void testEventRoundTrip() throws AmfSerializerException {
+        SimplePlayerModel playerModel = new SimplePlayerModel();
+
+        IdentifiedActorModel idActorModel = new IdentifiedActorModel();
+        idActorModel.setActorOwner(2);
+        idActorModel.setActorId(1);
+        idActorModel.setActorModel(playerModel);
+
+        List<IdentifiedActorModel> actorModels = new ArrayList<IdentifiedActorModel>();
+        actorModels.add(idActorModel);
+
+        SnapshotEvent snapshot = new SnapshotEvent();
+        snapshot.setActorModels(actorModels);
+
+        AmfSerializer serializer = Amf3Factory.instance().getAmfSerializer();
+        byte[] snapShotBytes = serializer.toAmfBytes(snapshot);
+        SnapshotEvent snapshotAfterTrip = (SnapshotEvent) serializer.fromAmfBytes(snapShotBytes);
+
+        assertEquals(snapshotAfterTrip.getActorModels().size(), snapshot.getActorModels().size());
+
+        assertEquals(snapshotAfterTrip.getActorModels().get(0).getActorId(),
+                snapshot.getActorModels().get(0).getActorId());
+
+        assertEquals(snapshotAfterTrip.getActorModels().get(0).getActorOwner(),
+                snapshot.getActorModels().get(0).getActorOwner());
+
 
     }
 

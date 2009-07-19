@@ -15,9 +15,12 @@ import com.slaggun.amf.AmfSerializer;
 import com.slaggun.amf.Amf3Factory;
 import com.slaggun.amf.AmfSerializerException;
 import com.slaggun.util.Assert;
+import com.slaggun.actor.world.PhysicalWorld;
+import com.slaggun.actor.world.EventHandler;
 
 import java.util.List;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
@@ -32,19 +35,25 @@ public class EventPacketsHandler implements Runnable {
 
     private static Logger log = Logger.getLogger(EventPacketsHandler.class);
 
+    private PhysicalWorld world;
     private List<EventPacket> incomingPackets;
-    private Set<Integer> recipientSessionIds;
     private BlockingQueue<OutgoingEventPacket> outgoingPackets;
+    // session id of the player who sent these packets
+    private int packetsOwner;
+    private Set<Integer> liveSessionIds;
 
-    public EventPacketsHandler(List<EventPacket> incomingPackets, Set<Integer> recipientSessionIds,
-                               BlockingQueue<OutgoingEventPacket> outgoingPackets) {
+    public EventPacketsHandler(PhysicalWorld world, List<EventPacket> incomingPackets, int packetsOwner,
+                               Set<Integer> liveSessionIds, BlockingQueue<OutgoingEventPacket> outgoingPackets) {
         Assert.notNull(incomingPackets, "incomingPackets must not be null");
-        Assert.notNull(recipientSessionIds, "recipientSessionIds must not be null");
         Assert.notNull(outgoingPackets, "outgoingPackets must not be null");
+        Assert.notNull(world, "world must not be null");
+        Assert.notNull(liveSessionIds, "liveSessionIds must not be null");
 
         this.incomingPackets = incomingPackets;
-        this.recipientSessionIds = recipientSessionIds;
+        this.packetsOwner = packetsOwner;
         this.outgoingPackets = outgoingPackets;
+        this.world = world;
+        this.liveSessionIds = liveSessionIds;
     }
 
     public void run() {
@@ -54,18 +63,36 @@ public class EventPacketsHandler implements Runnable {
         AmfSerializer serializer = Amf3Factory.instance().getAmfSerializer();
         for (EventPacket eventPacket : incomingPackets) {
             try {
-                GameEvent gameEvent = (GameEvent) serializer.fromAmfBytes(eventPacket.getBody().getContent());
+                // serialize to binary packet to object
+                GameEvent gameEvent = serializer.fromAmfBytes(eventPacket.getBody().getContent());
                 log.debug(gameEvent);
 
-                // back to packet
-                byte[] body = serializer.toAmfBytes(gameEvent);
-                int bodySize = body.length;
-                OutgoingEventPacket outgoingPacket =
-                        new OutgoingEventPacket(new EventHeader(bodySize), new EventBody(body), recipientSessionIds);
+                // determine recipients
+                // protect session ids, deep copy
+                Set<Integer> liveSessionIdsCopy =  new HashSet<Integer>(liveSessionIds);
+                RecipientsVisitor recipientsVisitor = new RecipientsVisitor(packetsOwner, liveSessionIdsCopy);
+                gameEvent.accept(recipientsVisitor);
+                Set<Integer> recipients = recipientsVisitor.getRecipients();
 
-                log.debug("Enqueue new outgoing event packets");
-                outgoingPackets.put(outgoingPacket);
-                log.debug("Outgoing packets queue size: " + outgoingPackets.size());
+                // setup owner
+                OwnerVisitor ownerVisitor = new OwnerVisitor(packetsOwner);
+                gameEvent.accept(ownerVisitor);
+
+                // update world
+                EventHandler eventHandler = new EventHandler(world, packetsOwner);
+                gameEvent.accept(eventHandler);
+
+                // don't communicate with world, just broadcast event for now
+                EventPacket packetToSend = EventPacket.of(gameEvent);
+                log.debug("Packet to send:" + packetToSend);
+
+                OutgoingEventPacket outgoingPacket = new OutgoingEventPacket(packetToSend, recipients);
+
+                if (!recipients.isEmpty()){
+                    log.debug("Enqueue new outgoing event packets");
+                    outgoingPackets.put(outgoingPacket);
+                    log.debug("Outgoing packets queue size: " + outgoingPackets.size());
+                }
 
 
             } catch (AmfSerializerException e) {
@@ -74,12 +101,7 @@ public class EventPacketsHandler implements Runnable {
                 log.error("Error during put to outgoing packets queue", e);
             }
         }
-
-
-        // TODO: for testing
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-        }
+        log.debug("event packets handler ... done");
     }
+
 }

@@ -9,13 +9,32 @@
  * and limitations under the License.
  */
 
-package com.slaggun.events;
+package com.slaggun.actor.world;
+
+import com.slaggun.events.HzEvent;
+import com.slaggun.events.SnapshotEvent;
+import com.slaggun.events.EventVisitor;
 
 /**
+ * Visitor implementation
+ *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public interface GameEvent {
+public class EventHandler implements EventVisitor {
 
-    void accept(EventVisitor visitor);
+    private PhysicalWorld world;
+    private int eventOwner;
 
+    public EventHandler(PhysicalWorld world, int eventOwner) {
+        this.world = world;
+        this.eventOwner = eventOwner;
+    }
+
+    public void visit(SnapshotEvent event) {
+        world.updateActors(eventOwner, event.getActorModels());
+    }
+
+    public void visit(HzEvent event) {
+
+    }
 }

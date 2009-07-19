@@ -9,13 +9,14 @@
  * and limitations under the License.
  */
 
-package com.slaggun.events;
+package com.slaggun.events {
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
+[RemoteClass(alias="com.slaggun.events.GameEvent")]
 public interface GameEvent {
 
-    void accept(EventVisitor visitor);
-
+    
+}
 }

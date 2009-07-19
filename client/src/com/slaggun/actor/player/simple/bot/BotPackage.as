@@ -12,14 +12,21 @@
 package com.slaggun.actor.player.simple.bot {
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorPackage;
+import com.slaggun.actor.player.ActorIdGenerator;
 import com.slaggun.actor.player.simple.SimplePlayer;
 import com.slaggun.actor.player.simple.SimplePlayerPackage;
 
 public class BotPackage implements ActorPackage{
-        public function createPlayer():Actor {
-            var actor:SimplePlayer = SimplePlayer(new SimplePlayerPackage().createPlayer());
-            actor.physics = new BotPhysics();
-            return actor;
+
+    public function createPlayer(mine:Boolean = false):Actor {
+        var actor:SimplePlayer = SimplePlayer(new SimplePlayerPackage().createPlayer());
+        actor.physics = new BotPhysics();
+
+        if (mine) {
+            actor.id = ActorIdGenerator.nextId();
         }
+
+        return actor;
     }
+}
 }

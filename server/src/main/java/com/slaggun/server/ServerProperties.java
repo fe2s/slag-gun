@@ -81,7 +81,7 @@ public class ServerProperties {
         readBufferSize = Integer.parseInt(findProperty(READ_BUFFER_SIZE_KEY));
         log.info("Read buffer size: " + readBufferSize);
 
-        // get event handlers queue size
+        // get events handlers queue size
         packetHandlersQueueSize = Integer.parseInt(findProperty(PACKET_HANDLERS_QUEUE_SIZE_KEY));
         log.info("packet handlers queue size: " + packetHandlersQueueSize);
 

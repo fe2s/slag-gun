@@ -12,12 +12,15 @@
 package com.slaggun.events;
 
 import com.slaggun.util.Assert;
+import com.slaggun.amf.AmfSerializer;
+import com.slaggun.amf.Amf3Factory;
+import com.slaggun.amf.AmfSerializerException;
 
 import java.nio.ByteBuffer;
 
 /**
  * Binary representation of the event.
- *
+ * <p/>
  * Structure:
  * [header]
  * [body]
@@ -28,6 +31,13 @@ public class EventPacket {
 
     private EventHeader header;
     private EventBody body;
+
+    public static EventPacket of(GameEvent event) throws AmfSerializerException {
+        AmfSerializer serializer = Amf3Factory.instance().getAmfSerializer();
+        byte[] body = serializer.toAmfBytes(event);
+        int bodySize = body.length;
+        return new EventPacket(new EventHeader(bodySize), new EventBody(body));
+    }
 
     public EventPacket(EventHeader header, EventBody body) {
         Assert.notNull(header, "header must not be null");
@@ -40,18 +50,18 @@ public class EventPacket {
     /**
      * @return size of the packet in bytes
      */
-    public int getSize(){
+    public int getSize() {
         return EventHeader.BINARY_SIZE + body.getSize();
     }
 
-    public byte[] getContent(){
+    public byte[] getContent() {
         byte[] content = new byte[getSize()];
         System.arraycopy(header.getContent(), 0, content, 0, EventHeader.BINARY_SIZE);
         System.arraycopy(body.getContent(), 0, content, EventHeader.BINARY_SIZE, body.getSize());
         return content;
     }
 
-    public ByteBuffer getContentAsBuffer(){
+    public ByteBuffer getContentAsBuffer() {
         byte[] header = this.header.getContent();
         byte[] body = this.body.getContent();
         ByteBuffer buffer = ByteBuffer.allocateDirect(header.length + body.length);
@@ -60,8 +70,8 @@ public class EventPacket {
         return buffer;
     }
 
-    protected void validate(){
-        if (body.getSize() != header.getBodySize()){
+    protected void validate() {
+        if (body.getSize() != header.getBodySize()) {
             throw new IllegalStateException("Declared body size in header " + header.getBodySize() + "" +
                     ", at the same time real body size " + body.getSize());
         }

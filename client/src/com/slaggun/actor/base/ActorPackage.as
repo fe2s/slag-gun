@@ -10,20 +10,22 @@
  */
 
 package com.slaggun.actor.base {
-    /**
-     * This is package that store preset for the different actors.
-     * It used as factory.
-     *
-     * Author Dmitry Brazhnik (amid.ukr@gmail.com)
-     *
-     * @see Actor
-     */
-    public interface ActorPackage {
+/**
+ * This is package that store preset for the different actors.
+ * It used as factory.
+ *
+ * Author Dmitry Brazhnik (amid.ukr@gmail.com)
+ *
+ * @see Actor
+ */
+public interface ActorPackage {
 
-        /**
-         * Create new actor
-         * @return created actor.
-         */
-        function createPlayer():Actor
-    }
+    /**
+     * Create new actor
+     *
+     * @param mine Am I an owner ?
+     * @return created actor.
+     */
+    function createPlayer(mine:Boolean = false):Actor
+}
 }

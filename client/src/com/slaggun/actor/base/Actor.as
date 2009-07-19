@@ -22,26 +22,59 @@
 package com.slaggun.actor.base {
 public interface Actor {
 
-        /**
-         * Return actor game model
-         * @return actor game model
-         *
-         * @see ActorModel
-         */
-        function get model():ActorModel;
+    /**
+     * Return actor game model
+     * @return actor game model
+     *
+     * @see ActorModel
+     */
+    function get model():ActorModel;
 
-        /**
-         * Returns actor renderer
-         * @return actor renderer
-         * @see ActorRenderer
-         */
-        function get renderer():ActorRenderer;
+    /**
+     * Set given actor game model
+     * @param model model to set
+     *
+     * @see ActorModel
+     */
+    function set model(model:ActorModel):void;
 
-        /**
-         * Returns actor physics processor
-         * @return actor physics processor
-         * @see ActorPhysics
-         */
-        function get physics():ActorPhysics;
-    }
+    /**
+     * Returns actor renderer
+     * @return actor renderer
+     * @see ActorRenderer
+     */
+    function get renderer():ActorRenderer;
+
+    /**
+     * Returns actor physics processor
+     * @return actor physics processor
+     * @see ActorPhysics
+     */
+    function get physics():ActorPhysics;
+
+    /**
+     * @return owner's id. Owner is the player who created the actor.
+     * Unique in the scope of world.
+     * For now owner id is generated on the server side.
+     */
+    function get owner():int;
+
+    /**
+     * Set owner id
+     *
+     * @param owner id
+     */
+    function set owner(owner:int):void;
+
+    /**
+     * @return actor id. Unique in the scope of owner.
+     * So key {owner, id} - unique identifier in the world
+     */
+    function get id():int;
+
+    /**
+     * @param id set actor's id
+     */
+    function set id(id:int):void;
+}
 }

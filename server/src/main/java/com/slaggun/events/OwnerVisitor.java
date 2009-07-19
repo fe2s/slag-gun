@@ -11,11 +11,26 @@
 
 package com.slaggun.events;
 
+import java.util.List;
+
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public interface GameEvent {
+public class OwnerVisitor implements EventVisitor{
 
-    void accept(EventVisitor visitor);
+    private int owner;
 
+    public OwnerVisitor(int owner) {
+        this.owner = owner;
+    }
+
+    public void visit(SnapshotEvent event) {
+        List<IdentifiedActorModel> models = event.getActorModels();
+        for (IdentifiedActorModel model : models) {
+            model.setActorOwner(owner);
+        }
+    }
+
+    public void visit(HzEvent event) {
+    }
 }

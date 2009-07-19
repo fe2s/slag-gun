@@ -29,6 +29,10 @@ import com.slaggun.actor.base.ActorRenderer;
         private var _renderer:ActorRenderer = new SimplePlayerRenderer();
         private var _model:ActorModel = new SimplePlayerModel();
 
+        // TODO: need to introduce smth better than magic numbers 
+        private var _id:int = -1;
+        private var _owner:int = -1;
+
         public function get model():ActorModel {
             return _model;
         }
@@ -52,6 +56,22 @@ import com.slaggun.actor.base.ActorRenderer;
 
         public function set physics(value:ActorPhysics):void {
             _physics = value;
+        }
+
+        public function get id():int {
+            return _id;
+        }
+
+        public function set id(value:int):void {
+            _id = value;
+        }
+
+        public function get owner():int {
+            return _owner;
+        }
+
+        public function set owner(value:int):void {
+            _owner = value;
         }
     }
 }

@@ -12,8 +12,9 @@
 package com.slaggun.actor.player.simple {
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorPackage;
+import com.slaggun.actor.player.ActorIdGenerator;
 
-    /**
+/**
      * This is package with SimplePlayer.
      * It must be used to create SimplePlayer
      *
@@ -26,8 +27,13 @@ import com.slaggun.actor.base.ActorPackage;
             super();
         }
 
-        public function createPlayer():Actor {            
-            return new SimplePlayer();
+        public function createPlayer(mine:Boolean = false):Actor {
+            var player:SimplePlayer = new SimplePlayer();
+            if (mine){
+                player.id = ActorIdGenerator.nextId();
+            }
+
+            return player;
         }
     }
 }

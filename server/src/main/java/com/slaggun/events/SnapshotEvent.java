@@ -11,49 +11,40 @@
 
 package com.slaggun.events;
 
+import com.slaggun.actor.base.ActorModel;
+
+import java.util.List;
+
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public class HzEvent implements GameEvent {
+public class SnapshotEvent implements GameEvent {
 
-    private int x;
+    private List<IdentifiedActorModel> actorModels;
 
-    private int y;
+    public SnapshotEvent() {
+    }
 
-    public HzEvent() {
-        // need for AMF serialization
+    public SnapshotEvent(List<IdentifiedActorModel> actorModels) {
+        this.actorModels = actorModels;
+    }
+
+    public List<IdentifiedActorModel> getActorModels() {
+        return actorModels;
+    }
+
+    public void setActorModels(List<IdentifiedActorModel> actorModels) {
+        this.actorModels = actorModels;
     }
 
     public void accept(EventVisitor visitor) {
         visitor.visit(this);
     }
 
-    public HzEvent(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
     @Override
     public String toString() {
-        return "HzEvent{" +
-                "x=" + x +
-                ", y=" + y +
+        return "SnapshotEvent{" +
+                "actorModels=" + actorModels +
                 '}';
     }
 }

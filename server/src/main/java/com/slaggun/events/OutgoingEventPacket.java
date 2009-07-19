@@ -25,6 +25,10 @@ public class OutgoingEventPacket extends EventPacket {
 
     private Set<Integer> recipientSessionIds;
 
+    public OutgoingEventPacket(EventPacket eventPacket, Set<Integer> recipientSessionIds){
+        this(eventPacket.getHeader(), eventPacket.getBody(), recipientSessionIds);
+    }
+
     public OutgoingEventPacket(EventHeader header, EventBody body, Set<Integer> recipientSessionIds) {
         super(header, body);
         Assert.notNull(recipientSessionIds, "recipientSessionIds must not be null");
