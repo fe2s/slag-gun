@@ -162,7 +162,7 @@ public class PhysicalWorld extends EventDispatcher {
 
         var i:int;
 
-        //TODO: only mine actors now, need to render others
+        //TODO: only mine actors now, need to tick others
         var len:int = mineActors.length;
         for (i = 0; i < len; i++)
         {
