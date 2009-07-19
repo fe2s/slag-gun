@@ -162,10 +162,11 @@ public class PhysicalWorld extends EventDispatcher {
 
         var i:int;
 
-        var len:int = actors.length;
+        //TODO: only mine actors now, need to render others
+        var len:int = mineActors.length;
         for (i = 0; i < len; i++)
         {
-            actor = actors[i];
+            actor = mineActors[i];
             actor.physics.live(deltaTime, actor, this);
         }
 

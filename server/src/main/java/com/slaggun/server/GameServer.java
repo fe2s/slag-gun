@@ -314,7 +314,7 @@ public class GameServer {
                 outgoingPackets.remove(eventPacket);
             }
         } else {
-            log.debug("Outgoing packets queue is empty. Nothing to wtite.");
+            log.debug("Outgoing packets queue is empty. Nothing to write.");
         }
 
         // resume interest in OP_READ (interest in OP_WRITE is removed)
