@@ -130,14 +130,6 @@ public class GameServer {
 
         while (running) {
             try {
-                // blocking select, may wait for connection for a long time
-                int interestingKeysNumber = selector.select();
-
-                if (interestingKeysNumber == 0) {
-                    // nothing to do if there are no new acceptable channels
-                    continue;
-                }
-
                 // set OP_WRITE for those keys which we have waiting events for
                 Set<SelectionKey> allKeys = selector.keys();
                 for (SelectionKey key : allKeys) {
@@ -150,6 +142,14 @@ public class GameServer {
                     if (outgoingPackets.hasPackets(sessionId)) {
                         key.interestOps(SelectionKey.OP_WRITE);
                     }
+                }
+
+                // blocking select, may wait for connection for a long time
+                int interestingKeysNumber = selector.select();
+
+                if (interestingKeysNumber == 0) {
+                    // nothing to do if there are no new acceptable channels
+                    continue;
                 }
 
                 Set<SelectionKey> readyKeys = selector.selectedKeys();
