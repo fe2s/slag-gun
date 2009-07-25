@@ -120,7 +120,7 @@ public class GameClient extends EventDispatcher {
                 socket.readBytes(eventBody, 0, bodySize);
 
                 var event:Event = Event(AmfSerializer.instance().fromAmfBytes(eventBody));
-//                trace("Incoming event:" + event);
+                trace("Incoming event:" + event);
                 dispatchEvent(event);
             }
         }

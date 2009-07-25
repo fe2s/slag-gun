@@ -11,8 +11,6 @@
 
 package com.slaggun.events;
 
-import com.slaggun.actor.base.ActorModel;
-
 import java.util.List;
 
 /**

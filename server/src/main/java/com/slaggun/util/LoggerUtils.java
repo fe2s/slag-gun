@@ -14,7 +14,6 @@ package com.slaggun.util;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
-import java.io.File;
 import java.net.URL;
 
 /**

@@ -11,14 +11,10 @@
 
 package com.slaggun.actor.world;
 
-import com.slaggun.actor.base.ActorModel;
 import com.slaggun.events.IdentifiedActorModel;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.List;
 
 /**

@@ -14,7 +14,7 @@ package com.slaggun.server;
 import static com.slaggun.util.Assert.notNull;
 import com.slaggun.events.EventPacket;
 import com.slaggun.events.EventPacketsHandler;
-import com.slaggun.events.OutgoingEventPacket;
+import com.slaggun.events.OutgoingEventPackets;
 import com.slaggun.actor.world.PhysicalWorld;
 import org.apache.log4j.Logger;
 
@@ -56,7 +56,7 @@ public class GameServer {
     private int sessionIdGenerator = 1;
 
     // holds outgoing binary packets that are waiting for being sent
-    private ArrayBlockingQueue<OutgoingEventPacket> outgoingPackets;
+    private OutgoingEventPackets outgoingPackets;
 
     private PhysicalWorld world;
 
@@ -98,13 +98,13 @@ public class GameServer {
         // register the channel with the selector to handle new socket connections
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-        // blocking bounded queue to hold submitted tasks of incoming events packets processing
+        // blocking bounded queue to hold submitted tasks setOf incoming events packets processing
         int packetHandlersQueueSize = serverProperties.getPacketHandlersQueueSize();
         packetHandlers = new ArrayBlockingQueue<Runnable>(packetHandlersQueueSize);
 
         // blocking bounded queue to hold outgoing events packets
         int outgoingPacketsQueueSize = serverProperties.getOutgoingPacketsQueueSize();
-        outgoingPackets = new ArrayBlockingQueue<OutgoingEventPacket>(outgoingPacketsQueueSize);
+        outgoingPackets = new OutgoingEventPackets(outgoingPacketsQueueSize);
 
         // thread pool for events packets processing
         initializeWorkersPool();
@@ -132,9 +132,24 @@ public class GameServer {
             try {
                 // blocking select, may wait for connection for a long time
                 int interestingKeysNumber = selector.select();
+
                 if (interestingKeysNumber == 0) {
                     // nothing to do if there are no new acceptable channels
                     continue;
+                }
+
+                // set OP_WRITE for those keys which we have waiting events for
+                Set<SelectionKey> allKeys = selector.keys();
+                for (SelectionKey key : allKeys) {
+                    Object attachment = key.attachment();
+                    if (attachment == null){
+                        continue;
+                    }
+
+                    int sessionId = ((Attachment) attachment).getSessionId();
+                    if (outgoingPackets.hasPackets(sessionId)) {
+                        key.interestOps(SelectionKey.OP_WRITE);
+                    }
                 }
 
                 Set<SelectionKey> readyKeys = selector.selectedKeys();
@@ -260,14 +275,13 @@ public class GameServer {
             // protect from modifying
             HashSet<Integer> liveSessionIds = new HashSet<Integer>(this.liveSessionIds);
 
-            EventPacketsHandler handler = new EventPacketsHandler(world, eventPackets, sessionId, liveSessionIds, outgoingPackets);
+            EventPacketsHandler handler = new EventPacketsHandler(world, eventPackets, sessionId, liveSessionIds, 
+                    outgoingPackets, selector);
 
             // Hands the data off to our worker threads
             packetHandlers.add(handler);
             log.debug("Packet handlers queue size: " + packetHandlers.size());
 
-            // set interest in OP_WRITE (interest in OP_READ is removed)
-//            key.interestOps(SelectionKey.OP_WRITE);
         }
         log.debug("reading done");
     }
@@ -277,8 +291,6 @@ public class GameServer {
      * Look at the head packet of outgoing queue.
      * If we intersted in it, send to client.
      * <p/>
-     * TODO: for now, it peeks only the one, head packet.
-     * TODO: consider to change the number of packets being analyzed
      *
      * @param key represents channel of the connection
      * @throws IOException -
@@ -290,35 +302,29 @@ public class GameServer {
 
         int sessionId = attachment.getSessionId();
 
-        if (!outgoingPackets.isEmpty()) {
-            // retrieve head packet, but don't remove
-            OutgoingEventPacket eventPacket = outgoingPackets.peek();
-            Set<Integer> recipientSessionIds = eventPacket.getRecipientSessionIds();
-            log.debug("recepients: " + recipientSessionIds);
+        if (outgoingPackets.hasPackets(sessionId)) {
+            // let's send all packets we have for this recipient
+            // need to be tested under the load, probably we should split it into the portions
 
-            // are we interested in this packet ?
-            if (recipientSessionIds.contains(sessionId)) {
-                ByteBuffer packetBuffer = eventPacket.getContentAsBuffer();
+            log.debug("recepient: " + sessionId);
+
+            Queue<EventPacket> packets = outgoingPackets.popAll(sessionId);
+
+            for (EventPacket packet : packets) {
+                ByteBuffer packetBuffer = packet.getContentAsBuffer();
                 packetBuffer.flip();
                 socketChannel.write(packetBuffer);
-
-                recipientSessionIds.remove(sessionId);
-
-                log.debug("writing done");
             }
 
-            // if have sent to all recipients, remove from the queue
-            if (recipientSessionIds.isEmpty()) {
-                // TODO: this is actually rather expensive action
-                log.debug("removing packet from outgoint queue");
-                outgoingPackets.remove(eventPacket);
-            }
+            log.debug("writing done");
+
         } else {
-            log.debug("Outgoing packets queue is empty. Nothing to write.");
+            log.debug("Outgoing packets queue for recipient " + sessionId + " is empty. " +
+                    "Nothing to write.");
         }
 
         // resume interest in OP_READ (interest in OP_WRITE is removed)
-//        key.interestOps(SelectionKey.OP_READ);
+        key.interestOps(SelectionKey.OP_READ);
     }
 
     /**

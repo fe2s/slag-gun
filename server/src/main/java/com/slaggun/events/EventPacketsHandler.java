@@ -21,7 +21,7 @@ import com.slaggun.actor.world.EventHandler;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.concurrent.BlockingQueue;
+import java.nio.channels.Selector;
 
 import org.apache.log4j.Logger;
 
@@ -37,13 +37,16 @@ public class EventPacketsHandler implements Runnable {
 
     private PhysicalWorld world;
     private List<EventPacket> incomingPackets;
-    private BlockingQueue<OutgoingEventPacket> outgoingPackets;
+    private OutgoingEventPackets outgoingPackets;
+
     // session id of the player who sent these packets
     private int packetsOwner;
     private Set<Integer> liveSessionIds;
 
+    private Selector selector;
+
     public EventPacketsHandler(PhysicalWorld world, List<EventPacket> incomingPackets, int packetsOwner,
-                               Set<Integer> liveSessionIds, BlockingQueue<OutgoingEventPacket> outgoingPackets) {
+                               Set<Integer> liveSessionIds, OutgoingEventPackets outgoingPackets, Selector selector) {
         Assert.notNull(incomingPackets, "incomingPackets must not be null");
         Assert.notNull(outgoingPackets, "outgoingPackets must not be null");
         Assert.notNull(world, "world must not be null");
@@ -54,6 +57,7 @@ public class EventPacketsHandler implements Runnable {
         this.outgoingPackets = outgoingPackets;
         this.world = world;
         this.liveSessionIds = liveSessionIds;
+        this.selector = selector;
     }
 
     public void run() {
@@ -86,20 +90,18 @@ public class EventPacketsHandler implements Runnable {
                 EventPacket packetToSend = EventPacket.of(gameEvent);
                 log.debug("Packet to send:" + packetToSend);
 
-                OutgoingEventPacket outgoingPacket = new OutgoingEventPacket(packetToSend, recipients);
-
                 if (!recipients.isEmpty()){
-                    log.debug("Enqueue new outgoing event packets");
-                    outgoingPackets.put(outgoingPacket);
-                    log.debug("Outgoing packets queue size: " + outgoingPackets.size());
+                    log.debug("Enqueue new outgoing event packets for recipients " + recipients);
+                    outgoingPackets.put(packetToSend, recipients);
+
+                    // wake up selector
+                    selector.wakeup();
                 }
 
 
             } catch (AmfSerializerException e) {
                 log.error("Can't deserialize byte to object");
-            } catch (InterruptedException e) {
-                log.error("Error during put to outgoing packets queue", e);
-            }
+            } 
         }
         log.debug("event packets handler ... done");
     }

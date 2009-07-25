@@ -90,7 +90,7 @@ public class PhysicalWorld extends EventDispatcher {
      */
     public function add(actor:Actor, mine:Boolean):void {
         toBeAdded.push(actor);
-        if (mine){
+        if (mine) {
             mineActors.push(actor);
         }
     }
@@ -212,11 +212,8 @@ public class PhysicalWorld extends EventDispatcher {
             var owner:int = newActorModel.actorOwner;
             var existingActors:Array = actorsByOwner[owner];
 
-            trace("owner:" + owner + ", id" + newActorModel.actorId);
-
             var newActor:Actor;
             if (existingActors == null) {
-                trace("unknown owner");
                 // unknown owner
                 // assume we use SimplePlayer only for now
                 newActor = playerPackage.createPlayer(false);
@@ -227,18 +224,14 @@ public class PhysicalWorld extends EventDispatcher {
                 add(newActor, false);
                 actorsByOwner[owner] = [newActor];
             } else {
-                trace("known owner");
                 // known owner
                 // try to find given actor
                 for each (var existingActor:Actor in existingActors) {
                     if (existingActor.id == newActorModel.actorId) {
-                        trace("known actor");
                         // found model, update it
                         existingActor.model = newActorModel.actorModel;
                     } else {
-                        trace("new actor");
                         // create new actor
-
                         // assume we use SimplePlayer only for now
                         newActor = playerPackage.createPlayer(false);
                         newActor.model = newActorModel.actorModel;

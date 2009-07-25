@@ -17,7 +17,6 @@ import com.slaggun.events.EventBody;
 
 import java.nio.ByteBuffer;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
