@@ -98,16 +98,16 @@ public class AttachmentTest extends TestCase {
         // cut off complete events packets
         List<EventPacket> packets = attachment.cutOffEventPackets();
 
-        // test number setOf packets
+        // test number of packets
         assertEquals(packets.size(), 3);
 
-        // write the second part setOf the fourth packet in another session
+        // write the second part of the fourth packet in another session
         readBuffer.put(fourthEventContent, fourthEventFirstPartSize, fourthEvent.getSize() - fourthEventFirstPartSize);
 
         // cut off complete events packets
         packets = attachment.cutOffEventPackets();
 
-        // test number setOf packets
+        // test number of packets
         assertEquals(packets.size(), 1);
 
         // test header
