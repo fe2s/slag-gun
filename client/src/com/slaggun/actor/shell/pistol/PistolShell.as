@@ -23,7 +23,6 @@ public class PistolShell extends AbstractActor implements Actor{
 
     public function PistolShell(startPosition:Point2d, speedVector:Vector2d) {
 
-
         _physics = new PistolShellPhysics();
         _renderer = new PistolShellRenderer();
         _model = new PistolShellModel(startPosition, speedVector);
