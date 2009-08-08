@@ -35,9 +35,10 @@ public class PhysicalWorld extends EventDispatcher {
     private var _inputStates:InputState = new InputState();
     private var _bitmap:BitmapData;
 
+    // all actors
     private var actors:Array = [];
 
-    // belong to myself
+    // actors belong to myself
     private var mineActors:Array = [];
 
     // actors grouped by owner, key - owner id, value - Array<Actor>
@@ -89,9 +90,21 @@ public class PhysicalWorld extends EventDispatcher {
      * @return
      */
     public function add(actor:Actor, mine:Boolean):void {
+        // add to all actors list
         toBeAdded.push(actor);
+
+        // add to mine actors list
         if (mine) {
             mineActors.push(actor);
+        }
+
+        // add to 'grouped by owner' dictionary
+        var owner:int = actor.owner;
+        var existingActorsForThisOwner:Array = actorsByOwner[owner];
+        if (existingActorsForThisOwner == null) {
+            actorsByOwner[owner] = [actor];
+        } else {
+            actorsByOwner[owner].push(actor);
         }
     }
 
@@ -164,8 +177,7 @@ public class PhysicalWorld extends EventDispatcher {
 
         //TODO: only mine actors now, need to tick others
         var len:int = mineActors.length;
-        for (i = 0; i < len; i++)
-        {
+        for (i = 0; i < len; i++) {
             actor = mineActors[i];
             actor.physics.live(deltaTime, actor, this);
         }
@@ -173,8 +185,7 @@ public class PhysicalWorld extends EventDispatcher {
         _bitmap.fillRect(_bitmap.rect, 0xFFFFFF);
 
         len = actors.length;
-        for (i = 0; i < len; i++)
-        {
+        for (i = 0; i < len; i++) {
             actor = actors[i];
             actor.renderer.draw(deltaTime, actor, _bitmap);
         }
@@ -206,44 +217,37 @@ public class PhysicalWorld extends EventDispatcher {
     public function handleSnapshot(snapshotEvent:SnapshotEvent):void {
         var playerPackage:SimplePlayerPackage = new SimplePlayerPackage();
 
-        var newActorModels:ArrayCollection = snapshotEvent.actorModels;
+        for each (var newActorModel:IdentifiedActorModel in snapshotEvent.actorModels) {
 
-        for each (var newActorModel:IdentifiedActorModel in newActorModels) {
-            var owner:int = newActorModel.actorOwner;
-            var existingActors:Array = actorsByOwner[owner];
+            var existingActors:Array = actorsByOwner[newActorModel.actorOwner];
 
-            var newActor:Actor;
-            if (existingActors == null) {
-                // unknown owner
-                // assume we use SimplePlayer only for now
-                newActor = playerPackage.createPlayer(false);
-                newActor.model = newActorModel.actorModel;
-                newActor.id = newActorModel.actorId;
-
-                // add to the world
-                add(newActor, false);
-                actorsByOwner[owner] = [newActor];
-            } else {
-                // known owner
-                // try to find given actor
+            if (existingActors != null) {
+                // known owner, try to find given actor
+                var knownActor:Boolean = false;
                 for each (var existingActor:Actor in existingActors) {
                     if (existingActor.id == newActorModel.actorId) {
-                        // found model, update it
+                        // found actor, update it
                         existingActor.model = newActorModel.actorModel;
-                    } else {
-                        // create new actor
-                        // assume we use SimplePlayer only for now
-                        newActor = playerPackage.createPlayer(false);
-                        newActor.model = newActorModel.actorModel;
-                        newActor.owner = newActorModel.actorOwner;
-                        newActor.id = newActorModel.actorId;
-
-                        // add to the world
-                        add(newActor, false);
-                        actorsByOwner[owner].push(newActor);
+                        knownActor = true;
+                        break;
                     }
                 }
+                if (!knownActor) {
+                    _addActor(newActorModel);
+                }
+            } else {
+                _addActor(newActorModel);
             }
+        }
+
+        // create and add to the world new actor with a given model
+        // assume we use SimplePlayer only for now
+        function _addActor(model:IdentifiedActorModel):void {
+            var actor:Actor = playerPackage.createPlayer(false);
+            actor.model = model.actorModel;
+            actor.id = model.actorId;
+            actor.owner = model.actorOwner;
+            add(actor, false);
         }
     }
 }

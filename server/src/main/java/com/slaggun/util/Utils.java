@@ -16,6 +16,9 @@ package com.slaggun.util;
  */
 public class Utils {
 
+    private Utils() {
+    }
+
     public static int toInt(byte[] bytes) {
         return bytes[0] << 24 |
                 (bytes[1] & 0xff) << 16 |

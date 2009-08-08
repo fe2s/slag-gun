@@ -20,6 +20,9 @@ import java.util.Arrays;
  */
 public class Util {
 
+    private Util(){
+    }
+
     public static <T> Set<T> setOf(T ... elements){
         Set<T> set = new HashSet<T>(elements.length);
         set.addAll(Arrays.asList(elements));
