@@ -18,76 +18,75 @@ import flash.geom.Point;
  * Author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
 public class InputState{
-        private var mouse:Point = new Point(0, 0);
-        private var keyboard:Array;
+    private var mouse:Point = new Point(0, 0);
+    private var keyboard:Array;
 
-        /**
-         *  Scan code to check is left mouse button is clicked
-         */
-        public static const MOUSE_LEFT   :Number = 256;
+    public static const MOUSE_BUTTON_KEY_CODE:Number = 256;
 
-        /**
-         *  Scan code to check is right mouse button is clicked
-         */
-        public static const MOUSE_RIGHT  :Number = 257;
-    
-        private static const LAST:Number = MOUSE_RIGHT ;
+    private static const LAST:Number = MOUSE_BUTTON_KEY_CODE;
 
 
-        public function InputState()
-        {
-            keyboard = [];
+    public function InputState() {
+        keyboard = [];
 
-            keyboard.length = LAST;
+        keyboard.length = LAST;
 
-            for(var s:String in keyboard){
-                keyboard[s] = false;
-            }
-        }
-
-        /**
-         * Press mosue/keyboard button
-         * @param keyNumber - key scan code
-         * @return
-         */
-        public function pressDown(keyNumber:Number):void{
-            keyboard[keyNumber]  = true;
-        }
-
-        /**
-         * Unpress mosue/keyboard button
-         * @param keyNumber - key scan code
-         * @return
-         */
-        public function pressUp(keyNumber:Number):void{
-            keyboard[keyNumber]  = false;
-        }
-
-        /**
-         * Set mouse coords
-         * @param x - x mouse position
-         * @param y - y mouse position
-         * @return
-         */
-        public function updateMousePosition(x:Number, y:Number):void {
-            mouse = new Point(x, y);
-        }
-
-        /**
-         * Check whether mouse/keyboard button is pressed.
-         * @param keyCode - button to be checked
-         * @return true if button is checked, otherwise false
-         */
-        public function isPressed(keyCode: Number):Boolean{
-            return keyboard[keyCode]; 
-        }
-
-        /**
-         * Returns mouse position 
-         * @return mouse position
-         */
-        public function get mousePosition():Point {
-            return mouse;
+        for (var s:String in keyboard) {
+            keyboard[s] = false;
         }
     }
+
+    /**
+     * Press mosue/keyboard button
+     * @param keyNumber - key scan code
+     * @return
+     */
+    public function pressDown(keyNumber:Number):void {
+        keyboard[keyNumber] = true;
+    }
+
+    /**
+     * Unpress mosue/keyboard button
+     * @param keyNumber - key scan code
+     * @return
+     */
+    public function pressUp(keyNumber:Number):void {
+        keyboard[keyNumber] = false;
+    }
+
+    /**
+     * Set mouse coords
+     * @param x - x mouse position
+     * @param y - y mouse position
+     * @return
+     */
+    public function updateMousePosition(x:Number, y:Number):void {
+        mouse = new Point(x, y);
+    }
+
+    /**
+     * Check whether keyboard/mouse button is pressed.
+     * @param keyCode - button to be checked
+     * @return true if button is checked, otherwise false
+     */
+    public function isPressed(keyCode: Number):Boolean {
+        return keyboard[keyCode];
+    }
+
+    /**
+     * Check whether mouse button is pressed.
+     * @return true if button is pressed, otherwise false
+     */
+    public function isMousePressed():Boolean {
+        return isPressed(MOUSE_BUTTON_KEY_CODE);
+    }
+
+    /**
+     * Returns mouse position
+     * @return mouse position
+     */
+    public function get mousePosition():Point {
+        return mouse;
+    }
+}
 }

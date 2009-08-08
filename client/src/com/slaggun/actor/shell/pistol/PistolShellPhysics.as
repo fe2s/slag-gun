@@ -9,24 +9,23 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player.simple.bot {
+package com.slaggun.actor.shell.pistol {
 import com.slaggun.actor.base.Actor;
-import com.slaggun.actor.base.ActorPackage;
-import com.slaggun.actor.player.ActorIdGenerator;
-import com.slaggun.actor.player.simple.SimplePlayer;
-import com.slaggun.actor.player.simple.SimplePlayerPackage;
+import com.slaggun.actor.base.ActorPhysics;
+import com.slaggun.actor.world.PhysicalWorld;
 
-public class BotPackage implements ActorPackage{
+/**
+ *
+ * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ */
+public class PistolShellPhysics implements ActorPhysics {
 
-    public function createPlayer(mine:Boolean = false):Actor {
-        var actor:SimplePlayer = SimplePlayer(new SimplePlayerPackage().createPlayer());
-        actor.physics = new BotPhysics();
+    public function live(deltaTime:Number, actor:Actor, world:PhysicalWorld):void {
+        translateShell(PistolShellModel(actor.model));
+    }
 
-        if (mine) {
-            actor.id = ActorIdGenerator.nextId();
-        }
-
-        return actor;
+    private function translateShell(shell:PistolShellModel):void {
+        shell.position.translate(shell.speedVector);
     }
 }
 }

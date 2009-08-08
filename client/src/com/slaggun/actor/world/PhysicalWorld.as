@@ -13,7 +13,7 @@ package com.slaggun.actor.world {
 import com.slaggun.actor.base.Actor;
 
 import com.slaggun.actor.player.simple.SimplePlayerModel;
-import com.slaggun.actor.player.simple.SimplePlayerPackage;
+import com.slaggun.actor.player.simple.SimplePlayerFactory;
 import com.slaggun.events.IdentifiedActorModel;
 import com.slaggun.events.SnapshotEvent;
 
@@ -175,20 +175,33 @@ public class PhysicalWorld extends EventDispatcher {
 
         var i:int;
 
-        //TODO: only mine actors now, need to tick others
-        var len:int = mineActors.length;
+        var len:int = actors.length;
         for (i = 0; i < len; i++) {
-            actor = mineActors[i];
+            actor = actors[i];
             actor.physics.live(deltaTime, actor, this);
         }
 
         _bitmap.fillRect(_bitmap.rect, 0xFFFFFF);
 
-        len = actors.length;
         for (i = 0; i < len; i++) {
             actor = actors[i];
             actor.renderer.draw(deltaTime, actor, _bitmap);
         }
+    }
+
+    /**
+     *  Determines whether given actor is mine
+     *
+     * @param actor
+     * @return true if mine, false otherwise
+     */
+    public function isMineActor(actor:Actor):Boolean {
+        for each (var mineActor:Actor in mineActors) {
+            if (mineActor.owner == actor.owner && mineActor.id == actor.id){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -215,7 +228,7 @@ public class PhysicalWorld extends EventDispatcher {
      * Handles incoming snapshots
      */
     public function handleSnapshot(snapshotEvent:SnapshotEvent):void {
-        var playerPackage:SimplePlayerPackage = new SimplePlayerPackage();
+        var playerFactory:SimplePlayerFactory = new SimplePlayerFactory();
 
         for each (var newActorModel:IdentifiedActorModel in snapshotEvent.actorModels) {
 
@@ -243,7 +256,7 @@ public class PhysicalWorld extends EventDispatcher {
         // create and add to the world new actor with a given model
         // assume we use SimplePlayer only for now
         function _addActor(model:IdentifiedActorModel):void {
-            var actor:Actor = playerPackage.createPlayer(false);
+            var actor:Actor = playerFactory.create(false);
             actor.model = model.actorModel;
             actor.id = model.actorId;
             actor.owner = model.actorOwner;

@@ -17,7 +17,6 @@
  * Author Dmitry Brazhnik (amid.ukr@gmail.com)
  *
  * @see PhysicalWorld
- * @see ActorPackage
  */
 package com.slaggun.actor.base {
 public interface Actor {
@@ -46,11 +45,23 @@ public interface Actor {
     function get renderer():ActorRenderer;
 
     /**
+     * Sets given actor renderer
+     * @see ActorRenderer
+     */
+    function set renderer(renderer:ActorRenderer):void;
+
+    /**
      * Returns actor physics processor
      * @return actor physics processor
      * @see ActorPhysics
      */
     function get physics():ActorPhysics;
+
+    /**
+     * Sets given physics processor
+     * @see ActorPhysics
+     */
+    function set physics(physics:ActorPhysics):void;
 
     /**
      * @return owner's id. Owner is the player who created the actor.

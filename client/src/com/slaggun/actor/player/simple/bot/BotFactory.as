@@ -9,10 +9,23 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player {
-public class PlayerConstants {
+package com.slaggun.actor.player.simple.bot {
+import com.slaggun.actor.base.Actor;
+import com.slaggun.actor.player.ActorIdGenerator;
+import com.slaggun.actor.player.simple.SimplePlayer;
+import com.slaggun.actor.player.simple.SimplePlayerFactory;
 
-    public static const PLAYER_SPEED_PER_MS:Number = 0.3;
+public class BotFactory {
 
+    public function create(mine:Boolean = false):Actor {
+        var actor:SimplePlayer = SimplePlayer(new SimplePlayerFactory().create());
+        actor.physics = new BotPhysics();
+
+        if (mine) {
+            actor.id = ActorIdGenerator.nextId();
+        }
+
+        return actor;
+    }
 }
 }

@@ -11,7 +11,8 @@
 
 package com.slaggun.actor.player.simple {
 import com.slaggun.actor.base.ActorModel;
-import com.slaggun.geom.Point;
+import com.slaggun.geom.Point2d;
+import com.slaggun.geom.Vector2d;
 
 
 /**
@@ -24,16 +25,16 @@ import com.slaggun.geom.Point;
 [RemoteClass(alias="com.slaggun.actor.player.simple.SimplePlayerModel")]
 public class SimplePlayerModel implements ActorModel{
 
-    private var _position:Point = new Point(50, 50);
-    private var _velocity:Point = new Point;
-    private var _look:Point = new Point;
+    private var _position:Point2d = new Point2d(50, 50);
+    private var _velocity:Vector2d = new Vector2d();
+    private var _look:Vector2d = new Vector2d();
 
 
     /**
      * Return player position
      * @return player position
      */
-    public function get position():Point {
+    public function get position():Point2d {
         return _position;
     }
 
@@ -41,7 +42,7 @@ public class SimplePlayerModel implements ActorModel{
      * Sets player position
      * @param value - new position
      */
-    public function set position(value:Point):void {
+    public function set position(value:Point2d):void {
         _position = value;
     }
 
@@ -49,7 +50,7 @@ public class SimplePlayerModel implements ActorModel{
      * Returns velocity vector.
      * @return velocity vector.
      */
-    public function get velocity():Point {
+    public function get velocity():Vector2d {
         return _velocity;
     }
 
@@ -57,23 +58,23 @@ public class SimplePlayerModel implements ActorModel{
      * Sets velocity vector
      * @param value - new velocity vector
      */
-    public function set velocity(value:Point):void {
+    public function set velocity(value:Vector2d):void {
         _velocity = value;
     }
 
     /**
-     * Return coordinate where user look
+     * Return vector where user look
      * @return coordinate where user look
      */
-    public function get look():Point {
+    public function get look():Vector2d {
         return _look;
     }
 
     /**
-     * Sets coordinate where user looks.
+     * Sets vector where user looks.
      * @param value - look coordinate
      */
-    public function set look(value:Point):void {
+    public function set look(value:Vector2d):void {
         _look = value;
     }
 

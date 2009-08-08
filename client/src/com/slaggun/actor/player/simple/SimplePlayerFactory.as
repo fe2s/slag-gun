@@ -11,7 +11,6 @@
 
 package com.slaggun.actor.player.simple {
 import com.slaggun.actor.base.Actor;
-import com.slaggun.actor.base.ActorPackage;
 import com.slaggun.actor.player.ActorIdGenerator;
 
 /**
@@ -22,12 +21,9 @@ import com.slaggun.actor.player.ActorIdGenerator;
      *
      * @see SimplePlayer
      */
-    public class SimplePlayerPackage implements ActorPackage{
-        public function SimplePlayerPackage() {
-            super();
-        }
+    public class SimplePlayerFactory {
 
-        public function createPlayer(mine:Boolean = false):Actor {
+        public function create(mine:Boolean = false):Actor {
             var player:SimplePlayer = new SimplePlayer();
             if (mine){
                 player.id = ActorIdGenerator.nextId();

@@ -9,10 +9,11 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player {
-public class PlayerConstants {
-
-    public static const PLAYER_SPEED_PER_MS:Number = 0.3;
-
+package com.slaggun.util {
+/**
+ *
+ * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ */
+public class NotImplementedException extends Error {
 }
 }

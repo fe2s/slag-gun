@@ -10,9 +10,8 @@
  */
 
 package com.slaggun {
-import com.slaggun.actor.base.ActorPackage;
-import com.slaggun.actor.player.simple.SimplePlayerPackage;
-import com.slaggun.actor.player.simple.bot.BotPackage;
+import com.slaggun.actor.player.simple.SimplePlayerFactory;
+import com.slaggun.actor.player.simple.bot.BotFactory;
 import com.slaggun.actor.world.PhysicalWorld;
 
 import com.slaggun.events.SnapshotEvent;
@@ -45,11 +44,11 @@ public class LauncherClass {
      */
     public function inititalize():void {
 
-        var playerPackage:ActorPackage = new SimplePlayerPackage();
-        var botPackage:ActorPackage = new BotPackage();
+        var playerFactory:SimplePlayerFactory = new SimplePlayerFactory();
+        var botFactory:BotFactory = new BotFactory();
 
         var mineActor:Boolean = true;
-        world.add(playerPackage.createPlayer(mineActor), mineActor);
+        world.add(playerFactory.create(mineActor), mineActor);
 
         //        addBots(30, botPackage);
 
@@ -59,11 +58,11 @@ public class LauncherClass {
     /**
      * add a number of bots
      */
-    private function addBots(number:int, botPackage:ActorPackage): void {
+    private function addBots(number:int, botFactory:BotFactory): void {
         var mineActor:Boolean = true;
         var i: int;
         for (i = 0; i < number; i++) {
-            world.add(botPackage.createPlayer(), mineActor);
+            world.add(botFactory.create(), mineActor);
         }
     }
 
@@ -88,6 +87,7 @@ public class LauncherClass {
             {
                 lastTime = nowTime;
                 world.live(mils);
+                fireEvent();
             }
 
             var bitmapData:BitmapData = world.bitmap;
@@ -109,7 +109,7 @@ public class LauncherClass {
      */
     public function mouseMove(localX:Number, localY:Number):void {
         world.inputStates.updateMousePosition(localX, localY);
-        fireEvent();
+//        fireEvent();
     }
 
     /**
@@ -119,7 +119,7 @@ public class LauncherClass {
      */
     public function buttonDown(keyCode:Number):void {
         world.inputStates.pressDown(keyCode);
-        fireEvent();
+//        fireEvent();
     }
 
     /**
@@ -129,7 +129,7 @@ public class LauncherClass {
      */
     public function buttonUp(keyCode:Number):void {
         world.inputStates.pressUp(keyCode);
-        fireEvent();
+//        fireEvent();
     }
 
     /**

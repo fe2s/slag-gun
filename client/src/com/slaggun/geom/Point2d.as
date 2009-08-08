@@ -15,11 +15,20 @@ import flash.geom.Point;
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-[RemoteClass(alias="com.slaggun.geom.Point")]
-public class Point extends flash.geom.Point{
+[RemoteClass(alias="com.slaggun.geom.Point2d")]
+public class Point2d extends Point{
 
-    public function Point(x:Number = 0, y:Number = 0) {
+    public function Point2d(x:Number = 0, y:Number = 0) {
         super(x, y);
+    }
+
+    public static function valueOf(p:Point2d):Point2d {
+        return new Point2d(p.x, p.y);
+    }
+
+    public function translate(vector:Vector2d):void {
+        x += vector.x;
+        y += vector.y;
     }
 }
 }

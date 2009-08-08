@@ -11,12 +11,12 @@
 
 package com.slaggun.events;
 
-import com.slaggun.util.ThreadSafe;
 import com.slaggun.util.Assert;
+import com.slaggun.util.ThreadSafe;
+import com.slaggun.util.GuardedBy;
+import org.apache.log4j.Logger;
 
 import java.util.*;
-
-import org.apache.log4j.Logger;
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
@@ -28,7 +28,9 @@ public class OutgoingEventPackets {
     private static Logger log = Logger.getLogger(OutgoingEventPackets.class);
 
     // outgoing event packets grouped by recipient
+    @GuardedBy(value = "this") 
     private Map<Integer, LinkedList<EventPacket>> eventPackets;
+
     private int queueSizeLimit;
 
     /**
@@ -78,12 +80,10 @@ public class OutgoingEventPackets {
     /**
      * Has packets for given recipient ?
      *
-     * Don't synchronize this method.
-     *
      * @param recipient recipient
      * @return true if there are some packets
      */
-    public boolean hasPackets(int recipient) {
+    public synchronized boolean hasPackets(int recipient) {
         LinkedList<EventPacket> packetsForRecipient = eventPackets.get(recipient);
         return packetsForRecipient != null && packetsForRecipient.size() > 0;
     }

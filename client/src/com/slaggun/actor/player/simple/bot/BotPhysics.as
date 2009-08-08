@@ -72,8 +72,8 @@ import flash.geom.Rectangle;
             if(timePass > 100){
                 timePass-=100;
 
-                vx = randV() * PlayerConstants.PLAER_SPEED_PER_MS;
-                vy = randV() * PlayerConstants.PLAER_SPEED_PER_MS;
+                vx = randV() * PlayerConstants.PLAYER_SPEED_PER_MS;
+                vy = randV() * PlayerConstants.PLAYER_SPEED_PER_MS;
 
                 var rect:Rectangle = world.bitmap.rect;
 

@@ -9,10 +9,19 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player {
-public class PlayerConstants {
+package com.slaggun.geom;
 
-    public static const PLAYER_SPEED_PER_MS:Number = 0.3;
+/**
+ * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ */
+public class Point2d {
 
-}
+    public double x;
+
+    public double y;
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ")";
+    }
 }

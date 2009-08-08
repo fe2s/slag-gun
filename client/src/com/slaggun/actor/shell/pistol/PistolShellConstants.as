@@ -9,23 +9,17 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.base {
-/**
- * This is package that store preset for the different actors.
- * It used as factory.
- *
- * Author Dmitry Brazhnik (amid.ukr@gmail.com)
- *
- * @see Actor
- */
-public interface ActorPackage {
+package com.slaggun.actor.shell.pistol {
+import com.slaggun.geom.Vector2d;
 
-    /**
-     * Create new actor
-     *
-     * @param mine Am I an owner ?
-     * @return created actor.
-     */
-    function createPlayer(mine:Boolean = false):Actor
+/**
+ *
+ * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ */
+public class PistolShellConstants {
+
+    public static const SPEED:Number = 5;
+    public static const RADIUS:Number = 2;
+
 }
 }

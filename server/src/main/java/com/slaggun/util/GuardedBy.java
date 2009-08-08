@@ -9,10 +9,18 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player {
-public class PlayerConstants {
+package com.slaggun.util;
 
-    public static const PLAYER_SPEED_PER_MS:Number = 0.3;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-}
+/**
+ * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ */
+@Target({ElementType.FIELD, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface GuardedBy {
+    String value();
 }

@@ -9,10 +9,25 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player {
-public class PlayerConstants {
+package com.slaggun.actor.shell.pistol {
+import com.slaggun.actor.base.AbstractActor;
+import com.slaggun.actor.base.Actor;
+import com.slaggun.geom.Point2d;
+import com.slaggun.geom.Vector2d;
 
-    public static const PLAYER_SPEED_PER_MS:Number = 0.3;
+/**
+ *
+ * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ */
+public class PistolShell extends AbstractActor implements Actor{
+
+    public function PistolShell(startPosition:Point2d, speedVector:Vector2d) {
+
+
+        _physics = new PistolShellPhysics();
+        _renderer = new PistolShellRenderer();
+        _model = new PistolShellModel(startPosition, speedVector);
+    }
 
 }
 }

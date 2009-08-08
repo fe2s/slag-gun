@@ -9,10 +9,21 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player {
-public class PlayerConstants {
+package com.slaggun.geom {
 
-    public static const PLAYER_SPEED_PER_MS:Number = 0.3;
+/**
+ *
+ * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ */
+[RemoteClass(alias="com.slaggun.geom.Vector2d")]
+public class Vector2d extends Point2d{
 
+    public function Vector2d(x:Number = 0, y:Number = 0) {
+        super(x, y);
+    }
+
+    public function addVector(v:Vector2d):Vector2d {
+        return Vector2d(this.add(v));
+    }
 }
 }
