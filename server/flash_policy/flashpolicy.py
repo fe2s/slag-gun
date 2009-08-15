@@ -25,14 +25,8 @@ class policy_server(object):
         self.path = path
         self.policy = self.read_policy(path)
         self.log('Listening on port %d\n' % port)
-        try:
-            self.sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
-        except AttributeError:
-            # AttributeError catches Python built without IPv6
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        except socket.error:
-            # socket.error catches OS with IPv6 disabled
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        print('Create socket AF_INET')
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind(('', port))
         self.sock.listen(5)
@@ -49,7 +43,9 @@ class policy_server(object):
     def run(self):
         try:
             while True:
-                thread.start_new_thread(self.handle, self.sock.accept())
+                connection = self.sock.accept()
+                print 'New client connected: ', connection                
+                thread.start_new_thread(self.handle, connection)
         except socket.error, e:
             self.log('Error accepting connection: %s' % (e[1],))
     def handle(self, conn, addr):
