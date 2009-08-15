@@ -14,7 +14,7 @@ package com.slaggun.geom;
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public class Point2d {
+public class Point2D {
 
     public double x;
 

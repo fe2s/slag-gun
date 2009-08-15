@@ -12,39 +12,39 @@
 package com.slaggun.actor.player.simple;
 
 import com.slaggun.actor.base.ActorModel;
-import com.slaggun.geom.Point2d;
-import com.slaggun.geom.Vector2d;
+import com.slaggun.geom.Point2D;
+import com.slaggun.geom.Vector2D;
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
 public class SimplePlayerModel implements ActorModel {
 
-    private Point2d position;
-    private Vector2d velocity;
-    private Vector2d look;
+    private Point2D position;
+    private Vector2D velocity;
+    private Vector2D look;
 
-    public Point2d getPosition() {
+    public Point2D getPosition() {
         return position;
     }
 
-    public void setPosition(Point2d position) {
+    public void setPosition(Point2D position) {
         this.position = position;
     }
 
-    public Vector2d getVelocity() {
+    public Vector2D getVelocity() {
         return velocity;
     }
 
-    public void setVelocity(Vector2d velocity) {
+    public void setVelocity(Vector2D velocity) {
         this.velocity = velocity;
     }
 
-    public Vector2d getLook() {
+    public Vector2D getLook() {
         return look;
     }
 
-    public void setLook(Vector2d look) {
+    public void setLook(Vector2D look) {
         this.look = look;
     }
 

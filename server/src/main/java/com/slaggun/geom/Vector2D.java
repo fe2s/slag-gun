@@ -14,7 +14,7 @@ package com.slaggun.geom;
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public class Vector2d {
+public class Vector2D {
 
     public double x;
 
