@@ -12,12 +12,7 @@
 package com.slaggun.actor.player.simple {
 import com.slaggun.actor.base.AbstractActor;
 import com.slaggun.actor.base.Actor;
-import com.slaggun.actor.base.ActorModel;
-import com.slaggun.actor.base.ActorModel;
-import com.slaggun.actor.base.ActorPhysics;
-import com.slaggun.actor.base.ActorPhysics;
-import com.slaggun.actor.base.ActorRenderer;
-import com.slaggun.actor.base.ActorRenderer;
+import com.slaggun.actor.player.renderer.StalkerPlayerResource;
 
 /**
  * This is the first implementation of user controlled game character
@@ -31,7 +26,7 @@ public class SimplePlayer extends AbstractActor implements Actor {
 
     public function SimplePlayer() {
         _physics = new SimplePlayerPhysics();
-        _renderer = new SimplePlayerRenderer();
+        _renderer = StalkerPlayerResource.createRenderer();
         _model = new SimplePlayerModel();
     }
     

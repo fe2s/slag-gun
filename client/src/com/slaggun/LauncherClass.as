@@ -13,12 +13,12 @@ package com.slaggun {
 import com.slaggun.actor.player.simple.SimplePlayerFactory;
 import com.slaggun.actor.player.simple.bot.BotFactory;
 import com.slaggun.actor.world.PhysicalWorld;
-
-import com.slaggun.events.SnapshotEvent;
 import com.slaggun.net.GameClient;
 
 import flash.display.BitmapData;
 import flash.display.Graphics;
+
+import mx.controls.Label;
 
 /**
  * Lucnher class that integrates game engine and mxml
@@ -50,7 +50,8 @@ public class LauncherClass {
         var mineActor:Boolean = true;
         world.add(playerFactory.create(mineActor), mineActor);
 
-        //        addBots(30, botPackage);
+        //world.drawAnimationCalibrateGrid = true;
+        //addBots(350, new BotFactory());
 
         start();
     }
@@ -91,6 +92,7 @@ public class LauncherClass {
             }
 
             var bitmapData:BitmapData = world.bitmap;
+            g.clear();
             g.beginBitmapFill(bitmapData);
             g.drawRect(0, 0, bitmapData.rect.width, bitmapData.rect.height);
             g.endFill();

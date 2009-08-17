@@ -11,16 +11,13 @@
 
 package com.slaggun.actor.world {
 import com.slaggun.actor.base.Actor;
-
-import com.slaggun.actor.player.simple.SimplePlayerModel;
 import com.slaggun.actor.player.simple.SimplePlayerFactory;
 import com.slaggun.events.IdentifiedActorModel;
 import com.slaggun.events.SnapshotEvent;
 
 import flash.display.BitmapData;
-
+import flash.display.Shape;
 import flash.events.EventDispatcher;
-
 import flash.utils.Dictionary;
 
 import mx.collections.ArrayCollection;
@@ -50,9 +47,26 @@ public class PhysicalWorld extends EventDispatcher {
     private var _worldWidth:Number;
     private var _worldHeight:Number;
 
+    private var _drawAnimationCalibrateGrid:Boolean;
 
     public function PhysicalWorld() {
         addEventListener(SnapshotEvent.INCOMING, handleSnapshot);
+    }
+
+    /**
+     * Returns true if gird for calibarting animation is drawn
+     * @return true if gird for calibarting animation is drawn
+     */
+    public function get drawAnimationCalibrateGrid():Boolean {
+        return _drawAnimationCalibrateGrid;
+    }
+
+    /**
+     * Shows or hides animation calibraion grid
+     * @param value - if true, calibraion grid will be drawn
+     */
+    public function set drawAnimationCalibrateGrid(value:Boolean):void {
+        _drawAnimationCalibrateGrid = value;
     }
 
     /**
@@ -163,6 +177,22 @@ public class PhysicalWorld extends EventDispatcher {
         toBeRemoved = [];
     }
 
+    private function drawDebugLines(bitmap:BitmapData):void {
+        var debugShape:Shape = new Shape();
+
+        debugShape.graphics.lineStyle(1, 0x0000AA);
+
+        const w:int = 30;
+        var n:int = bitmap.width/w;
+
+        for (var i:int = 0; i < n; i++) {
+            debugShape.graphics.moveTo(i * w, 0);
+            debugShape.graphics.lineTo(i * w, bitmap.width);
+        }
+
+        bitmap.draw(debugShape);
+    }
+
     /**
      * Process world live iteration
      * @param deltaTime - time pass
@@ -187,6 +217,9 @@ public class PhysicalWorld extends EventDispatcher {
             actor = actors[i];
             actor.renderer.draw(deltaTime, actor, _bitmap);
         }
+
+        if(_drawAnimationCalibrateGrid)
+            drawDebugLines(_bitmap);
     }
 
     /**

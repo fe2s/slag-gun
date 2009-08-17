@@ -9,7 +9,8 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player.simple {
+package com.slaggun.actor.player.renderer {
+import com.slaggun.actor.player.simple.*;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorRenderer;
 
@@ -25,7 +26,7 @@ import flash.geom.Point;
      *
      * @see SimplePlayer
      */
-    public class SimplePlayerRenderer implements ActorRenderer{
+    public class TrianglesRenderer implements ActorRenderer{
 
         private var triangleBlue:Shape = new Shape();
         private var triangleRed:Shape = new Shape();
@@ -37,7 +38,7 @@ import flash.geom.Point;
         private static const H:Number = 1.7*SIZE;
         private static const YSTART:Number = SIZE*0.6;
 
-        public function SimplePlayerRenderer(){
+        public function TrianglesRenderer(){
             triangleBlue = new Shape();
             triangleRed = new Shape();
 
