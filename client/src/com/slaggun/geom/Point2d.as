@@ -15,7 +15,7 @@ import flash.geom.Point;
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-[RemoteClass(alias="com.slaggun.geom.Point2d")]
+[RemoteClass(alias="com.slaggun.geom.Point2D")]
 public class Point2d extends Point{
 
     public function Point2d(x:Number = 0, y:Number = 0) {

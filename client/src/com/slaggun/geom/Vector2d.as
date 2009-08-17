@@ -15,7 +15,7 @@ package com.slaggun.geom {
  *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-[RemoteClass(alias="com.slaggun.geom.Vector2d")]
+[RemoteClass(alias="com.slaggun.geom.Vector2D")]
 public class Vector2d extends Point2d{
 
     public function Vector2d(x:Number = 0, y:Number = 0) {
