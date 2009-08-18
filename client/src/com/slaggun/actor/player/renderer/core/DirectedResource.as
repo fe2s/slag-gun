@@ -9,7 +9,7 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player.renderer {
+package com.slaggun.actor.player.renderer.core {
 import flash.display.DisplayObject;
 
 public class DirectedResource extends PNGFramedResource{

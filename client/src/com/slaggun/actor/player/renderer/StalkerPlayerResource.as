@@ -11,6 +11,8 @@
 
 package com.slaggun.actor.player.renderer {
 import com.slaggun.actor.base.ActorRenderer;
+import com.slaggun.actor.player.renderer.core.DirectedRenderer;
+import com.slaggun.actor.player.renderer.core.DirectedResource;
 
 /**
  * This is renderer for the SimplePlayer

@@ -9,10 +9,9 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player.renderer {
+package com.slaggun.actor.player.renderer.core {
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorRenderer;
-
 import com.slaggun.actor.player.simple.SimplePlayerModel;
 
 import flash.display.BitmapData;
