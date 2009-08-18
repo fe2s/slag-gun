@@ -36,7 +36,7 @@ public class PNGFramedResource {
     }
 
     protected function getBoxWidth():int {
-        return (image.width-1)/getYFramesCount()-1;
+        return (image.width-1)/getXFramesCount()-1;
     }
 
     protected function getBoxHeight():int {
@@ -88,7 +88,7 @@ public class PNGFramedResource {
         _boxXStart = getBoxXStart();
         _boxYStart = getBoxYStart();
         _xFramesCount = getXFramesCount();
-        _yFramesCount = getXFramesCount();
+        _yFramesCount = getYFramesCount();
     }
 
     private function drawRect(dst:BitmapData, dstX: int, dstY:int, src:IBitmapDrawable, srcX:int, srcY:int, srcWidth:int, srcHeight:int):void {

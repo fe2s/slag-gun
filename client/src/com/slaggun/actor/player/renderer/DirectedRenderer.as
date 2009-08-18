@@ -22,7 +22,7 @@ public class DirectedRenderer implements ActorRenderer{
     private var resource:DirectedResource;
     private var _frameSpeedFactor:Number;
     
-    private var xTime:int = 0;
+    private var xTime:Number = 0;
 
     public function DirectedRenderer(resource:DirectedResource, frameSpeedFactor:Number) {
         this.resource = resource;
@@ -71,6 +71,8 @@ public class DirectedRenderer implements ActorRenderer{
         lookAngle %= 2 * Math.PI;
 
         var yFrame:int = resource.yFramesCount * lookAngle / (2 * Math.PI);
+
+        trace("yFrame = ", yFrame);
 
         resource.draw(bitmap, x, y, xFrame, yFrame);
     }
