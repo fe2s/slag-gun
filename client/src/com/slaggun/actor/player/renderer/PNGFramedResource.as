@@ -17,7 +17,7 @@ import flash.geom.Matrix;
 import flash.geom.Rectangle;
 
 /**
- * Here some documentation
+ * Here some doc
  */
 public class PNGFramedResource {
 
