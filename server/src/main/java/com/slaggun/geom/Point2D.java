@@ -11,9 +11,12 @@
 
 package com.slaggun.geom;
 
+import com.slaggun.util.RemoteClass;
+
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
+@RemoteClass
 public class Point2D {
 
     public double x;

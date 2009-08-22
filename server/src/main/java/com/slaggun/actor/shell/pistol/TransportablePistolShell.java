@@ -9,30 +9,43 @@
  * and limitations under the License.
  */
 
-package com.slaggun.events;
+package com.slaggun.actor.shell.pistol;
 
+import com.slaggun.util.RemoteClass;
 import com.slaggun.actor.base.TransportableActor;
-
-import java.util.List;
+import com.slaggun.actor.base.ActorModel;
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public class OwnerVisitor implements EventVisitor{
+@RemoteClass
+public class TransportablePistolShell implements TransportableActor{
 
+    private ActorModel model;
     private int owner;
+    private int id;
 
-    public OwnerVisitor(int owner) {
+    public ActorModel getModel() {
+        return model;
+    }
+
+    public void setModel(ActorModel model) {
+        this.model = model;
+    }
+
+    public int getOwner() {
+        return owner;
+    }
+
+    public void setOwner(int owner) {
         this.owner = owner;
     }
 
-    public void visit(SnapshotEvent event) {
-        List<TransportableActor> transportableActors = event.getTransportableActors();
-        for (TransportableActor transActor : transportableActors) {
-            transActor.setOwner(owner);
-        }
+    public int getId() {
+        return id;
     }
 
-    public void visit(HzEvent event) {
+    public void setId(int id) {
+        this.id = id;
     }
 }

@@ -9,18 +9,31 @@
  * and limitations under the License.
  */
 
-package com.slaggun.util;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package com.slaggun.actor.base {
+import com.slaggun.actor.base.Actor;
+import com.slaggun.actor.base.ActorModel;
 
 /**
+ * Transportable (fly weight) representation of actor
+ *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-@Target({ElementType.FIELD, ElementType.METHOD})
-@Retention(RetentionPolicy.SOURCE)
-public @interface GuardedBy {
-    String value();
+[RemoteClass(alias="com.slaggun.actor.base.TransportableActor")]
+public interface TransportableActor {
+
+    function resurrect():Actor;
+
+    function get model():ActorModel;
+
+    function set model(model:ActorModel):void;
+
+    function set owner(owner:int):void;
+
+    function get owner():int;
+
+    function set id(id:int):void;
+
+    function get id():int;
+
+}
 }

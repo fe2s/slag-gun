@@ -12,6 +12,7 @@
 package com.slaggun.actor.shell.pistol {
 import com.slaggun.actor.base.AbstractActor;
 import com.slaggun.actor.base.Actor;
+import com.slaggun.actor.base.TransportableActor;
 import com.slaggun.geom.Point2d;
 import com.slaggun.geom.Vector2d;
 
@@ -21,12 +22,19 @@ import com.slaggun.geom.Vector2d;
  */
 public class PistolShell extends AbstractActor implements Actor{
 
-    public function PistolShell(startPosition:Point2d, speedVector:Vector2d) {
-
+    public function PistolShell() {
+        _model = new PistolShellModel();
         _physics = new PistolShellPhysics();
         _renderer = new PistolShellRenderer();
-        _model = new PistolShellModel(startPosition, speedVector);
     }
 
+
+    override public function compact():TransportableActor {
+        var trans:TransportablePistolShell = new TransportablePistolShell();
+        trans.id = _id;
+        trans.model = _model;
+        trans.owner = _owner;
+        return trans;
+    }
 }
 }

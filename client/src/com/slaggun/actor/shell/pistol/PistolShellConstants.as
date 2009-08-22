@@ -18,7 +18,7 @@ import com.slaggun.geom.Vector2d;
  */
 public class PistolShellConstants {
 
-    public static const SPEED:Number = 5;
+    public static const SPEED:Number = 15;
     public static const RADIUS:Number = 2;
 
 }

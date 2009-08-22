@@ -11,21 +11,15 @@
 
 package com.slaggun.actor.world;
 
-import com.slaggun.events.IdentifiedActorModel;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-
-import java.util.List;
-
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
 public class PhysicalWorld {
 
     // actors grouped by owner
-    Multimap<Integer, IdentifiedActorModel> actorModels = HashMultimap.create();
-
-    public synchronized void updateActors(int owner, List<IdentifiedActorModel> actorModels){
-        this.actorModels.replaceValues(owner, actorModels);    
-    }
+//    Multimap<Integer, IdentifiedActorModel> actorModels = HashMultimap.create();
+//
+//    public synchronized void updateActors(int owner, List<IdentifiedActorModel> actorModels){
+//        this.actorModels.replaceValues(owner, actorModels);
+//    }
 }

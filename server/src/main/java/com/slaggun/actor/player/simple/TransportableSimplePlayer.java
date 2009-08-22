@@ -11,51 +11,50 @@
 
 package com.slaggun.actor.player.simple;
 
+import com.slaggun.actor.base.TransportableActor;
 import com.slaggun.actor.base.ActorModel;
-import com.slaggun.geom.Point2D;
-import com.slaggun.geom.Vector2D;
 import com.slaggun.util.RemoteClass;
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
 @RemoteClass
-public class SimplePlayerModel implements ActorModel {
+public class TransportableSimplePlayer implements TransportableActor {
 
-    private Point2D position;
-    private Vector2D velocity;
-    private Vector2D look;
+    private ActorModel model;
+    private int owner;
+    private int id;
 
-    public Point2D getPosition() {
-        return position;
+    public ActorModel getModel() {
+        return model;
     }
 
-    public void setPosition(Point2D position) {
-        this.position = position;
+    public void setModel(ActorModel model) {
+        this.model = model;
     }
 
-    public Vector2D getVelocity() {
-        return velocity;
+    public int getOwner() {
+        return owner;
     }
 
-    public void setVelocity(Vector2D velocity) {
-        this.velocity = velocity;
+    public void setOwner(int owner) {
+        this.owner = owner;
     }
 
-    public Vector2D getLook() {
-        return look;
+    public int getId() {
+        return id;
     }
 
-    public void setLook(Vector2D look) {
-        this.look = look;
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override
     public String toString() {
-        return "SimplePlayerModel{" +
-                "position=" + position +
-                ", velocity=" + velocity +
-                ", look=" + look +
+        return "TransportableSimplePlayer{" +
+                "model=" + model +
+                ", owner=" + owner +
+                ", id=" + id +
                 '}';
     }
 }

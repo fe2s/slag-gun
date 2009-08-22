@@ -73,7 +73,7 @@ public class SimplePlayerPhysics implements ActorPhysics{
         }
 
         if (inputState.isMousePressed()) {
-//            shoot(actorModel, world);
+            shoot(actorModel, world);
         }
 
         // update actor model

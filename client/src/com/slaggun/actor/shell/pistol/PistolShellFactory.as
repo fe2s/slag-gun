@@ -21,17 +21,27 @@ import com.slaggun.geom.Vector2d;
  */
 public class PistolShellFactory  {
 
-    public function create(startPosition:Point2d, direction:Vector2d, mine:Boolean = false):Actor {
-
-        direction.normalize(PistolShellConstants.SPEED);
-
-        var pistolShell:PistolShell = new PistolShell(startPosition, direction);
+    public function createNew(mine:Boolean = false):PistolShell {
+        var pistolShell:PistolShell = new PistolShell();
 
         if (mine) {
             pistolShell.id = ActorIdGenerator.nextId();
         }
+        return pistolShell;
+    }
+    
+    public function create(startPosition:Point2d, direction:Vector2d, mine:Boolean = false):PistolShell {
+        direction.normalize(PistolShellConstants.SPEED);
+
+        var pistolShellModel:PistolShellModel = new PistolShellModel();
+        pistolShellModel.position = startPosition;
+        pistolShellModel.speedVector = direction;
+
+        var pistolShell:PistolShell = createNew(mine);
+        pistolShell.model = pistolShellModel;
 
         return pistolShell;
     }
+
 }
 }

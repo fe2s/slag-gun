@@ -21,6 +21,14 @@
 package com.slaggun.actor.base {
 public interface Actor {
 
+
+    /**
+     * Compact to transportable form
+     * 
+     * @return transportable actor
+     */
+    function compact():TransportableActor;
+    
     /**
      * Return actor game model
      * @return actor game model

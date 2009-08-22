@@ -12,7 +12,7 @@
 package com.slaggun.actor.world {
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.player.simple.SimplePlayerFactory;
-import com.slaggun.events.IdentifiedActorModel;
+import com.slaggun.actor.base.TransportableActor;
 import com.slaggun.events.SnapshotEvent;
 
 import flash.display.BitmapData;
@@ -183,7 +183,7 @@ public class PhysicalWorld extends EventDispatcher {
         debugShape.graphics.lineStyle(1, 0x0000AA);
 
         const w:int = 30;
-        var n:int = bitmap.width/w;
+        var n:int = bitmap.width / w;
 
         for (var i:int = 0; i < n; i++) {
             debugShape.graphics.moveTo(i * w, 0);
@@ -218,7 +218,7 @@ public class PhysicalWorld extends EventDispatcher {
             actor.renderer.draw(deltaTime, actor, _bitmap);
         }
 
-        if(_drawAnimationCalibrateGrid)
+        if (_drawAnimationCalibrateGrid)
             drawDebugLines(_bitmap);
     }
 
@@ -230,7 +230,7 @@ public class PhysicalWorld extends EventDispatcher {
      */
     public function isMineActor(actor:Actor):Boolean {
         for each (var mineActor:Actor in mineActors) {
-            if (mineActor.owner == actor.owner && mineActor.id == actor.id){
+            if (mineActor.owner == actor.owner && mineActor.id == actor.id) {
                 return true;
             }
         }
@@ -242,17 +242,13 @@ public class PhysicalWorld extends EventDispatcher {
      * @return snapshot event
      */
     public function get snapshot(): SnapshotEvent {
-        var mineModels:ArrayCollection = new ArrayCollection();
+        var transportableActors:ArrayCollection = new ArrayCollection();
         for each (var actor:Actor in mineActors) {
-            var idActorModel:IdentifiedActorModel = new IdentifiedActorModel();
-            idActorModel.actorModel = actor.model;
-            idActorModel.actorId = actor.id;
-
-            mineModels.addItem(idActorModel);
+            transportableActors.addItem(actor.compact());
         }
 
         var snapshot:SnapshotEvent = new SnapshotEvent(SnapshotEvent.OUTGOING);
-        snapshot.actorModels = mineModels;
+        snapshot.transportableActors = transportableActors;
 
         return snapshot;
     }
@@ -261,39 +257,29 @@ public class PhysicalWorld extends EventDispatcher {
      * Handles incoming snapshots
      */
     public function handleSnapshot(snapshotEvent:SnapshotEvent):void {
-        var playerFactory:SimplePlayerFactory = new SimplePlayerFactory();
 
-        for each (var newActorModel:IdentifiedActorModel in snapshotEvent.actorModels) {
+        for each (var transportableActor:TransportableActor in snapshotEvent.transportableActors) {
 
-            var existingActors:Array = actorsByOwner[newActorModel.actorOwner];
+            var actor:Actor = transportableActor.resurrect();
+            var existingActors:Array = actorsByOwner[actor.owner];
 
             if (existingActors != null) {
                 // known owner, try to find given actor
                 var knownActor:Boolean = false;
                 for each (var existingActor:Actor in existingActors) {
-                    if (existingActor.id == newActorModel.actorId) {
+                    if (existingActor.id == actor.id) {
                         // found actor, update it
-                        existingActor.model = newActorModel.actorModel;
+                        existingActor.model = actor.model;
                         knownActor = true;
                         break;
                     }
                 }
                 if (!knownActor) {
-                    _addActor(newActorModel);
+                    add(actor, false);
                 }
             } else {
-                _addActor(newActorModel);
+                add(actor, false);
             }
-        }
-
-        // create and add to the world new actor with a given model
-        // assume we use SimplePlayer only for now
-        function _addActor(model:IdentifiedActorModel):void {
-            var actor:Actor = playerFactory.create(false);
-            actor.model = model.actorModel;
-            actor.id = model.actorId;
-            actor.owner = model.actorOwner;
-            add(actor, false);
         }
     }
 }

@@ -9,7 +9,7 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player.simple;
+package com.slaggun.actor.shell.pistol;
 
 import com.slaggun.actor.base.ActorModel;
 import com.slaggun.geom.Point2D;
@@ -20,11 +20,14 @@ import com.slaggun.util.RemoteClass;
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
 @RemoteClass
-public class SimplePlayerModel implements ActorModel {
+public class PistolShellModel implements ActorModel{
 
     private Point2D position;
-    private Vector2D velocity;
-    private Vector2D look;
+    private Vector2D speedVector;
+
+    public PistolShellModel() {
+        // need for AMF
+    }
 
     public Point2D getPosition() {
         return position;
@@ -34,28 +37,19 @@ public class SimplePlayerModel implements ActorModel {
         this.position = position;
     }
 
-    public Vector2D getVelocity() {
-        return velocity;
+    public Vector2D getSpeedVector() {
+        return speedVector;
     }
 
-    public void setVelocity(Vector2D velocity) {
-        this.velocity = velocity;
-    }
-
-    public Vector2D getLook() {
-        return look;
-    }
-
-    public void setLook(Vector2D look) {
-        this.look = look;
+    public void setSpeedVector(Vector2D speedVector) {
+        this.speedVector = speedVector;
     }
 
     @Override
     public String toString() {
-        return "SimplePlayerModel{" +
+        return "PistolShellModel{" +
                 "position=" + position +
-                ", velocity=" + velocity +
-                ", look=" + look +
+                ", speedVector=" + speedVector +
                 '}';
     }
 }

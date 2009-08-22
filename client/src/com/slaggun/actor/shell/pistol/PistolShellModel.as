@@ -18,15 +18,11 @@ import com.slaggun.geom.Vector2d;
  *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
+[RemoteClass(alias="com.slaggun.actor.shell.pistol.PistolShellModel")]
 public class PistolShellModel implements ActorModel{
 
     private var _position:Point2d;
     private var _speedVector:Vector2d;
-
-    public function PistolShellModel(position:Point2d, speedVector:Vector2d) {
-        _position = position;
-        _speedVector = speedVector;
-    }
 
     public function get position():Point2d {
         return _position;
@@ -34,6 +30,14 @@ public class PistolShellModel implements ActorModel{
 
     public function get speedVector():Vector2d {
         return _speedVector;
+    }
+
+    public function set position(value:Point2d):void {
+        _position = value;
+    }
+
+    public function set speedVector(value:Vector2d):void {
+        _speedVector = value;
     }
 }
 }

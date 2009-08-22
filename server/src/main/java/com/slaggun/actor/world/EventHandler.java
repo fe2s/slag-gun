@@ -31,7 +31,7 @@ public class EventHandler implements EventVisitor {
     }
 
     public void visit(SnapshotEvent event) {
-        world.updateActors(eventOwner, event.getActorModels());
+//        world.updateActors(eventOwner, event.getActorModels());
     }
 
     public void visit(HzEvent event) {

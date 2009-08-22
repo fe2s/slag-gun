@@ -12,6 +12,7 @@
 package com.slaggun.actor.player.simple {
 import com.slaggun.actor.base.AbstractActor;
 import com.slaggun.actor.base.Actor;
+import com.slaggun.actor.base.TransportableActor;
 import com.slaggun.actor.player.renderer.StalkerPlayerResource;
 
 /**
@@ -29,6 +30,14 @@ public class SimplePlayer extends AbstractActor implements Actor {
         _renderer = StalkerPlayerResource.createRenderer();
         _model = new SimplePlayerModel();
     }
-    
+
+
+    override public function compact():TransportableActor {
+        var trans:TransportableSimplePlayer = new TransportableSimplePlayer();
+        trans.id = _id;
+        trans.model = _model;
+        trans.owner = _owner;
+        return trans;
+    }
 }
 }

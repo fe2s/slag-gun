@@ -11,28 +11,28 @@
 
 package com.slaggun.events;
 
+import com.slaggun.actor.base.TransportableActor;
+import com.slaggun.util.RemoteClass;
+
 import java.util.List;
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
+@RemoteClass
 public class SnapshotEvent implements GameEvent {
 
-    private List<IdentifiedActorModel> actorModels;
+    private List<TransportableActor> transportableActors;
 
     public SnapshotEvent() {
     }
 
-    public SnapshotEvent(List<IdentifiedActorModel> actorModels) {
-        this.actorModels = actorModels;
+    public List<TransportableActor> getTransportableActors() {
+        return transportableActors;
     }
 
-    public List<IdentifiedActorModel> getActorModels() {
-        return actorModels;
-    }
-
-    public void setActorModels(List<IdentifiedActorModel> actorModels) {
-        this.actorModels = actorModels;
+    public void setTransportableActors(List<TransportableActor> transportableActors) {
+        this.transportableActors = transportableActors;
     }
 
     public void accept(EventVisitor visitor) {
@@ -42,7 +42,7 @@ public class SnapshotEvent implements GameEvent {
     @Override
     public String toString() {
         return "SnapshotEvent{" +
-                "actorModels=" + actorModels +
+                "transportableActors=" + transportableActors +
                 '}';
     }
 }

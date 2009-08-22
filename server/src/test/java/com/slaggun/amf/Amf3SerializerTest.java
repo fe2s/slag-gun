@@ -11,15 +11,15 @@
 
 package com.slaggun.amf;
 
+import com.slaggun.actor.base.TransportableActor;
+import com.slaggun.actor.player.simple.SimplePlayerModel;
+import com.slaggun.actor.player.simple.TransportableSimplePlayer;
+import com.slaggun.events.SnapshotEvent;
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import java.util.List;
 import java.util.ArrayList;
-
-import com.slaggun.events.SnapshotEvent;
-import com.slaggun.events.IdentifiedActorModel;
-import com.slaggun.actor.player.simple.SimplePlayerModel;
+import java.util.List;
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
@@ -52,28 +52,29 @@ public class Amf3SerializerTest extends TestCase {
     public void testEventRoundTrip() throws AmfSerializerException {
         SimplePlayerModel playerModel = new SimplePlayerModel();
 
-        IdentifiedActorModel idActorModel = new IdentifiedActorModel();
-        idActorModel.setActorOwner(2);
-        idActorModel.setActorId(1);
-        idActorModel.setActorModel(playerModel);
+        TransportableActor transActor = new TransportableSimplePlayer();
+        transActor.setOwner(2);
+        transActor.setId(1);
+        transActor.setModel(playerModel);
 
-        List<IdentifiedActorModel> actorModels = new ArrayList<IdentifiedActorModel>();
-        actorModels.add(idActorModel);
+        List<TransportableActor> transportableActors = new ArrayList<TransportableActor>();
+        transportableActors.add(transActor);
 
         SnapshotEvent snapshot = new SnapshotEvent();
-        snapshot.setActorModels(actorModels);
+        snapshot.setTransportableActors(transportableActors);
 
         AmfSerializer serializer = Amf3Factory.instance().getAmfSerializer();
         byte[] snapShotBytes = serializer.toAmfBytes(snapshot);
         SnapshotEvent snapshotAfterTrip = (SnapshotEvent) serializer.fromAmfBytes(snapShotBytes);
 
-        assertEquals(snapshotAfterTrip.getActorModels().size(), snapshot.getActorModels().size());
+        assertEquals(snapshotAfterTrip.getTransportableActors().size(),
+                snapshot.getTransportableActors().size());
 
-        assertEquals(snapshotAfterTrip.getActorModels().get(0).getActorId(),
-                snapshot.getActorModels().get(0).getActorId());
+        assertEquals(snapshotAfterTrip.getTransportableActors().get(0).getId(),
+                snapshot.getTransportableActors().get(0).getId());
 
-        assertEquals(snapshotAfterTrip.getActorModels().get(0).getActorOwner(),
-                snapshot.getActorModels().get(0).getActorOwner());
+        assertEquals(snapshotAfterTrip.getTransportableActors().get(0).getOwner(),
+                snapshot.getTransportableActors().get(0).getOwner());
 
 
     }

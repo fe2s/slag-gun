@@ -10,6 +10,8 @@
  */
 
 package com.slaggun.actor.base {
+import com.slaggun.util.NotImplementedException;
+
 /**
  *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
@@ -25,6 +27,10 @@ public class AbstractActor implements Actor {
 
     protected var _id:int = NOT_SET_ID;
     protected var _owner:int = NOT_SET_OWNER_ID;
+
+    public function compact():TransportableActor {
+        throw new NotImplementedException();
+    }
 
     public function get physics():ActorPhysics {
         return _physics;
@@ -65,5 +71,7 @@ public class AbstractActor implements Actor {
     public function set owner(value:int):void {
         _owner = value;
     }
+
+
 }
 }

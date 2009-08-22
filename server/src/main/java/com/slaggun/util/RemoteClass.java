@@ -11,16 +11,16 @@
 
 package com.slaggun.util;
 
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 /**
+ * Indicates that class is used as Remote Class in ActionScript.
+ * So if you rename it, you have to rename corresponding mapping in
+ * ActionScript.
+ *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-@Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.SOURCE)
-public @interface GuardedBy {
-    String value();
+public @interface RemoteClass {
 }
