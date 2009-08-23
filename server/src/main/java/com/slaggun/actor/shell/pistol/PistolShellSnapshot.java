@@ -9,40 +9,52 @@
  * and limitations under the License.
  */
 
-package com.slaggun.events;
+package com.slaggun.actor.shell.pistol;
 
-import com.slaggun.actor.base.ActorSnapshot;
 import com.slaggun.util.RemoteClass;
-
-import java.util.List;
+import com.slaggun.actor.base.ActorSnapshot;
+import com.slaggun.actor.base.ActorModel;
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
 @RemoteClass
-public class SnapshotEvent implements GameEvent {
+public class PistolShellSnapshot implements ActorSnapshot {
 
-    private List<ActorSnapshot> actorSnapshots;
+    private ActorModel model;
+    private int owner;
+    private int id;
 
-    public SnapshotEvent() {
+    public ActorModel getModel() {
+        return model;
     }
 
-    public List<ActorSnapshot> getTransportableActors() {
-        return actorSnapshots;
+    public void setModel(ActorModel model) {
+        this.model = model;
     }
 
-    public void setTransportableActors(List<ActorSnapshot> actorSnapshots) {
-        this.actorSnapshots = actorSnapshots;
+    public int getOwner() {
+        return owner;
     }
 
-    public void accept(EventVisitor visitor) {
-        visitor.visit(this);
+    public void setOwner(int owner) {
+        this.owner = owner;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override
     public String toString() {
-        return "SnapshotEvent{" +
-                "actorSnapshots=" + actorSnapshots +
+        return "PistolShellSnapshot{" +
+                "model=" + model +
+                ", owner=" + owner +
+                ", id=" + id +
                 '}';
     }
 }

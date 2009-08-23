@@ -9,25 +9,16 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.base;
-
-import com.slaggun.util.RemoteClass;
-
+package com.slaggun.util.log {
 /**
+ *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-@RemoteClass
-public interface TransportableActor {
+public class ConsoleAppender implements Appender {
 
-    void setModel(ActorModel model);
+    public function append(str:String):void {
+        trace(str);
+    }
 
-    ActorModel getModel();
-
-    void setOwner(int owner);
-
-    int getOwner();
-
-    void setId(int id);
-
-    int getId();
+}
 }

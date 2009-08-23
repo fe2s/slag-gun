@@ -9,13 +9,15 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player {
-public class PlayerConstants {
+package com.slaggun.util.log {
+/**
+ * Implement this interface for your own strategies
+ * for outputting log messages
+ *
+ * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ */
+public interface Appender {
 
-    public static const PLAYER_SPEED_PER_MS:Number = 0.3;
-    public static const MAX_HEALTH_HP:int = 100;
-
-    // assume player is a circle
-    public static const RADIUS:int = 20;
+    function append(str:String):void;
 }
 }

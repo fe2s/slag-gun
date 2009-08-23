@@ -11,8 +11,10 @@
 
 package com.slaggun.actor.player.simple {
 import com.slaggun.actor.base.ActorModel;
+import com.slaggun.actor.player.PlayerConstants;
 import com.slaggun.geom.Point2d;
 import com.slaggun.geom.Vector2d;
+import com.slaggun.util.log.Logger;
 
 
 /**
@@ -25,10 +27,34 @@ import com.slaggun.geom.Vector2d;
 [RemoteClass(alias="com.slaggun.actor.player.simple.SimplePlayerModel")]
 public class SimplePlayerModel implements ActorModel{
 
+    private var log:Logger = Logger.getLogger();
+
     private var _position:Point2d = new Point2d(50, 50);
     private var _velocity:Vector2d = new Vector2d();
     private var _look:Vector2d = new Vector2d();
+    private var _health:int = PlayerConstants.MAX_HEALTH_HP; // in hit points
 
+    /**
+     * Hit player (decrease health)
+     * 
+     * @param hitPoints
+     * @return true if still live, false if person has died  :)
+     */
+    public function hit(hitPoints:int):Boolean {
+        log.info("damaged " + hitPoints);
+        log.info("health " + _health);
+        _health -= hitPoints;
+        return _health > 0;
+    }
+
+    /**
+     * Respawn player
+     */
+    public function respawn():void {
+        log.info("respawned");
+        _health = PlayerConstants.MAX_HEALTH_HP;
+        _position = new Point2d(50, 50);
+    }
 
     /**
      * Return player position
@@ -78,6 +104,13 @@ public class SimplePlayerModel implements ActorModel{
         _look = value;
     }
 
+    public function get health():int {
+        return _health;
+    }
+
+    public function set health(value:int):void {
+        _health = value;
+    }
 
     public function toString():String {
         return "SimplePlayerModel{_position=" + String(_position) +

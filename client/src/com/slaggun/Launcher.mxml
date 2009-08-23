@@ -10,7 +10,7 @@
   ~ and limitations under the License.
   -->
 
-<mx:Application layout="absolute"
+<mx:Application layout="horizontal"
                 initialize="initApp();"
                 enterFrame="enterFrame()"
 
@@ -27,12 +27,15 @@
 <![CDATA[
         import com.slaggun.actor.world.InputState;
 
+        import com.slaggun.util.log.LoggerConfig;
+
         import mx.core.Application;
 
-        private var luncher:LauncherClass;
+        private var launcher:LauncherClass;
+        private var logScrollTimer:Timer;
 
         private function enterFrame():void {
-            fpsOut.text = "fps: " + 1000 / luncher.enterFrame(output.graphics);
+            fpsOut.text = "fps: " + 1000 / launcher.enterFrame(output.graphics);
         }
 
         private function hookKeyboard():void {
@@ -41,40 +44,65 @@
         }
 
         private function initApp():void {
-            luncher = new LauncherClass();
-            luncher.resize(Application.application.width, Application.application.height);
-            luncher.inititalize();
+            LoggerConfig.instance.setTextArea(logOutput);
+            launcher = new LauncherClass();
+            launcher.resize(Application.application.width, Application.application.height);
+            launcher.inititalize();
+            initLogScrollTimer();
         }
 
         private function keyDown(event:KeyboardEvent):void {
-            luncher.buttonDown(event.keyCode);
+            launcher.buttonDown(event.keyCode);
         }
 
         private function keyUp(event:KeyboardEvent):void {
-            luncher.buttonUp(event.keyCode);
+            launcher.buttonUp(event.keyCode);
         }
 
         private function mouseDown(event:MouseEvent):void {
-            luncher.buttonDown(InputState.MOUSE_BUTTON_KEY_CODE);
+            launcher.buttonDown(InputState.MOUSE_BUTTON_KEY_CODE);
         }
 
         private function mouseUp(event:MouseEvent):void {
-            luncher.buttonUp(InputState.MOUSE_BUTTON_KEY_CODE);
+            launcher.buttonUp(InputState.MOUSE_BUTTON_KEY_CODE);
         }
 
         private function mouseMove(event:MouseEvent):void {
-            luncher.mouseMove(event.localX, event.localY);
+            launcher.mouseMove(event.localX, event.localY);
         }
 
         private function resize():void {
             if (output != null)
-                luncher.resize(output.width, output.height);
+                launcher.resize(output.width, output.height);
+        }
+
+        /**
+         * Scrolls log's textArea to the bottom every 1 second  
+         */
+        private function initLogScrollTimer():void {
+            logScrollTimer = new Timer(1000);
+            logScrollTimer.addEventListener(TimerEvent.TIMER, function() {
+                callLater(autoScrollTextArea, [logOutput]);
+            });
+            logScrollTimer.start();
+        }
+
+        /**
+         * Scroll textArea to the bottom
+         */
+        private function autoScrollTextArea(target:TextArea):void {
+            target.verticalScrollPosition = target.maxVerticalScrollPosition;
         }
 
 ]]>
 </mx:Script>
-    <mx:Canvas id="output" x="0" y="0" width="100%" height="100%"/>
-    <mx:Text x="0" y="0" id="fpsOut" color="red"/>
-    <mx:Button label="connect" click="luncher.connect()" x="0" y="20"/>
+    <mx:Canvas id="output" width="100%" height="100%"/>
+    <mx:Text id="fpsOut" color="red"/>
+    <mx:Button label="connect" click="launcher.connect()"/>
+    <mx:TextArea id="logOutput"
+                 height="100%"
+                 width="200"
+                 backgroundAlpha="0"
+                 editable="false"/>
 
 </mx:Application>

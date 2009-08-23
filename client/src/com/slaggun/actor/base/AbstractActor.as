@@ -10,6 +10,7 @@
  */
 
 package com.slaggun.actor.base {
+import com.slaggun.actor.base.Action;
 import com.slaggun.util.NotImplementedException;
 
 /**
@@ -28,8 +29,14 @@ public class AbstractActor implements Actor {
     protected var _id:int = NOT_SET_ID;
     protected var _owner:int = NOT_SET_OWNER_ID;
 
-    public function compact():TransportableActor {
-        throw new NotImplementedException();
+    public function makeSnapshot():ActorSnapshot {
+        throw new NotImplementedException("AbstractActor.makeSnapshot() method not implemented. " +
+                                          "Probably is not overridden in child");
+    }
+
+    public function apply(interactAction:Action):void {
+        throw new NotImplementedException("AbstractActor.apply() method not implemented. " +
+                                          "Probably is not overridden in child");
     }
 
     public function get physics():ActorPhysics {

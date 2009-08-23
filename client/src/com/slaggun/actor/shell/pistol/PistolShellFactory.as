@@ -21,23 +21,22 @@ import com.slaggun.geom.Vector2d;
  */
 public class PistolShellFactory  {
 
-    public function createNew(mine:Boolean = false):PistolShell {
+    public function createNew():PistolShell {
         var pistolShell:PistolShell = new PistolShell();
 
-        if (mine) {
-            pistolShell.id = ActorIdGenerator.nextId();
-        }
+        pistolShell.id = ActorIdGenerator.nextId();
+
         return pistolShell;
     }
     
-    public function create(startPosition:Point2d, direction:Vector2d, mine:Boolean = false):PistolShell {
+    public function create(startPosition:Point2d, direction:Vector2d):PistolShell {
         direction.normalize(PistolShellConstants.SPEED);
 
         var pistolShellModel:PistolShellModel = new PistolShellModel();
         pistolShellModel.position = startPosition;
         pistolShellModel.speedVector = direction;
 
-        var pistolShell:PistolShell = createNew(mine);
+        var pistolShell:PistolShell = createNew();
         pistolShell.model = pistolShellModel;
 
         return pistolShell;

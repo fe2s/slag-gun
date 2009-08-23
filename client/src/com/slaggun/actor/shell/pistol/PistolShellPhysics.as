@@ -21,11 +21,23 @@ import com.slaggun.actor.world.PhysicalWorld;
 public class PistolShellPhysics implements ActorPhysics {
 
     public function live(deltaTime:Number, actor:Actor, world:PhysicalWorld):void {
-        translateShell(PistolShellModel(actor.model));
+        var shell:PistolShell = PistolShell(actor);
+        var shellModel:PistolShellModel = PistolShellModel(actor.model);
+        translateShell(shellModel);
+        hit(shell, world);
+
+        // TODO: if is out of the world, destruct it
     }
 
     private function translateShell(shell:PistolShellModel):void {
         shell.position.translate(shell.speedVector);
+    }
+
+    private function hit(shell:PistolShell, world:PhysicalWorld):void{
+        var hitAction:PistolShellHitAction = new PistolShellHitAction(shell, world);
+        for each (var actor:Actor in world.actors){
+            actor.apply(hitAction);
+        }
     }
 }
 }

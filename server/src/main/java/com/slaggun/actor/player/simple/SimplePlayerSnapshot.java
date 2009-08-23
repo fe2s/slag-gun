@@ -11,7 +11,7 @@
 
 package com.slaggun.actor.player.simple;
 
-import com.slaggun.actor.base.TransportableActor;
+import com.slaggun.actor.base.ActorSnapshot;
 import com.slaggun.actor.base.ActorModel;
 import com.slaggun.util.RemoteClass;
 
@@ -19,7 +19,7 @@ import com.slaggun.util.RemoteClass;
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
 @RemoteClass
-public class TransportableSimplePlayer implements TransportableActor {
+public class SimplePlayerSnapshot implements ActorSnapshot {
 
     private ActorModel model;
     private int owner;
@@ -51,7 +51,7 @@ public class TransportableSimplePlayer implements TransportableActor {
 
     @Override
     public String toString() {
-        return "TransportableSimplePlayer{" +
+        return "SimplePlayerSnapshot{" +
                 "model=" + model +
                 ", owner=" + owner +
                 ", id=" + id +

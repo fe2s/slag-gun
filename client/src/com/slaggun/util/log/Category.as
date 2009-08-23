@@ -9,30 +9,33 @@
  * and limitations under the License.
  */
 
-package com.slaggun.events;
-
-import com.slaggun.actor.base.ActorSnapshot;
-
-import java.util.List;
-
+package com.slaggun.util.log {
 /**
+ *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public class OwnerVisitor implements EventVisitor{
+public class Category {
 
-    private int owner;
+    private var _clazz:Class;
+    private var _priority:Priority;
+    private var _appenders:Array;
 
-    public OwnerVisitor(int owner) {
-        this.owner = owner;
+    public function Category(clazz:Class, priority:Priority, appenders:Array) {
+        this._clazz = clazz;
+        this._priority = priority;
+        this._appenders = appenders;
     }
 
-    public void visit(SnapshotEvent event) {
-        List<ActorSnapshot> actorSnapshots = event.getTransportableActors();
-        for (ActorSnapshot transActorSnapshot : actorSnapshots) {
-            transActorSnapshot.setOwner(owner);
-        }
+    public function get clazz():Class {
+        return _clazz;
     }
 
-    public void visit(HzEvent event) {
+    public function get priority():Priority {
+        return _priority;
     }
+
+    public function get appenders():Array {
+        return _appenders;
+    }
+}
 }

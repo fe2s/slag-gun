@@ -9,31 +9,25 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.base {
+package com.slaggun.actor.player.simple {
+import com.slaggun.actor.base.AbstractActorSnapshot;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorModel;
+import com.slaggun.actor.base.ActorSnapshot;
 
 /**
- * Transportable (fly weight) representation of actor
- *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-[RemoteClass(alias="com.slaggun.actor.base.TransportableActor")]
-public interface TransportableActor {
+[RemoteClass(alias="com.slaggun.actor.player.simple.SimplePlayerSnapshot")]
+public class SimplePlayerSnapshot extends AbstractActorSnapshot implements ActorSnapshot{
 
-    function resurrect():Actor;
-
-    function get model():ActorModel;
-
-    function set model(model:ActorModel):void;
-
-    function set owner(owner:int):void;
-
-    function get owner():int;
-
-    function set id(id:int):void;
-
-    function get id():int;
+    override public function resurrect():Actor {
+        var actor:Actor = new SimplePlayerFactory().create(false);
+        actor.model = _model;
+        actor.id = _id;
+        actor.owner = _owner;
+        return actor;
+    }
 
 }
 }

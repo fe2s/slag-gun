@@ -9,43 +9,25 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.shell.pistol;
+package com.slaggun.actor.base;
 
 import com.slaggun.util.RemoteClass;
-import com.slaggun.actor.base.TransportableActor;
-import com.slaggun.actor.base.ActorModel;
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
 @RemoteClass
-public class TransportablePistolShell implements TransportableActor{
+public interface ActorSnapshot {
 
-    private ActorModel model;
-    private int owner;
-    private int id;
+    void setModel(ActorModel model);
 
-    public ActorModel getModel() {
-        return model;
-    }
+    ActorModel getModel();
 
-    public void setModel(ActorModel model) {
-        this.model = model;
-    }
+    void setOwner(int owner);
 
-    public int getOwner() {
-        return owner;
-    }
+    int getOwner();
 
-    public void setOwner(int owner) {
-        this.owner = owner;
-    }
+    void setId(int id);
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
+    int getId();
 }

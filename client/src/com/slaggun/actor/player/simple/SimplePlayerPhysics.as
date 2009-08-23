@@ -21,6 +21,8 @@ import com.slaggun.geom.Point2d;
 
 import com.slaggun.geom.Vector2d;
 
+import com.slaggun.util.log.Logger;
+
 import flash.ui.Keyboard;
 import flash.ui.Mouse;
 
@@ -32,6 +34,8 @@ import flash.ui.Mouse;
  * @see SimplePlayer
  */
 public class SimplePlayerPhysics implements ActorPhysics{
+
+    private var log:Logger = Logger.getLogger();
 
     public function live(timePass:Number, actor:Actor, world:PhysicalWorld):void {
 
@@ -87,20 +91,25 @@ public class SimplePlayerPhysics implements ActorPhysics{
         actorModel.position.x = x + vx * timePass;
         actorModel.position.y = y + vy * timePass;
 
-        actorModel.look.x = x - mouseX;
-        actorModel.look.y = y - mouseY;
+        actorModel.look.x = mouseX - x;
+        actorModel.look.y = mouseY - y;
     }
 
     private function shoot(actorModel:SimplePlayerModel, world:PhysicalWorld):void {
-        var mineActor:Boolean = true;
+        const mineActor:Boolean = false;
+        const replicatedOnce:Boolean = true;
 
         var shellPosition:Point2d = Point2d.valueOf(actorModel.position);
         var shellDirection:Vector2d = new Vector2d(actorModel.look.x, actorModel.look.y);
 
-        var shellFactory:PistolShellFactory = new PistolShellFactory();
-        var shell:Actor = shellFactory.create(shellPosition, shellDirection, mineActor);
+        // to not kill yourself =)
+        shellDirection.normalize(PlayerConstants.RADIUS + 1);
+        shellPosition.translate(shellDirection);
 
-        world.add(shell, mineActor);
+        var shellFactory:PistolShellFactory = new PistolShellFactory();
+        var shell:Actor = shellFactory.create(shellPosition, shellDirection);
+
+        world.add(shell, mineActor, replicatedOnce);
     }
 }
 }

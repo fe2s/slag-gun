@@ -12,7 +12,8 @@
 package com.slaggun.actor.shell.pistol {
 import com.slaggun.actor.base.AbstractActor;
 import com.slaggun.actor.base.Actor;
-import com.slaggun.actor.base.TransportableActor;
+import com.slaggun.actor.base.ActorSnapshot;
+import com.slaggun.actor.base.Action;
 import com.slaggun.geom.Point2d;
 import com.slaggun.geom.Vector2d;
 
@@ -29,12 +30,16 @@ public class PistolShell extends AbstractActor implements Actor{
     }
 
 
-    override public function compact():TransportableActor {
-        var trans:TransportablePistolShell = new TransportablePistolShell();
+    override public function makeSnapshot():ActorSnapshot {
+        var trans:PistolShellSnapshot = new PistolShellSnapshot();
         trans.id = _id;
         trans.model = _model;
         trans.owner = _owner;
         return trans;
+    }
+
+    override public function apply(action:Action):void {
+        action.applyToPistolShell(this);
     }
 }
 }

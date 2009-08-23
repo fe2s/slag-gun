@@ -11,9 +11,14 @@
 
 package com.slaggun.util {
 /**
+ * Indicates that functionality is not currently implemented by developer
  *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
 public class NotImplementedException extends Error {
+
+    public function NotImplementedException(msg:*="", id:*=0) {
+        super(msg, id);
+    }
 }
 }

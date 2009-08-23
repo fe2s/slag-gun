@@ -11,9 +11,9 @@
 
 package com.slaggun.amf;
 
-import com.slaggun.actor.base.TransportableActor;
+import com.slaggun.actor.base.ActorSnapshot;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
-import com.slaggun.actor.player.simple.TransportableSimplePlayer;
+import com.slaggun.actor.player.simple.SimplePlayerSnapshot;
 import com.slaggun.events.SnapshotEvent;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -52,16 +52,16 @@ public class Amf3SerializerTest extends TestCase {
     public void testEventRoundTrip() throws AmfSerializerException {
         SimplePlayerModel playerModel = new SimplePlayerModel();
 
-        TransportableActor transActor = new TransportableSimplePlayer();
-        transActor.setOwner(2);
-        transActor.setId(1);
-        transActor.setModel(playerModel);
+        ActorSnapshot transActorSnapshot = new SimplePlayerSnapshot();
+        transActorSnapshot.setOwner(2);
+        transActorSnapshot.setId(1);
+        transActorSnapshot.setModel(playerModel);
 
-        List<TransportableActor> transportableActors = new ArrayList<TransportableActor>();
-        transportableActors.add(transActor);
+        List<ActorSnapshot> actorSnapshots = new ArrayList<ActorSnapshot>();
+        actorSnapshots.add(transActorSnapshot);
 
         SnapshotEvent snapshot = new SnapshotEvent();
-        snapshot.setTransportableActors(transportableActors);
+        snapshot.setTransportableActors(actorSnapshots);
 
         AmfSerializer serializer = Amf3Factory.instance().getAmfSerializer();
         byte[] snapShotBytes = serializer.toAmfBytes(snapshot);

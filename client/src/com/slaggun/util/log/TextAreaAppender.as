@@ -9,13 +9,27 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player {
-public class PlayerConstants {
+package com.slaggun.util.log {
+import mx.controls.TextArea;
 
-    public static const PLAYER_SPEED_PER_MS:Number = 0.3;
-    public static const MAX_HEALTH_HP:int = 100;
+/**
+ *
+ * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ */
+public class TextAreaAppender implements Appender{
 
-    // assume player is a circle
-    public static const RADIUS:int = 20;
+    private var _textArea:TextArea;
+
+    public function TextAreaAppender(textArea:TextArea) {
+        _textArea = textArea;
+    }
+
+    public function set textArea(value:TextArea):void {
+        _textArea = value;
+    }
+
+    public function append(str:String):void {
+        _textArea.text += str;
+    }
 }
 }

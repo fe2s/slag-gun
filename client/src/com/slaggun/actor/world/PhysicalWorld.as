@@ -11,8 +11,7 @@
 
 package com.slaggun.actor.world {
 import com.slaggun.actor.base.Actor;
-import com.slaggun.actor.player.simple.SimplePlayerFactory;
-import com.slaggun.actor.base.TransportableActor;
+import com.slaggun.actor.base.ActorSnapshot;
 import com.slaggun.events.SnapshotEvent;
 
 import flash.display.BitmapData;
@@ -32,14 +31,17 @@ public class PhysicalWorld extends EventDispatcher {
     private var _inputStates:InputState = new InputState();
     private var _bitmap:BitmapData;
 
-    // all actors
-    private var actors:Array = [];
-
-    // actors belong to myself
-    private var mineActors:Array = [];
+    // all actors in the world
+    private var _actors:Array = [];
 
     // actors grouped by owner, key - owner id, value - Array<Actor>
     private var actorsByOwner:Dictionary = new Dictionary();
+
+    // actors belong to myself, we replicate these actors continuously
+    private var _mineActors:Array = [];
+
+    // actors which should be replicated only once
+    private var toBeReplicatedOnce:Array = [];
 
     private var toBeAdded:Array = [];
     private var toBeRemoved:Array = [];
@@ -101,15 +103,25 @@ public class PhysicalWorld extends EventDispatcher {
      * If actor is adding during loop it will be active in the next loop
      * @param actor
      * @param mine belongs to myself
+     * @param replicateOnce whether to replicate this actor only one time
      * @return
      */
-    public function add(actor:Actor, mine:Boolean):void {
+    public function add(actor:Actor, mine:Boolean, replicateOnce:Boolean):void {
         // add to all actors list
         toBeAdded.push(actor);
 
+        if (mine && replicateOnce){
+            // most likely logical error as mine actors are replicated continuously
+            throw new Error("Illegal arguments. Both mine and replicateOnce params are true");
+        }
+
         // add to mine actors list
         if (mine) {
-            mineActors.push(actor);
+            _mineActors.push(actor);
+        }
+
+        if (replicateOnce) {
+            toBeReplicatedOnce.push(actor);
         }
 
         // add to 'grouped by owner' dictionary
@@ -123,7 +135,7 @@ public class PhysicalWorld extends EventDispatcher {
     }
 
     /**
-     * Remove actor to the world.
+     * Remove actor from the world.
      * If actor is removing during loop it will be remove in the next loop
      * @param actor
      * @return
@@ -161,7 +173,7 @@ public class PhysicalWorld extends EventDispatcher {
 
         for (i = 0; i < len; i++)
         {
-            actors.push(toBeAdded[i]);
+            _actors.push(toBeAdded[i]);
         }
 
         toBeAdded = [];
@@ -170,8 +182,8 @@ public class PhysicalWorld extends EventDispatcher {
         for (i = 0; i < len; i++)
         {
             var actor:Actor = toBeRemoved[i];
-            var actorIndex:Number = actors.indexOf(actor);
-            actors.splice(actorIndex, 1);
+            var actorIndex:Number = _actors.indexOf(actor);
+            _actors.splice(actorIndex, 1);
         }
 
         toBeRemoved = [];
@@ -205,16 +217,16 @@ public class PhysicalWorld extends EventDispatcher {
 
         var i:int;
 
-        var len:int = actors.length;
+        var len:int = _actors.length;
         for (i = 0; i < len; i++) {
-            actor = actors[i];
+            actor = _actors[i];
             actor.physics.live(deltaTime, actor, this);
         }
 
         _bitmap.fillRect(_bitmap.rect, 0xFFFFFF);
 
         for (i = 0; i < len; i++) {
-            actor = actors[i];
+            actor = _actors[i];
             actor.renderer.draw(deltaTime, actor, _bitmap);
         }
 
@@ -229,7 +241,7 @@ public class PhysicalWorld extends EventDispatcher {
      * @return true if mine, false otherwise
      */
     public function isMineActor(actor:Actor):Boolean {
-        for each (var mineActor:Actor in mineActors) {
+        for each (var mineActor:Actor in _mineActors) {
             if (mineActor.owner == actor.owner && mineActor.id == actor.id) {
                 return true;
             }
@@ -237,15 +249,30 @@ public class PhysicalWorld extends EventDispatcher {
         return false;
     }
 
+    public function get mineActors():Array{
+        return _mineActors;
+    }
+
+    public function get actors():Array {
+        return _actors;
+    }
+
     /**
-     * Snapshot of 'my' world, i.e. all my models.
+     * Snapshot of 'my' world
+     *
      * @return snapshot event
      */
     public function get snapshot(): SnapshotEvent {
         var transportableActors:ArrayCollection = new ArrayCollection();
-        for each (var actor:Actor in mineActors) {
-            transportableActors.addItem(actor.compact());
+
+        for each (var actor:Actor in _mineActors) {
+            transportableActors.addItem(actor.makeSnapshot());
         }
+        for each (var publishOnce:Actor in toBeReplicatedOnce) {
+            transportableActors.addItem(publishOnce.makeSnapshot());
+        }
+
+        toBeReplicatedOnce = [];
 
         var snapshot:SnapshotEvent = new SnapshotEvent(SnapshotEvent.OUTGOING);
         snapshot.transportableActors = transportableActors;
@@ -257,8 +284,9 @@ public class PhysicalWorld extends EventDispatcher {
      * Handles incoming snapshots
      */
     public function handleSnapshot(snapshotEvent:SnapshotEvent):void {
-
-        for each (var transportableActor:TransportableActor in snapshotEvent.transportableActors) {
+        const mineActor:Boolean = false;
+        const replicatedOnce:Boolean = false;
+        for each (var transportableActor:ActorSnapshot in snapshotEvent.transportableActors) {
 
             var actor:Actor = transportableActor.resurrect();
             var existingActors:Array = actorsByOwner[actor.owner];
@@ -275,10 +303,10 @@ public class PhysicalWorld extends EventDispatcher {
                     }
                 }
                 if (!knownActor) {
-                    add(actor, false);
+                    add(actor, mineActor, replicatedOnce);
                 }
             } else {
-                add(actor, false);
+                add(actor, mineActor, replicatedOnce);
             }
         }
     }

@@ -9,13 +9,27 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player {
-public class PlayerConstants {
+package com.slaggun.util.log {
+/**
+ *
+ * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ */
+public class Priority {
 
-    public static const PLAYER_SPEED_PER_MS:Number = 0.3;
-    public static const MAX_HEALTH_HP:int = 100;
+    public static const DEBUG:Priority = new Priority(0);
+    public static const INFO:Priority = new Priority(1);
+    public static const ERROR:Priority = new Priority(2);
 
-    // assume player is a circle
-    public static const RADIUS:int = 20;
+    private var level:int;
+
+    public function Priority(level:int) {
+        this.level = level;
+    }
+
+    public function greaterOrEqualThan(another:Priority):Boolean {
+        return level >= another.level;
+    }
+
+
 }
 }

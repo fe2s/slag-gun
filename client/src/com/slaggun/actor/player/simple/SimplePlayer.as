@@ -12,7 +12,8 @@
 package com.slaggun.actor.player.simple {
 import com.slaggun.actor.base.AbstractActor;
 import com.slaggun.actor.base.Actor;
-import com.slaggun.actor.base.TransportableActor;
+import com.slaggun.actor.base.ActorSnapshot;
+import com.slaggun.actor.base.Action;
 import com.slaggun.actor.player.renderer.StalkerPlayerResource;
 
 /**
@@ -32,12 +33,32 @@ public class SimplePlayer extends AbstractActor implements Actor {
     }
 
 
-    override public function compact():TransportableActor {
-        var trans:TransportableSimplePlayer = new TransportableSimplePlayer();
+    override public function makeSnapshot():ActorSnapshot {
+        var trans:SimplePlayerSnapshot = new SimplePlayerSnapshot();
         trans.id = _id;
         trans.model = _model;
         trans.owner = _owner;
         return trans;
+    }
+
+    override public function apply(action:Action):void {
+        action.applyToSimplePlayer(this);
+    }
+
+    /**
+     * Hit player (decrease health)
+     * @param hitPoints
+     * @return true if still live, false if person has died  :)
+     */
+    public function hit(hitPoints:int):Boolean {
+        return SimplePlayerModel(_model).hit(hitPoints);
+    }
+
+    /**
+     * Respawn player
+     */
+    public function respawn():void{
+        SimplePlayerModel(_model).respawn();
     }
 }
 }

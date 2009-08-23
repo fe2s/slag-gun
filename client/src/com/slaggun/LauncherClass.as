@@ -14,11 +14,10 @@ import com.slaggun.actor.player.simple.SimplePlayerFactory;
 import com.slaggun.actor.player.simple.bot.BotFactory;
 import com.slaggun.actor.world.PhysicalWorld;
 import com.slaggun.net.GameClient;
+import com.slaggun.util.log.Logger;
 
 import flash.display.BitmapData;
 import flash.display.Graphics;
-
-import mx.controls.Label;
 
 /**
  * Lucnher class that integrates game engine and mxml
@@ -33,6 +32,7 @@ public class LauncherClass {
     private var lastTime:Date;
     private var world:PhysicalWorld = new PhysicalWorld();
     private var gameClient:GameClient = new GameClient(world);
+    private var log:Logger = Logger.getLogger();
 
 
     public function LauncherClass() {
@@ -47,8 +47,10 @@ public class LauncherClass {
         var playerFactory:SimplePlayerFactory = new SimplePlayerFactory();
         var botFactory:BotFactory = new BotFactory();
 
-        var mineActor:Boolean = true;
-        world.add(playerFactory.create(mineActor), mineActor);
+        const mineActor:Boolean = true;
+        const replicatedOnce:Boolean = false;
+
+        world.add(playerFactory.create(mineActor), mineActor, replicatedOnce);
 
         //world.drawAnimationCalibrateGrid = true;
         //addBots(350, new BotFactory());
@@ -60,10 +62,11 @@ public class LauncherClass {
      * add a number of bots
      */
     private function addBots(number:int, botFactory:BotFactory): void {
-        var mineActor:Boolean = true;
+        const mineActor:Boolean = true;
+        const replicatedOnce:Boolean = true;
         var i: int;
         for (i = 0; i < number; i++) {
-            world.add(botFactory.create(), mineActor);
+            world.add(botFactory.create(), mineActor, replicatedOnce);
         }
     }
 

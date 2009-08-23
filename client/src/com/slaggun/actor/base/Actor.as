@@ -12,23 +12,32 @@
 /**
  * Base interface for the actor.
  * It will live in the world.
- * It can be created with ActorPackage
  *
  * Author Dmitry Brazhnik (amid.ukr@gmail.com)
  *
  * @see PhysicalWorld
  */
 package com.slaggun.actor.base {
+
 public interface Actor {
 
 
     /**
-     * Compact to transportable form
+     * Make a snapshot of the actor, i.e. compact to transportable form.
+     * This method is used to compress actor for further transfer over the network 
      * 
-     * @return transportable actor
+     * @return snapshot of the actor
      */
-    function compact():TransportableActor;
-    
+    function makeSnapshot():ActorSnapshot;
+
+
+    /**
+     * Apply the given action on the actor
+     *
+     * @param action action to be applied
+     */
+    function apply(action:Action):void;
+
     /**
      * Return actor game model
      * @return actor game model

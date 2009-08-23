@@ -9,13 +9,19 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player {
-public class PlayerConstants {
+package com.slaggun.actor.base {
+import com.slaggun.actor.player.simple.SimplePlayer;
+import com.slaggun.actor.shell.pistol.PistolShell;
 
-    public static const PLAYER_SPEED_PER_MS:Number = 0.3;
-    public static const MAX_HEALTH_HP:int = 100;
+/**
+ * How different actors should react on the specified action
+ *
+ * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ */
+public interface Action {
 
-    // assume player is a circle
-    public static const RADIUS:int = 20;
+    function applyToSimplePlayer(player:SimplePlayer):void;
+
+    function applyToPistolShell(shell:PistolShell):void;
 }
 }

@@ -9,28 +9,22 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.shell.pistol {
+package com.slaggun.actor.base {
 import com.slaggun.actor.base.Actor;
-import com.slaggun.actor.base.ActorModel;
-import com.slaggun.actor.base.TransportableActor;
+import com.slaggun.util.NotImplementedException;
 
 /**
  *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-[RemoteClass(alias="com.slaggun.actor.shell.pistol.TransportablePistolShell")]
-public class TransportablePistolShell implements TransportableActor{
+public class AbstractActorSnapshot implements ActorSnapshot{
 
-    private var _id:int;
-    private var _owner:int;
-    private var _model:ActorModel;
+    protected var _id:int;
+    protected var _owner:int;
+    protected var _model:ActorModel;
 
     public function resurrect():Actor {
-        var actor:Actor = new PistolShellFactory().createNew(false);
-        actor.model = _model;
-        actor.id = _id;
-        actor.owner = _owner;
-        return actor;
+        throw new NotImplementedException("Should be implemented in child");
     }
 
     public function get id():int {
@@ -56,5 +50,6 @@ public class TransportablePistolShell implements TransportableActor{
     public function set model(value:ActorModel):void {
         _model = value;
     }
+
 }
 }
