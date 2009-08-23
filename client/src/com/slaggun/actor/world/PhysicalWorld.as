@@ -263,19 +263,19 @@ public class PhysicalWorld extends EventDispatcher {
      * @return snapshot event
      */
     public function get snapshot(): SnapshotEvent {
-        var transportableActors:ArrayCollection = new ArrayCollection();
+        var actorSnapsots:ArrayCollection = new ArrayCollection();
 
         for each (var actor:Actor in _mineActors) {
-            transportableActors.addItem(actor.makeSnapshot());
+            actorSnapsots.addItem(actor.makeSnapshot());
         }
         for each (var publishOnce:Actor in toBeReplicatedOnce) {
-            transportableActors.addItem(publishOnce.makeSnapshot());
+            actorSnapsots.addItem(publishOnce.makeSnapshot());
         }
 
         toBeReplicatedOnce = [];
 
         var snapshot:SnapshotEvent = new SnapshotEvent(SnapshotEvent.OUTGOING);
-        snapshot.transportableActors = transportableActors;
+        snapshot.actorSnapshots = actorSnapsots;
 
         return snapshot;
     }
@@ -286,27 +286,26 @@ public class PhysicalWorld extends EventDispatcher {
     public function handleSnapshot(snapshotEvent:SnapshotEvent):void {
         const mineActor:Boolean = false;
         const replicatedOnce:Boolean = false;
-        for each (var transportableActor:ActorSnapshot in snapshotEvent.transportableActors) {
+        for each (var actorSnapshot:ActorSnapshot in snapshotEvent.actorSnapshots) {
 
-            var actor:Actor = transportableActor.resurrect();
-            var existingActors:Array = actorsByOwner[actor.owner];
+            var existingActors:Array = actorsByOwner[actorSnapshot.owner];
 
             if (existingActors != null) {
                 // known owner, try to find given actor
                 var knownActor:Boolean = false;
                 for each (var existingActor:Actor in existingActors) {
-                    if (existingActor.id == actor.id) {
+                    if (existingActor.id == actorSnapshot.id) {
                         // found actor, update it
-                        existingActor.model = actor.model;
+                        existingActor.model = actorSnapshot.model;
                         knownActor = true;
                         break;
                     }
                 }
                 if (!knownActor) {
-                    add(actor, mineActor, replicatedOnce);
+                    add(actorSnapshot.resurrect(), mineActor, replicatedOnce);
                 }
             } else {
-                add(actor, mineActor, replicatedOnce);
+                add(actorSnapshot.resurrect(), mineActor, replicatedOnce);
             }
         }
     }

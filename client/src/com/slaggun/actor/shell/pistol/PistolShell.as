@@ -31,11 +31,11 @@ public class PistolShell extends AbstractActor implements Actor{
 
 
     override public function makeSnapshot():ActorSnapshot {
-        var trans:PistolShellSnapshot = new PistolShellSnapshot();
-        trans.id = _id;
-        trans.model = _model;
-        trans.owner = _owner;
-        return trans;
+        var snapshot:PistolShellSnapshot = new PistolShellSnapshot();
+        snapshot.id = _id;
+        snapshot.model = _model;
+        snapshot.owner = _owner;
+        return snapshot;
     }
 
     override public function apply(action:Action):void {

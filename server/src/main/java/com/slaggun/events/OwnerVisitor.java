@@ -27,9 +27,9 @@ public class OwnerVisitor implements EventVisitor{
     }
 
     public void visit(SnapshotEvent event) {
-        List<ActorSnapshot> actorSnapshots = event.getTransportableActors();
-        for (ActorSnapshot transActorSnapshot : actorSnapshots) {
-            transActorSnapshot.setOwner(owner);
+        List<ActorSnapshot> actorSnapshots = event.getActorSnapshots();
+        for (ActorSnapshot actorSnapshot : actorSnapshots) {
+            actorSnapshot.setOwner(owner);
         }
     }
 

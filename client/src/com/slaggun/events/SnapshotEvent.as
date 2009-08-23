@@ -23,23 +23,22 @@ public class SnapshotEvent extends Event implements GameEvent {
     public static const INCOMING:String = "Incoming";
     public static const OUTGOING:String = "Outgoing";
 
-    private var _transportableActors:ArrayCollection /**<TransportableActor>*/;
+    private var _actorSnapshots:ArrayCollection /**<ActorSnapshot>*/;
 
     public function SnapshotEvent(type:String = INCOMING, bubbles:Boolean = false, cancelable:Boolean = false) {
         super(type, bubbles, cancelable);
     }
 
-
-    public function get transportableActors():ArrayCollection {
-        return _transportableActors;
+    public function get actorSnapshots():ArrayCollection {
+        return _actorSnapshots;
     }
 
-    public function set transportableActors(value:ArrayCollection):void {
-        _transportableActors = value;
+    public function set actorSnapshots(value:ArrayCollection):void {
+        _actorSnapshots = value;
     }
 
     public override function toString():String {
-        return super.toString() + "{_transportableActors=" + String(_transportableActors) + "}";
+        return super.toString() + "{_actorSnapsots=" + String(_actorSnapshots) + "}";
     }
 }
 }

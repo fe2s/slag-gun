@@ -52,29 +52,29 @@ public class Amf3SerializerTest extends TestCase {
     public void testEventRoundTrip() throws AmfSerializerException {
         SimplePlayerModel playerModel = new SimplePlayerModel();
 
-        ActorSnapshot transActorSnapshot = new SimplePlayerSnapshot();
-        transActorSnapshot.setOwner(2);
-        transActorSnapshot.setId(1);
-        transActorSnapshot.setModel(playerModel);
+        ActorSnapshot actorSnapshot = new SimplePlayerSnapshot();
+        actorSnapshot.setOwner(2);
+        actorSnapshot.setId(1);
+        actorSnapshot.setModel(playerModel);
 
         List<ActorSnapshot> actorSnapshots = new ArrayList<ActorSnapshot>();
-        actorSnapshots.add(transActorSnapshot);
+        actorSnapshots.add(actorSnapshot);
 
         SnapshotEvent snapshot = new SnapshotEvent();
-        snapshot.setTransportableActors(actorSnapshots);
+        snapshot.setActorSnapshots(actorSnapshots);
 
         AmfSerializer serializer = Amf3Factory.instance().getAmfSerializer();
         byte[] snapShotBytes = serializer.toAmfBytes(snapshot);
         SnapshotEvent snapshotAfterTrip = (SnapshotEvent) serializer.fromAmfBytes(snapShotBytes);
 
-        assertEquals(snapshotAfterTrip.getTransportableActors().size(),
-                snapshot.getTransportableActors().size());
+        assertEquals(snapshotAfterTrip.getActorSnapshots().size(),
+                snapshot.getActorSnapshots().size());
 
-        assertEquals(snapshotAfterTrip.getTransportableActors().get(0).getId(),
-                snapshot.getTransportableActors().get(0).getId());
+        assertEquals(snapshotAfterTrip.getActorSnapshots().get(0).getId(),
+                snapshot.getActorSnapshots().get(0).getId());
 
-        assertEquals(snapshotAfterTrip.getTransportableActors().get(0).getOwner(),
-                snapshot.getTransportableActors().get(0).getOwner());
+        assertEquals(snapshotAfterTrip.getActorSnapshots().get(0).getOwner(),
+                snapshot.getActorSnapshots().get(0).getOwner());
 
 
     }

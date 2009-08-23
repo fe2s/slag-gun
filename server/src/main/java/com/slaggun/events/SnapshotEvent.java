@@ -27,11 +27,11 @@ public class SnapshotEvent implements GameEvent {
     public SnapshotEvent() {
     }
 
-    public List<ActorSnapshot> getTransportableActors() {
+    public List<ActorSnapshot> getActorSnapshots() {
         return actorSnapshots;
     }
 
-    public void setTransportableActors(List<ActorSnapshot> actorSnapshots) {
+    public void setActorSnapshots(List<ActorSnapshot> actorSnapshots) {
         this.actorSnapshots = actorSnapshots;
     }
 
