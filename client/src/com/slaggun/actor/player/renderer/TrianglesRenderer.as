@@ -20,7 +20,7 @@ import flash.geom.Matrix;
 import flash.geom.Point;
 
     /**
-     * This is renderer for the SimplePlayer
+     * This is triangle renderer
      *
      * Author Dmitry Brazhnik (amid.ukr@gmail.com)
      *

@@ -12,16 +12,38 @@
 package com.slaggun.actor.player.renderer.core {
 import flash.display.DisplayObject;
 
-public class DirectedResource extends PNGFramedResource{
+/**
+ * This is png file resource for the eight directed concept, for example for player actor.
+ *
+ * This resource consits of eight rows. Each row is set of animation frames for the row direction.
+ * There are 8 rows:
+ * The first row represents east direction.
+ * The second - south-east direction
+ * The thrid - south
+ * etc.
+ *
+ * By default each frame is square, so getBoxWidth is same as getBoxHeigth
+ * getBoxHeigth is resource height divided by 8. 
+ * 
+ */
+public class DirectedResource extends ImageFramedResource{
     
     public function DirectedResource(image:DisplayObject) {
         super(image);
     }
 
-    override protected function getBoxWidth():int {
-        return super.getBoxHeight();
+    /**
+     * Returns ImageFramedResource frame width. Assumed that resource frame is square, so it returns getFrameHeight().
+     * @return ImageFramedResource frame width.
+     */
+    override protected function getFrameWidth():int {
+        return super.getFrameHeight();
     }
 
+    /**
+     * Returns 8;
+     * @return 8
+     */
     override protected function getYFramesCount():int {
         return 8;
     }

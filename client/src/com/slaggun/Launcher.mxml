@@ -81,7 +81,7 @@
          */
         private function initLogScrollTimer():void {
             logScrollTimer = new Timer(1000);
-            logScrollTimer.addEventListener(TimerEvent.TIMER, function() {
+            logScrollTimer.addEventListener(TimerEvent.TIMER, function():void {
                 callLater(autoScrollTextArea, [logOutput]);
             });
             logScrollTimer.start();

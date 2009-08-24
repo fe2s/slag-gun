@@ -82,8 +82,15 @@ public class SimplePlayerPhysics implements ActorPhysics{
 
         // update actor model
 
-        vx = clickX * PlayerConstants.PLAYER_SPEED_PER_MS;
-        vy = clickY * PlayerConstants.PLAYER_SPEED_PER_MS;
+        vx = clickX;
+        vy = clickY;
+
+        var v:Number = Math.sqrt(vx*vx+vy*vy)/PlayerConstants.PLAYER_SPEED_PER_MS;
+
+        if(v != 0){
+            vx/= v;
+            vy/= v;
+        }
 
         actorModel.velocity.x = vx;
         actorModel.velocity.y = vy;

@@ -16,18 +16,38 @@ import com.slaggun.actor.player.simple.SimplePlayerModel;
 
 import flash.display.BitmapData;
 
+/**
+ * This is renderer for the framed image file.
+ * @see DirectedResource
+ */
 public class DirectedRenderer implements ActorRenderer{
 
     private var resource:DirectedResource;
     private var _frameSpeedFactor:Number;
-    
+
+    /**
+     * Previous time step.
+      */
     private var xTime:Number = 0;
 
+    /**
+     * Constructs DirectedRenderer with the specified png resource and frameSpeedFactor.
+     *
+     * @param resource - refence to x*8 png resource
+     * @param frameSpeedFactor - is factor that used to synchronize actor velocity and animation timesteps 
+     */
     public function DirectedRenderer(resource:DirectedResource, frameSpeedFactor:Number) {
         this.resource = resource;
         _frameSpeedFactor = frameSpeedFactor;
     }
 
+    /**
+     * Returns clockwise angle between positive x axis and specified (x, y) vector.
+     * Thre returned is lied in   
+     * @param x
+     * @param y
+     * @return
+     */
     private function getAngle(x:Number, y:Number):Number {
         var angle:Number = Math.atan(((1.0) * y) / x);
         angle = x > 0 ? angle : angle + Math.PI;
@@ -70,8 +90,6 @@ public class DirectedRenderer implements ActorRenderer{
         lookAngle %= 2 * Math.PI;
 
         var yFrame:int = resource.yFramesCount * lookAngle / (2 * Math.PI);
-
-        trace("yFrame = ", yFrame);
 
         resource.draw(bitmap, x, y, xFrame, yFrame);
     }
