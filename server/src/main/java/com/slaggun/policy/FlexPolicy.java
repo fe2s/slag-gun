@@ -105,16 +105,14 @@ public class FlexPolicy {
 			LOGGER.info("Flex policy server shutdown");
 		}
 
-		public void doStart() throws IOException {
-			socket = new ServerSocket(serverProperties.getFlexPolicyPort());
+		public synchronized void doStart() throws IOException {
+			try {
 
-			synchronized (this){
+				socket = new ServerSocket(serverProperties.getFlexPolicyPort());
 				start();
-				try {
-					wait();
-				} catch (InterruptedException e) {}
-			}
+				wait();
 
+			} catch (InterruptedException e) {}
 		}
 
 		public void doStop() throws IOException {
