@@ -3,6 +3,6 @@
 <cross-domain-policy>
    <!-- This is a master-policy file -->
    <site-control permitted-cross-domain-policies="master-only"/>
-   <!-- This will allow access to ports 4001 -->
-   <allow-access-from domain="*" to-ports="4001" />
-</cross-domain-policy>         
+   <!-- This will allow access to ports {0} -->
+   <allow-access-from domain="*" to-ports="{0}" />
+</cross-domain-policy>

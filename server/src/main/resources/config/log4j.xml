@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:schemaLocation="http://jakarta.apache.org/log4j/ ">
 
     <!-- Preserve messages in a local file -->
     <appender name="FILE" class="org.apache.log4j.RollingFileAppender">
@@ -21,7 +23,7 @@
     </appender>
 
     <!--<category name="" additivity="true">-->
-        <!--<priority value="INFO"/>-->
+    <!--<priority value="INFO"/>-->
     <!--</category>-->
 
     <!-- Setup the Root category -->

@@ -31,11 +31,13 @@ public class ServerProperties {
 
     private static String SERVER_PROPERTIES_FILE_NAME = "config/server.properties";
     private static String SERVER_PORT_KEY = "server.port";
+	private static String FLEX_POLICY_PORT_KEY = "flex.policy.port";
     private static String READ_BUFFER_SIZE_KEY = "read.buffer.size";
     private static String PACKET_HANDLERS_QUEUE_SIZE_KEY = "packet.handlers.queue.size";
     private static String OUTGOING_PACKETS_QUEUE_SIZE_KEY = "outgoing.packets.queue.size";
 
     private int gameServerPort;
+	private int flexPolicyPort;
     private int availableProcessors;
     private int readBufferSize;
     private int packetHandlersQueueSize;
@@ -73,21 +75,26 @@ public class ServerProperties {
                     " from classpath. Probably file not found.", e);
         }
 
+	    log.info("Loading game config");
+
         // get server.port property
         gameServerPort = Integer.parseInt(findProperty(SERVER_PORT_KEY));
-        log.info("Server port: " + gameServerPort);
+        log.info(" server port: " + gameServerPort);
+
+	    flexPolicyPort = Integer.parseInt(findProperty(FLEX_POLICY_PORT_KEY));
+	    log.info(" flex policy port: " + flexPolicyPort);
 
         // get read buffer size
         readBufferSize = Integer.parseInt(findProperty(READ_BUFFER_SIZE_KEY));
-        log.info("Read buffer size: " + readBufferSize);
+        log.info(" read buffer size: " + readBufferSize);
 
         // get events handlers queue size
         packetHandlersQueueSize = Integer.parseInt(findProperty(PACKET_HANDLERS_QUEUE_SIZE_KEY));
-        log.info("packet handlers queue size: " + packetHandlersQueueSize);
+        log.info(" packet handlers queue size: " + packetHandlersQueueSize);
 
          // get the outgoing packets queue size
         outgoingPacketsQueueSize = Integer.parseInt(findProperty(OUTGOING_PACKETS_QUEUE_SIZE_KEY));
-        log.info("outgoing packets queue size: " + outgoingPacketsQueueSize);
+        log.info(" outgoing packets queue size: " + outgoingPacketsQueueSize);
     }
 
     private String findProperty(String propertyKey) throws ServerInitializationException {
@@ -107,7 +114,15 @@ public class ServerProperties {
         this.gameServerPort = gameServerPort;
     }
 
-    public int getAvailableProcessors() {
+	public int getFlexPolicyPort() {
+		return flexPolicyPort;
+	}
+
+	public void setFlexPolicyPort(int flexPolicyPort) {
+		this.flexPolicyPort = flexPolicyPort;
+	}
+
+	public int getAvailableProcessors() {
         return availableProcessors;
     }
 

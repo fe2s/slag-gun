@@ -9,7 +9,7 @@
  * and limitations under the License.
  */
 
-package com.slaggun.util;
+package com.slaggun.policy;
 
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -17,6 +17,7 @@ import java.io.*;
 import java.nio.CharBuffer;
 
 /**
+ * Requests policy file
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
 public class PolicyChecker {
@@ -26,7 +27,7 @@ public class PolicyChecker {
 		InputStream inputStream = socket.getInputStream();
 		Reader reader = new BufferedReader(new InputStreamReader(inputStream));
 		char[] chars = new char[1024];
-		reader.read(chars);
-		System.out.println("chars = " + new String(chars));
+		int size = reader.read(chars);
+		System.out.println("chars = " + new String(chars, 0, size));
 	}
 }

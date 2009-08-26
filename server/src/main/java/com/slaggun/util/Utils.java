@@ -11,6 +11,8 @@
 
 package com.slaggun.util;
 
+import java.io.*;
+
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
@@ -34,4 +36,21 @@ public class Utils {
                 (byte) i};
     }
 
+	public static String readFromStream(InputStream stream) {		
+		Reader reader = new InputStreamReader(stream);
+		reader = new BufferedReader(reader);
+
+		StringBuffer buffer = new StringBuffer();
+		char[] charsBuffer = new char[4096];
+		int size;
+		try {
+			while ((size = reader.read(charsBuffer)) != -1) {
+				buffer.append(charsBuffer, 0, size);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException("Can't start flex policy server", e);
+		}
+
+		return buffer.toString();
+	}
 }

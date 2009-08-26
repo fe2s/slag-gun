@@ -14,6 +14,7 @@ package com.slaggun;
 import com.slaggun.server.GameServer;
 import com.slaggun.server.ServerProperties;
 import com.slaggun.util.LoggerUtils;
+import com.slaggun.policy.FlexPolicy;
 import org.apache.log4j.Logger;
 
 
@@ -38,14 +39,20 @@ public class Main {
         LoggerUtils.initializeLogger();
 
         GameServer server;
+	    FlexPolicy flexPolicy = null;
         try {
             ServerProperties serverProperties = new ServerProperties().initialize();
+	        flexPolicy = new FlexPolicy(serverProperties);
+	        flexPolicy.start();
             server = new GameServer(serverProperties).initialize();
+
+	        server.acceptConnections();
         } catch (Exception e) {
             throw new Exception("Error during server initialization", e);
+        }finally {
+	        if(flexPolicy != null)
+		        flexPolicy.stop();
         }
-
-        server.acceptConnections();
     }
 
 }
