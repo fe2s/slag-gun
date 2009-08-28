@@ -40,7 +40,7 @@ public class Utils {
 		Reader reader = new InputStreamReader(stream);
 		reader = new BufferedReader(reader);
 
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		char[] charsBuffer = new char[4096];
 		int size;
 		try {
@@ -48,9 +48,19 @@ public class Utils {
 				buffer.append(charsBuffer, 0, size);
 			}
 		} catch (IOException e) {
-			throw new RuntimeException("Can't start flex policy server", e);
-		}
+			throw new RuntimeException("Error during stream reading", e);
+		} finally {
+            release(reader);
+        }
 
 		return buffer.toString();
 	}
+
+    public static void release(Reader reader){
+        try {
+            reader.close();
+        } catch (IOException e) {
+            throw new RuntimeException("Error during reader closing", e);
+        }
+    }
 }
