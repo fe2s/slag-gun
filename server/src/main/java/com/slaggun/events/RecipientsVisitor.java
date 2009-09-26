@@ -46,4 +46,8 @@ public class RecipientsVisitor implements EventVisitor {
     public void visit(HzEvent event) {
         this.recipients = liveSessionIds;
     }
+
+	public void visit(GameEvent requestSnapshotEvent) {
+		
+	}
 }

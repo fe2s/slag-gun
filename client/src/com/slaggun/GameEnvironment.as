@@ -12,6 +12,7 @@
 package com.slaggun {
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorSnapshot;
+import com.slaggun.events.RequestSnapshotEvent;
 import com.slaggun.events.SnapshotEvent;
 import com.slaggun.net.GameClient;
 
@@ -54,8 +55,12 @@ public class GameEnvironment extends EventDispatcher {
 
     private var _drawAnimationCalibrateGrid:Boolean;
 
+    private var _lalatency:Number;
+    private var lastReplicateTime:Date = new Date();
+
     public function GameEnvironment() {
-        _gameClient.addEventListener(SnapshotEvent.INCOMING, handleSnapshot);        
+        _gameClient.addEventListener(SnapshotEvent.INCOMING, handleSnapshot);
+        _gameClient.addEventListener(RequestSnapshotEvent.REQUEST_SNAPSHOT,  handleRequestSnapshot);
     }
 
     /**
@@ -262,6 +267,10 @@ public class GameEnvironment extends EventDispatcher {
         return snapshot;
     }
 
+    private function handleRequestSnapshot(event:RequestSnapshotEvent):void{
+        replicate();
+    }
+
     /**
      * Handles incoming snapshots
      */
@@ -297,6 +306,9 @@ public class GameEnvironment extends EventDispatcher {
      */
     public function replicate():void {
         _gameClient.sendEvent(buildSnapshot());
+        var lastMilsTime:Number = lastReplicateTime.getTime();
+        lastReplicateTime = new Date();
+        _lalatency = lastReplicateTime.getTime() - lastMilsTime; 
     }
 
     /**
@@ -327,7 +339,12 @@ public class GameEnvironment extends EventDispatcher {
         if (_drawAnimationCalibrateGrid)
             drawDebugLines(_bitmap);
 
-        replicate();
+        //replicate();
     }
+
+    public function get lalatency():Number {
+        return _lalatency;
+    }
+
 }
 }

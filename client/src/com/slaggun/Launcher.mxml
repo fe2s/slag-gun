@@ -34,6 +34,7 @@
 
         private function enterFrame():void {
             fpsOut.text = "fps: " + 1000 / launcher.enterFrame(output.graphics);
+            latencyOut.text = "latency: " + launcher.latency;
         }
 
         private function hookKeyboard():void {
@@ -94,13 +95,21 @@
 
 ]]>
 </mx:Script>
-    <mx:Canvas id="output" width="100%" height="100%"/>
-    <mx:Text id="fpsOut" color="red"/>
-    <mx:Button label="connect" click="launcher.connect()"/>
-    <mx:TextArea id="logOutput"
-                 height="100%"
-                 width="200"
-                 backgroundAlpha="0"
-                 editable="false"/>
+    <mx:Canvas y = "0" x = "0" id="output" width="100%" height="100%"/>
+    
+    <mx:HBox height="100%">
+        <mx:VBox width="200">
+            <mx:Text id="fpsOut" color="red"/>
+            <mx:Text id="latencyOut" color="red"/>
+        </mx:VBox>
+        <mx:VBox height="100%">
+            <mx:Button label="connect" click="launcher.connect()"/>
+            <mx:TextArea id="logOutput"
+                height="100%"
+                width="200"
+                backgroundAlpha="0"
+                editable="false"/>
+        </mx:VBox>
+    </mx:HBox>
 
 </mx:Application>

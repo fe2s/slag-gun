@@ -17,6 +17,7 @@ import com.slaggun.amf.AmfSerializerException;
 import com.slaggun.util.Assert;
 import com.slaggun.actor.world.PhysicalWorld;
 import com.slaggun.actor.world.EventHandler;
+import com.slaggun.server.GameServer;
 
 import java.util.List;
 import java.util.Set;
@@ -36,6 +37,7 @@ public class EventPacketsHandler implements Runnable {
     private static Logger log = Logger.getLogger(EventPacketsHandler.class);
 
     private PhysicalWorld world;
+	private GameServer gameServer;
     private List<EventPacket> incomingPackets;
     private OutgoingEventPackets outgoingPackets;
 
@@ -45,17 +47,19 @@ public class EventPacketsHandler implements Runnable {
 
     private Selector selector;
 
-    public EventPacketsHandler(PhysicalWorld world, List<EventPacket> incomingPackets, int packetsOwner,
+    public EventPacketsHandler(GameServer gameServer, PhysicalWorld world, List<EventPacket> incomingPackets, int packetsOwner,
                                Set<Integer> liveSessionIds, OutgoingEventPackets outgoingPackets, Selector selector) {
         Assert.notNull(incomingPackets, "incomingPackets must not be null");
         Assert.notNull(outgoingPackets, "outgoingPackets must not be null");
         Assert.notNull(world, "world must not be null");
+	    Assert.notNull(gameServer, "gameServer must not be null");
         Assert.notNull(liveSessionIds, "liveSessionIds must not be null");
 
         this.incomingPackets = incomingPackets;
         this.packetsOwner = packetsOwner;
         this.outgoingPackets = outgoingPackets;
         this.world = world;
+	    this.gameServer = gameServer;
         this.liveSessionIds = liveSessionIds;
         this.selector = selector;
     }
@@ -98,11 +102,11 @@ public class EventPacketsHandler implements Runnable {
                     selector.wakeup();
                 }
 
-
             } catch (AmfSerializerException e) {
                 log.error("Can't deserialize byte to object");
             } 
         }
+	    gameServer.requestSnapshot(packetsOwner);
         log.debug("event packets handler ... done");
     }
 

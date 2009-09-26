@@ -11,32 +11,15 @@
 
 package com.slaggun.events;
 
-import com.slaggun.actor.base.ActorSnapshot;
-
-import java.util.List;
+import com.slaggun.util.RemoteClass;
 
 /**
- * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-public class OwnerVisitor implements EventVisitor{
+@RemoteClass
+public class RequestSnapshotEvent implements GameEvent{
 
-    private int owner;
-
-    public OwnerVisitor(int owner) {
-        this.owner = owner;
-    }
-
-    public void visit(SnapshotEvent event) {
-        List<ActorSnapshot> actorSnapshots = event.getActorSnapshots();
-        for (ActorSnapshot actorSnapshot : actorSnapshots) {
-            actorSnapshot.setOwner(owner);
-        }
-    }
-
-    public void visit(HzEvent event) {
-    }
-
-	public void visit(GameEvent requestSnapshotEvent) {
-		
+	public void accept(EventVisitor visitor) {
+		visitor.visit(this);
 	}
 }

@@ -14,6 +14,7 @@ package com.slaggun.actor.world;
 import com.slaggun.events.HzEvent;
 import com.slaggun.events.SnapshotEvent;
 import com.slaggun.events.EventVisitor;
+import com.slaggun.events.GameEvent;
 
 /**
  * Visitor implementation
@@ -37,4 +38,8 @@ public class EventHandler implements EventVisitor {
     public void visit(HzEvent event) {
 
     }
+
+	public void visit(GameEvent requestSnapshotEvent) {
+
+	}
 }

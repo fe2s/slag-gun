@@ -14,7 +14,7 @@ package com.slaggun.events;
 import org.junit.Test;
 
 import junit.framework.TestCase;
-import com.slaggun.testUtil.Util;
+import com.slaggun.util.Utils;
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
@@ -24,8 +24,8 @@ public class OutgoingEventPacketsTest extends TestCase {
     @Test
     public void test() {
         OutgoingEventPackets outgoingPackets = new OutgoingEventPackets(100);
-        outgoingPackets.put(emptyEventPacket(), Util.setOf(1));
-        outgoingPackets.put(emptyEventPacket(), Util.setOf(1, 2));
+        outgoingPackets.put(emptyEventPacket(), Utils.setOf(1));
+        outgoingPackets.put(emptyEventPacket(), Utils.setOf(1, 2));
 
         assertTrue("no packets for recipient [1]", outgoingPackets.hasPackets(1));
         assertTrue("no packets for recipient [2]", outgoingPackets.hasPackets(2));

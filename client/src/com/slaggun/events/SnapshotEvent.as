@@ -20,8 +20,8 @@ import mx.collections.ArrayCollection;
 [RemoteClass(alias="com.slaggun.events.SnapshotEvent")]
 public class SnapshotEvent extends Event implements GameEvent {
 
-    public static const INCOMING:String = "Incoming";
-    public static const OUTGOING:String = "Outgoing";
+    public static const INCOMING:String = "IncomingSnapshot";
+    public static const OUTGOING:String = "OutgoingSnapshot";
 
     private var _actorSnapshots:ArrayCollection /**<ActorSnapshot>*/;
 

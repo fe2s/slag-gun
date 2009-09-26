@@ -12,10 +12,13 @@
 package com.slaggun.server;
 
 import static com.slaggun.util.Assert.notNull;
+import com.slaggun.util.Utils;
 import com.slaggun.events.EventPacket;
 import com.slaggun.events.EventPacketsHandler;
 import com.slaggun.events.OutgoingEventPackets;
+import com.slaggun.events.RequestSnapshotEvent;
 import com.slaggun.actor.world.PhysicalWorld;
+import com.slaggun.amf.AmfSerializerException;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -50,7 +53,7 @@ public class GameServer {
     private ThreadPoolExecutor workersPool;
 
     // ids of sessions which are currently connected to this server
-    private Set<Integer> liveSessionIds;
+    private HashMap<Integer, SelectionKey> liveSessionIds;
 
     // used to generate session id for newcomer connection
     private int sessionIdGenerator = 1;
@@ -113,7 +116,7 @@ public class GameServer {
         world = new PhysicalWorld();
 
         // no live sessions yet
-        liveSessionIds = new HashSet<Integer>();
+        liveSessionIds = new HashMap<Integer, SelectionKey>();
 
         return this;
     }
@@ -138,7 +141,7 @@ public class GameServer {
                         continue;
                     }
 
-                    int sessionId = ((Attachment) attachment).getSessionId();
+                    int sessionId = ((Attachment) attachment).getSessionId();	                
                     if (outgoingPackets.hasPackets(sessionId)) {
                         key.interestOps(SelectionKey.OP_WRITE);
                     }
@@ -201,6 +204,20 @@ public class GameServer {
         log.info("Keep alive time: " + "10 " + unit);
     }
 
+	public void requestSnapshot(int clientID) {
+
+		EventPacket eventPacket;
+		try {
+			eventPacket = EventPacket.of(new RequestSnapshotEvent());
+		} catch (AmfSerializerException e) {
+			throw new RuntimeException(e);
+		}
+		
+		outgoingPackets.put(eventPacket, Utils.setOf(clientID));
+		liveSessionIds.get(clientID).interestOps(SelectionKey.OP_WRITE);
+		selector.wakeup();
+	}
+
     /**
      * Accept new connection
      *
@@ -219,11 +236,14 @@ public class GameServer {
 
         // issue a session id
         int sessionId = nextSessionId();
-        liveSessionIds.add(sessionId);
+
         Attachment attachement = new Attachment(serverProperties.getReadBufferSize(), sessionId);
 
         // we'd like to be notified when there's data waiting to be read
-        socketChannel.register(this.selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE, attachement);
+	    SelectionKey clientKey = socketChannel.register(this.selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE, attachement);	    
+	    liveSessionIds.put(sessionId, clientKey);
+
+	    requestSnapshot(sessionId);
     }
 
     /**
@@ -273,9 +293,9 @@ public class GameServer {
             log.debug("Enqueue new incoming event packets");
 
             // protect from modifying
-            HashSet<Integer> liveSessionIds = new HashSet<Integer>(this.liveSessionIds);
+            HashSet<Integer> liveSessionIds = new HashSet<Integer>(this.liveSessionIds.keySet());
 
-            EventPacketsHandler handler = new EventPacketsHandler(world, eventPackets, sessionId, liveSessionIds, 
+            EventPacketsHandler handler = new EventPacketsHandler(this, world, eventPackets, sessionId, liveSessionIds,
                     outgoingPackets, selector);
 
             // Hands the data off to our worker threads
@@ -342,7 +362,7 @@ public class GameServer {
      * @param sessionId id of the session that was disconnected
      */
     private void sessionWasDisconnected(int sessionId) {
-        boolean wasRemoved = liveSessionIds.remove(sessionId);
+        boolean wasRemoved = liveSessionIds.containsKey(sessionId);
         if (!wasRemoved) {
             throw new IllegalStateException("Client closed the connection, tried to remove his session id " +
                     sessionId + " from live sessions, but didn't find it there. Live session ids:" + liveSessionIds);

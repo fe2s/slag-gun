@@ -78,7 +78,7 @@ public class LauncherClass {
     /**
      * Proccess frame
      * @param g - graphics
-     * @return nothing
+     * @return time between live cycles
      */
     public function enterFrame(g:Graphics):Number {
         if (!gamePaused) {
@@ -100,6 +100,10 @@ public class LauncherClass {
         }
 
         return 0;
+    }
+
+    public function get latency():Number{
+        return world.lalatency;
     }
 
     /**

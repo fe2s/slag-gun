@@ -9,18 +9,19 @@
  * and limitations under the License.
  */
 
-package com.slaggun.events;
+package com.slaggun.events {
+import flash.events.Event;
 
 /**
- * Visitor pattern
- *
- * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-public interface EventVisitor {
+[RemoteClass(alias="com.slaggun.events.RequestSnapshotEvent")]
+public class RequestSnapshotEvent extends Event implements GameEvent{
 
-    void visit(SnapshotEvent event);
+    public static const REQUEST_SNAPSHOT:String = "RequestSnapshot";
 
-    void visit(HzEvent event);
-
-	void visit(GameEvent requestSnapshotEvent);
+    public function RequestSnapshotEvent(type:String = REQUEST_SNAPSHOT, bubbles:Boolean = false, cancelable:Boolean = false) {
+        super(type, bubbles, cancelable);
+    }
+}
 }

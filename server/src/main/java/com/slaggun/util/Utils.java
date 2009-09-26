@@ -12,6 +12,9 @@
 package com.slaggun.util;
 
 import java.io.*;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Arrays;
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
@@ -62,5 +65,11 @@ public class Utils {
         } catch (IOException e) {
             throw new RuntimeException("Error during reader closing", e);
         }
+    }
+
+	public static <T> Set<T> setOf(T ... elements){
+        Set<T> set = new HashSet<T>(elements.length);
+        set.addAll(Arrays.asList(elements));
+        return set;
     }
 }
