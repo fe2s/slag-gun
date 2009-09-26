@@ -25,8 +25,6 @@
                 xmlns:mx="http://www.adobe.com/2006/mxml">
     <mx:Script>
 <![CDATA[
-        import com.slaggun.actor.world.InputState;
-
         import com.slaggun.util.log.LoggerConfig;
 
         import mx.core.Application;
@@ -77,7 +75,7 @@
         }
 
         /**
-         * Scrolls log's textArea to the bottom every 1 second  
+         * Scrolls log's textArea to the bottom every 1 second
          */
         private function initLogScrollTimer():void {
             logScrollTimer = new Timer(1000);

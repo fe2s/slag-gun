@@ -9,7 +9,7 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.world {
+package com.slaggun {
 import flash.geom.Point;
 
 /**

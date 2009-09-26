@@ -12,8 +12,6 @@
 package com.slaggun {
 import com.slaggun.actor.player.simple.SimplePlayerFactory;
 import com.slaggun.actor.player.simple.bot.BotFactory;
-import com.slaggun.actor.world.PhysicalWorld;
-import com.slaggun.net.GameClient;
 import com.slaggun.util.log.Logger;
 
 import flash.display.BitmapData;
@@ -24,14 +22,13 @@ import flash.display.Graphics;
  *
  * Author Dmitry Brazhnik (amid.ukr@gmail.com)
  *
- * @see PhysicalWorld
+ * @see com.slaggun.GameEnvironment
  */
 public class LauncherClass {
 
     private var gamePaused:Boolean = true;
     private var lastTime:Date;
-    private var world:PhysicalWorld = new PhysicalWorld();
-    private var gameClient:GameClient = new GameClient(world);
+    private var world:GameEnvironment = new GameEnvironment();    
     private var log:Logger = Logger.getLogger();
 
 
@@ -91,7 +88,6 @@ public class LauncherClass {
             {
                 lastTime = nowTime;
                 world.live(mils);
-                fireEvent();
             }
 
             var bitmapData:BitmapData = world.bitmap;
@@ -114,7 +110,7 @@ public class LauncherClass {
      */
     public function mouseMove(localX:Number, localY:Number):void {
         world.inputStates.updateMousePosition(localX, localY);
-//        fireEvent();
+//        world.replicate();
     }
 
     /**
@@ -124,7 +120,7 @@ public class LauncherClass {
      */
     public function buttonDown(keyCode:Number):void {
         world.inputStates.pressDown(keyCode);
-//        fireEvent();
+//        world.replicate();
     }
 
     /**
@@ -134,7 +130,7 @@ public class LauncherClass {
      */
     public function buttonUp(keyCode:Number):void {
         world.inputStates.pressUp(keyCode);
-//        fireEvent();
+//        world.replicate();
     }
 
     /**
@@ -151,14 +147,7 @@ public class LauncherClass {
      * @return
      */
     public function connect() : void {
-        gameClient.connect();
-    }
-
-    /**
-     * Fire event
-     */
-    private function fireEvent():void {
-        gameClient.notify();
+        world.gameClient.connect();
     }
 }
 }

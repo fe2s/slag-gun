@@ -13,7 +13,6 @@ package com.slaggun.util.log {
 import com.slaggun.LauncherClass;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
 import com.slaggun.actor.player.simple.SimplePlayerPhysics;
-import com.slaggun.net.GameClient;
 
 import mx.controls.TextArea;
 

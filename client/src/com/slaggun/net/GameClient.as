@@ -10,16 +10,11 @@
  */
 
 package com.slaggun.net {
-import com.slaggun.actor.world.PhysicalWorld;
+import com.slaggun.GameEnvironment;
 import com.slaggun.amf.AmfSerializer;
-
-import com.slaggun.net.EventHeader;
 import com.slaggun.events.GameEvent;
-import com.slaggun.net.EventPacket;
-
 import com.slaggun.events.SnapshotEvent;
 
-import flash.events.DataEvent;
 import flash.events.ErrorEvent;
 import flash.events.Event;
 import flash.events.EventDispatcher;
@@ -41,13 +36,6 @@ public class GameClient extends EventDispatcher {
     private var socket:Socket;
 
     private var serializer:AmfSerializer = AmfSerializer.instance();
-
-    private var world:PhysicalWorld;
-
-    public function GameClient(world:PhysicalWorld) {
-        this.world = world;
-        this.addGameEventListeners();
-    }
 
     /**
      * Connect to the game server
@@ -73,17 +61,10 @@ public class GameClient extends EventDispatcher {
     }
 
     /**
-     * Notifies net game client to fire event
-     */
-    public function notify():void {
-        sendEvent(world.snapshot);
-    }
-
-    /**
      * Sends givent event to the server
      * @param event game event
      */
-    private function sendEvent(event:GameEvent):void {
+    public function sendEvent(event:GameEvent):void {
         if (socket != null && socket.connected) {
             var eventPacket:EventPacket = EventPacket.of(event);
             send(eventPacket.content);
@@ -147,10 +128,6 @@ public class GameClient extends EventDispatcher {
         socket.addEventListener(ProgressEvent.SOCKET_DATA, dataHandler);
         socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
         socket.addEventListener(ErrorEvent.ERROR, errorHandler);
-    }
-
-    private function addGameEventListeners():void {
-        addEventListener(SnapshotEvent.INCOMING, world.handleSnapshot);
     }
 
     private function closeHandler(event:Event):void {

@@ -10,7 +10,7 @@
  */
 
 package com.slaggun.actor.base {
-import com.slaggun.actor.world.PhysicalWorld;
+import com.slaggun.GameEnvironment;
 
     /**
      * This class proccess physical proccess of the Actor
@@ -27,6 +27,6 @@ import com.slaggun.actor.world.PhysicalWorld;
          * @param actor     - actor to be proccessed
          * @param world     - game world
          */
-        function live(deltaTime:Number, actor:Actor, world:PhysicalWorld):void;
+        function live(deltaTime:Number, actor:Actor, world:GameEnvironment):void;
     }
 }

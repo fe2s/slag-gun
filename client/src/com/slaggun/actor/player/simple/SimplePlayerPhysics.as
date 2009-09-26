@@ -14,8 +14,8 @@ import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorPhysics;
 import com.slaggun.actor.player.PlayerConstants;
 import com.slaggun.actor.shell.pistol.PistolShellFactory;
-import com.slaggun.actor.world.InputState;
-import com.slaggun.actor.world.PhysicalWorld;
+import com.slaggun.InputState;
+import com.slaggun.GameEnvironment;
 
 import com.slaggun.geom.Point2d;
 
@@ -37,7 +37,7 @@ public class SimplePlayerPhysics implements ActorPhysics{
 
     private var log:Logger = Logger.getLogger();
 
-    public function live(timePass:Number, actor:Actor, world:PhysicalWorld):void {
+    public function live(timePass:Number, actor:Actor, world:GameEnvironment):void {
 
         if (!world.isMineActor(actor)) {
             return;
@@ -102,7 +102,7 @@ public class SimplePlayerPhysics implements ActorPhysics{
         actorModel.look.y = mouseY - y;
     }
 
-    private function shoot(actorModel:SimplePlayerModel, world:PhysicalWorld):void {
+    private function shoot(actorModel:SimplePlayerModel, world:GameEnvironment):void {
         const mineActor:Boolean = false;
         const replicatedOnce:Boolean = true;
 

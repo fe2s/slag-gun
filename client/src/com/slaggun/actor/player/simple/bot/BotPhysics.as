@@ -14,7 +14,7 @@ import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorPhysics;
 import com.slaggun.actor.player.PlayerConstants;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
-import com.slaggun.actor.world.PhysicalWorld;
+import com.slaggun.GameEnvironment;
 
 import flash.geom.Rectangle;
 
@@ -36,7 +36,7 @@ import flash.geom.Rectangle;
         public function BotPhysics() {
         }
 
-        public function live(deltaTime:Number, actor:Actor, world:PhysicalWorld):void {
+        public function live(deltaTime:Number, actor:Actor, world:GameEnvironment):void {
             var actorModel:SimplePlayerModel = SimplePlayerModel(actor.model);
 
             timePass+=deltaTime;

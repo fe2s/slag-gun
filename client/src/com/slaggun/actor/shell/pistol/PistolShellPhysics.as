@@ -12,7 +12,7 @@
 package com.slaggun.actor.shell.pistol {
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorPhysics;
-import com.slaggun.actor.world.PhysicalWorld;
+import com.slaggun.GameEnvironment;
 
 /**
  *
@@ -20,7 +20,7 @@ import com.slaggun.actor.world.PhysicalWorld;
  */
 public class PistolShellPhysics implements ActorPhysics {
 
-    public function live(deltaTime:Number, actor:Actor, world:PhysicalWorld):void {
+    public function live(deltaTime:Number, actor:Actor, world:GameEnvironment):void {
         var shell:PistolShell = PistolShell(actor);
         var shellModel:PistolShellModel = PistolShellModel(actor.model);
         translateShell(shellModel);
@@ -33,7 +33,7 @@ public class PistolShellPhysics implements ActorPhysics {
         shell.position.translate(shell.speedVector);
     }
 
-    private function hit(shell:PistolShell, world:PhysicalWorld):void{
+    private function hit(shell:PistolShell, world:GameEnvironment):void{
         var hitAction:PistolShellHitAction = new PistolShellHitAction(shell, world);
         for each (var actor:Actor in world.actors){
             actor.apply(hitAction);

@@ -14,7 +14,7 @@ import com.slaggun.actor.base.Action;
 import com.slaggun.actor.player.PlayerConstants;
 import com.slaggun.actor.player.simple.SimplePlayer;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
-import com.slaggun.actor.world.PhysicalWorld;
+import com.slaggun.GameEnvironment;
 import com.slaggun.geom.Circle;
 import com.slaggun.geom.Point2d;
 
@@ -32,9 +32,9 @@ public class PistolShellHitAction implements Action{
     private var log:Logger = Logger.getLogger();
 
     private var shell:PistolShell;
-    private var world:PhysicalWorld;
+    private var world:GameEnvironment;
 
-    public function PistolShellHitAction(shell:PistolShell, world:PhysicalWorld) {
+    public function PistolShellHitAction(shell:PistolShell, world:GameEnvironment) {
         this.shell = shell;
         this.world = world;
     }

@@ -9,10 +9,11 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.world {
+package com.slaggun {
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorSnapshot;
 import com.slaggun.events.SnapshotEvent;
+import com.slaggun.net.GameClient;
 
 import flash.display.BitmapData;
 import flash.display.Shape;
@@ -22,13 +23,15 @@ import flash.utils.Dictionary;
 import mx.collections.ArrayCollection;
 
 /**
- * This is core world engine class
+ * This is core game engine class
  *
  * Author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-public class PhysicalWorld extends EventDispatcher {
+public class GameEnvironment extends EventDispatcher {
 
     private var _inputStates:InputState = new InputState();
+    private var _gameClient:GameClient = new GameClient();
+
     private var _bitmap:BitmapData;
 
     // all actors in the world
@@ -51,8 +54,8 @@ public class PhysicalWorld extends EventDispatcher {
 
     private var _drawAnimationCalibrateGrid:Boolean;
 
-    public function PhysicalWorld() {
-        addEventListener(SnapshotEvent.INCOMING, handleSnapshot);
+    public function GameEnvironment() {
+        _gameClient.addEventListener(SnapshotEvent.INCOMING, handleSnapshot);        
     }
 
     /**
@@ -147,10 +150,18 @@ public class PhysicalWorld extends EventDispatcher {
     /**
      * Returns input states
      * @return input states
-     * @see InputState
+     * @see com.slaggun.InputState
      */
     public function get inputStates():InputState {
         return _inputStates;
+    }
+
+    /**
+     * Returns network channel class 
+     * @return network channel class
+     */
+    public function get gameClient():GameClient {
+        return _gameClient;
     }
 
     /**
@@ -206,35 +217,6 @@ public class PhysicalWorld extends EventDispatcher {
     }
 
     /**
-     * Process world live iteration
-     * @param deltaTime - time pass
-     */
-    public function live(deltaTime:Number):void {
-        addAll();
-
-        var actorName:String;
-        var actor:Actor;
-
-        var i:int;
-
-        var len:int = _actors.length;
-        for (i = 0; i < len; i++) {
-            actor = _actors[i];
-            actor.physics.live(deltaTime, actor, this);
-        }
-
-        _bitmap.fillRect(_bitmap.rect, 0xFFFFFF);
-
-        for (i = 0; i < len; i++) {
-            actor = _actors[i];
-            actor.renderer.draw(deltaTime, actor, _bitmap);
-        }
-
-        if (_drawAnimationCalibrateGrid)
-            drawDebugLines(_bitmap);
-    }
-
-    /**
      *  Determines whether given actor is mine
      *
      * @param actor
@@ -262,7 +244,7 @@ public class PhysicalWorld extends EventDispatcher {
      *
      * @return snapshot event
      */
-    public function get snapshot(): SnapshotEvent {
+    public function buildSnapshot(): SnapshotEvent {
         var actorSnapsots:ArrayCollection = new ArrayCollection();
 
         for each (var actor:Actor in _mineActors) {
@@ -308,6 +290,44 @@ public class PhysicalWorld extends EventDispatcher {
                 add(actorSnapshot.resurrect(), mineActor, replicatedOnce);
             }
         }
+    }
+
+    /**
+     * Notifies net game client to fire event
+     */
+    public function replicate():void {
+        _gameClient.sendEvent(buildSnapshot());
+    }
+
+    /**
+     * Process world live iteration
+     * @param deltaTime - time pass
+     */
+    public function live(deltaTime:Number):void {
+        addAll();
+
+        var actorName:String;
+        var actor:Actor;
+
+        var i:int;
+
+        var len:int = _actors.length;
+        for (i = 0; i < len; i++) {
+            actor = _actors[i];
+            actor.physics.live(deltaTime, actor, this);
+        }
+
+        _bitmap.fillRect(_bitmap.rect, 0xFFFFFF);
+
+        for (i = 0; i < len; i++) {
+            actor = _actors[i];
+            actor.renderer.draw(deltaTime, actor, _bitmap);
+        }
+
+        if (_drawAnimationCalibrateGrid)
+            drawDebugLines(_bitmap);
+
+        replicate();
     }
 }
 }
