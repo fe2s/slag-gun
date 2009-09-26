@@ -20,7 +20,6 @@ import org.apache.log4j.Logger;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.text.MessageFormat;
 
 /**
@@ -30,7 +29,7 @@ import java.text.MessageFormat;
  */
 public class FlexPolicy {
 	private static Logger LOGGER = Logger.getLogger(FlexPolicy.class);
-	private static final String POLICY_FILE = "/com/slaggun/policy/policy.xml";
+	private static final String POLICY_FILE = "/config/policy.xml";
 
 	private static final String REQUEST_POLICY_COMMAND = "<policy-file-request/>\0";
 
