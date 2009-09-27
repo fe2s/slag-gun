@@ -37,10 +37,10 @@
 
     <target name="clean" depends="init" description="Clean up">
         <echo>Cleaning up ...</echo>
-        <delete dir="${BIN_DIR}"/>
+        <delete failonerror="false" dir="${BIN_DIR}"/>
     </target>
 
-    <target name="main" depends="init, clean" description="Compile MXML to SWF">
+    <target name="build" depends="init, clean" description="Compile MXML to SWF">
         <echo>Compile MXML to SWF ...</echo>
         <mxmlc file="${SRC_DIR}/com/slaggun/Launcher.mxml"
                output="${OUTPUT_SWF}"
@@ -51,6 +51,12 @@
             <source-path path-element="${SRC_DIR}"/>
             <compiler.debug>true</compiler.debug>
         </mxmlc>
+    </target>
+
+    <!-- TODO: It must be replaced with swf deploy server insted -->
+    <target name="deploy" depends="build" description="Deploy swf file">
+        <property name="DEPLOY_FILE" value="C:/server/tomcat/apache-tomcat-6.0.18/webapps/ROOT/slag-gun.swf"/>        
+        <copy overwrite="true" file="${OUTPUT_SWF}" tofile="${DEPLOY_FILE}"/>
     </target>
 
     <target name="compile.tests" depends="init" description="Compile Flex unit tests">

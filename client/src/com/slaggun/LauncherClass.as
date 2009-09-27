@@ -150,8 +150,8 @@ public class LauncherClass {
      * Test connection to game server
      * @return
      */
-    public function connect(host:String) : void {
-        world.gameClient.connect(host);
+    public function connect(host:String, policyServer:String) : void {
+        world.gameClient.connect(host, policyServer);
     }
 }
 }

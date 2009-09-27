@@ -10,10 +10,9 @@
  */
 
 package com.slaggun.net {
-import com.slaggun.GameEnvironment;
 import com.slaggun.amf.AmfSerializer;
 import com.slaggun.events.GameEvent;
-import com.slaggun.events.SnapshotEvent;
+import com.slaggun.util.log.Logger;
 
 import flash.events.ErrorEvent;
 import flash.events.Event;
@@ -25,7 +24,11 @@ import flash.net.Socket;
 import flash.system.Security;
 import flash.utils.ByteArray;
 
+import mx.controls.Alert;
+
 public class GameClient extends EventDispatcher {
+
+    private var log:Logger = Logger.getLogger();
 
     private static const gameServerPort:int = 4001;
 
@@ -39,10 +42,14 @@ public class GameClient extends EventDispatcher {
     /**
      * Connect to the game server
      */
-    public function connect(host:String):void {
+    public function connect(host:String, policyServer:String):void {
         trace("Connecting to game server");
 
-        var policyFileLocation:String = "xmlsocket://" + host + ":" + policyFilePort;
+        if(policyServer == null){
+            policyServer = host;
+        }
+
+        var policyFileLocation:String = "xmlsocket://" + policyServer + ":" + policyFilePort;
 
         Security.loadPolicyFile(policyFileLocation);
 
@@ -96,14 +103,25 @@ public class GameClient extends EventDispatcher {
         // TODO: but body is not available yet
         while (socket.bytesAvailable > EventHeader.BINARY_SIZE) {
             // read header
+
+            log.info("Message income, size: " + socket.bytesAvailable);
+
             var bodySize:int = socket.readInt();
+
+            log.info("Message body size: " + bodySize);
+            log.info("Buffer size: " + socket.bytesAvailable);
+
             if (socket.bytesAvailable >= bodySize) {
                 var eventBody:ByteArray = new ByteArray();
                 socket.readBytes(eventBody, 0, bodySize);
 
-                var event:Event = Event(AmfSerializer.instance().fromAmfBytes(eventBody));
+
+                var object:Object = AmfSerializer.instance().fromAmfBytes(eventBody);
+                var event:Event = Event(object);
                 trace("Incoming event:" + event);
                 dispatchEvent(event);
+            }else{
+                Alert.show("Can't successfuly read");
             }
         }
     }

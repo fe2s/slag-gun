@@ -16,6 +16,8 @@ import com.slaggun.events.RequestSnapshotEvent;
 import com.slaggun.events.SnapshotEvent;
 import com.slaggun.net.GameClient;
 
+import com.slaggun.util.log.Logger;
+
 import flash.display.BitmapData;
 import flash.display.Shape;
 import flash.events.EventDispatcher;
@@ -29,6 +31,8 @@ import mx.collections.ArrayCollection;
  * Author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
 public class GameEnvironment extends EventDispatcher {
+
+    private var LOG:Logger = Logger.getLogger();
 
     private var _inputStates:InputState = new InputState();
     private var _gameClient:GameClient = new GameClient();
@@ -57,6 +61,8 @@ public class GameEnvironment extends EventDispatcher {
 
     private var _lalatency:Number;
     private var lastReplicateTime:Date = new Date();
+
+    private var mustBeReplicated:Boolean = false;
 
     public function GameEnvironment() {
         _gameClient.addEventListener(SnapshotEvent.INCOMING, handleSnapshot);
@@ -267,10 +273,6 @@ public class GameEnvironment extends EventDispatcher {
         return snapshot;
     }
 
-    private function handleRequestSnapshot(event:RequestSnapshotEvent):void{
-        replicate();
-    }
-
     /**
      * Handles incoming snapshots
      */
@@ -301,10 +303,13 @@ public class GameEnvironment extends EventDispatcher {
         }
     }
 
+    private var repl:int = 0;
+
     /**
      * Notifies net game client to fire event
      */
     public function replicate():void {
+        LOG.debug("Replicates count" + repl++);
         _gameClient.sendEvent(buildSnapshot());
         var lastMilsTime:Number = lastReplicateTime.getTime();
         lastReplicateTime = new Date();
@@ -339,12 +344,22 @@ public class GameEnvironment extends EventDispatcher {
         if (_drawAnimationCalibrateGrid)
             drawDebugLines(_bitmap);
 
-        //replicate();
+        if(mustBeReplicated){
+            mustBeReplicated = false;
+            replicate();
+        }        
+    }
+
+    private var replReq:int = 0;
+
+    private function handleRequestSnapshot(event:RequestSnapshotEvent):void{
+        LOG.debug("Replicate requests count" + replReq++);
+        // synchronize with enterFrame loop
+        mustBeReplicated = true;
     }
 
     public function get lalatency():Number {
         return _lalatency;
     }
-
 }
 }

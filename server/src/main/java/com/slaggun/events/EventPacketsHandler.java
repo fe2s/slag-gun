@@ -68,7 +68,7 @@ public class EventPacketsHandler implements Runnable {
         log.debug("start processing new incoming packets");
         log.debug(incomingPackets);
 
-        AmfSerializer serializer = Amf3Factory.instance().getAmfSerializer();
+	    AmfSerializer serializer = Amf3Factory.instance().getAmfSerializer();
         for (EventPacket eventPacket : incomingPackets) {
             try {
                 // serialize to binary packet to object

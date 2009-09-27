@@ -132,7 +132,7 @@ public class GameServer {
         log.debug("Workers pool is ready to process event packets");
 
         while (running) {
-            try {
+	        try {
                 // set OP_WRITE for those keys which we have waiting events for
                 Set<SelectionKey> allKeys = selector.keys();
                 for (SelectionKey key : allKeys) {
