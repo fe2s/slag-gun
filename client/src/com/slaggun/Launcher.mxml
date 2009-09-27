@@ -32,22 +32,63 @@
         private var launcher:LauncherClass;
         private var logScrollTimer:Timer;
 
-        private function enterFrame():void {
-            fpsOut.text = "fps: " + 1000 / launcher.enterFrame(output.graphics);
-            latencyOut.text = "latency: " + launcher.latency;
-        }
-
-        private function hookKeyboard():void {
-            stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown);
-            stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
-        }
+        private var latencies:Array;
+        private var lastLatencyUpdated:Number = -1;
+        private var _statisticLatencyDeviation:Number = 0;
+        private var _latency:Number = 0;
 
         private function initApp():void {
+            latencies = [];
+            latencies.length = 100;
+
             LoggerConfig.instance.setTextArea(logOutput);
             launcher = new LauncherClass();
             launcher.resize(Application.application.width, Application.application.height);
             launcher.inititalize();
             initLogScrollTimer();
+        }
+
+        private function updateLatency():void {
+            var latenciesSize:uint = latencies.length;
+            lastLatencyUpdated = (lastLatencyUpdated + 1) % latenciesSize;
+            latencies[lastLatencyUpdated] = launcher.latency;
+            _latency = 0;
+
+            var i:int;
+            for (i = 0; i < latenciesSize; i++) {
+                _latency += latencies[i];
+            }
+
+            _latency /= latenciesSize;
+
+            _statisticLatencyDeviation = 0;
+
+            for (i = 0; i < latenciesSize; i++) {
+                _statisticLatencyDeviation += Math.abs(_latency - latencies[i]);
+            }
+
+            _statisticLatencyDeviation /= latenciesSize;
+        }
+
+
+        public function get statisticLatencyDeviation():Number {
+            return _statisticLatencyDeviation;
+        }
+
+        public function get latency():Number {
+            return _latency;
+        }
+
+        private function enterFrame():void {
+            updateLatency();
+
+            fpsOut.text = "fps: " + 1000 / launcher.enterFrame(output.graphics);
+            latencyOut.text = "latency: " + int(latency) + " +/- " + int(statisticLatencyDeviation);
+        }
+
+        private function hookKeyboard():void {
+            stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown);
+            stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
         }
 
         private function keyDown(event:KeyboardEvent):void {
@@ -98,12 +139,13 @@
     <mx:Canvas y = "0" x = "0" id="output" width="100%" height="100%"/>
     
     <mx:HBox height="100%">
-        <mx:VBox width="200">
+        <mx:VBox height="50" width="200">
             <mx:Text id="fpsOut" color="red"/>
             <mx:Text id="latencyOut" color="red"/>
         </mx:VBox>
         <mx:VBox height="100%">
-            <mx:Button label="connect" click="launcher.connect()"/>
+            <mx:TextInput id="txtHost" text="127.0.0.1" />
+            <mx:Button label="connect" click="launcher.connect(txtHost.text)"/>
             <mx:TextArea id="logOutput"
                 height="100%"
                 width="200"

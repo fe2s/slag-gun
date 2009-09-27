@@ -60,6 +60,7 @@ public class FlexPolicy {
 
 				if (REQUEST_POLICY_COMMAND.equals(request)) {
 					sessionSocket.getOutputStream().write(responseXMLMessage);
+					LOGGER.info("Policy file request");
 				} else {
 					LOGGER.warn("Unknown command retrieved: " + request);
 					sessionSocket.getOutputStream().write(responseErrorMessage);

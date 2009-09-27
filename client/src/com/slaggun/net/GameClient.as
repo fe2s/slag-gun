@@ -28,10 +28,9 @@ import flash.utils.ByteArray;
 public class GameClient extends EventDispatcher {
 
     private static const gameServerPort:int = 4001;
-    private static const gameServerIp:String = "127.0.0.1";
 
     private static const policyFilePort:int = 843;
-    private static const policyFileLocation:String = "xmlsocket://" + gameServerIp + ":" + policyFilePort;
+
 
     private var socket:Socket;
 
@@ -40,8 +39,10 @@ public class GameClient extends EventDispatcher {
     /**
      * Connect to the game server
      */
-    public function connect():void {
+    public function connect(host:String):void {
         trace("Connecting to game server");
+
+        var policyFileLocation:String = "xmlsocket://" + host + ":" + policyFilePort;
 
         Security.loadPolicyFile(policyFileLocation);
 
@@ -52,7 +53,7 @@ public class GameClient extends EventDispatcher {
             // network events
             addNetworkEventListeners();
 
-            socket.connect(gameServerIp, gameServerPort);
+            socket.connect(host, gameServerPort);
 
         } catch (e:Error) {
             trace(e);
