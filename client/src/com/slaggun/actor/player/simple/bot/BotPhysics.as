@@ -10,15 +10,15 @@
  */
 
 package com.slaggun.actor.player.simple.bot {
+import com.slaggun.GameEnvironment;
 import com.slaggun.actor.base.Actor;
-import com.slaggun.actor.base.ActorPhysics;
 import com.slaggun.actor.player.PlayerConstants;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
-import com.slaggun.GameEnvironment;
+import com.slaggun.actor.player.simple.SimplePlayerPhysics;
 
 import flash.geom.Rectangle;
 
-    public class BotPhysics implements ActorPhysics{
+public class BotPhysics extends SimplePlayerPhysics{
 
         private var timePass:Number = 1001;
 
@@ -36,7 +36,7 @@ import flash.geom.Rectangle;
         public function BotPhysics() {
         }
 
-        public function live(deltaTime:Number, actor:Actor, world:GameEnvironment):void {
+        public override function liveServer(deltaTime:Number, actor:Actor, world:GameEnvironment):void {
             var actorModel:SimplePlayerModel = SimplePlayerModel(actor.model);
 
             timePass+=deltaTime;
@@ -81,14 +81,10 @@ import flash.geom.Rectangle;
                 actorModel.look.y = Math.random()*world.height;
             }
 
-            x += vx*deltaTime;
-            y += vy*deltaTime;
-
             actorModel.velocity.x = vx;
             actorModel.velocity.y = vy;
 
-            actorModel.position.x = x;
-            actorModel.position.y = y;
+            liveClient(timePass, actor, world);
         }
     }
 }

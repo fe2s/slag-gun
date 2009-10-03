@@ -10,21 +10,18 @@
  */
 
 package com.slaggun.actor.player.simple {
+import com.slaggun.GameEnvironment;
+import com.slaggun.InputState;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorPhysics;
 import com.slaggun.actor.player.PlayerConstants;
 import com.slaggun.actor.shell.pistol.PistolShellFactory;
-import com.slaggun.InputState;
-import com.slaggun.GameEnvironment;
-
 import com.slaggun.geom.Point2d;
-
 import com.slaggun.geom.Vector2d;
-
 import com.slaggun.util.log.Logger;
 
+import flash.geom.Point;
 import flash.ui.Keyboard;
-import flash.ui.Mouse;
 
 /**
  * This is physical calculator for the SimplePlayer
@@ -37,43 +34,30 @@ public class SimplePlayerPhysics implements ActorPhysics{
 
     private var log:Logger = Logger.getLogger();
 
-    public function live(timePass:Number, actor:Actor, world:GameEnvironment):void {
-
-        if (!world.isMineActor(actor)) {
-            return;
-        }
-
+    public function liveServer(timePass:Number, actor:Actor, world:GameEnvironment):void {
+        
         var actorModel:SimplePlayerModel = SimplePlayerModel(actor.model);
-
-        var clickX:Number = 0;
-        var clickY:Number = 0;
 
         var vx:Number = 0;
         var vy:Number = 0;
-
-        var x:Number = actorModel.position.x;
-        var y:Number = actorModel.position.y;
-
-        var mouseX:Number = world.inputStates.mousePosition.x;
-        var mouseY:Number = world.inputStates.mousePosition.y;
 
         var inputState:InputState = world.inputStates;
 
         // procces key events
         if (inputState.isPressed(Keyboard.LEFT)) {
-            clickX -= 1;
+            vx -= 1;
         }
 
         if (inputState.isPressed(Keyboard.RIGHT)) {
-            clickX += 1;
+            vx += 1;
         }
 
         if (inputState.isPressed(Keyboard.UP)) {
-            clickY -= 1;
+            vy -= 1;
         }
 
         if (inputState.isPressed(Keyboard.DOWN)) {
-            clickY += 1;
+            vy += 1;
         }
 
         if (inputState.isMousePressed()) {
@@ -82,24 +66,43 @@ public class SimplePlayerPhysics implements ActorPhysics{
 
         // update actor model
 
-        vx = clickX;
-        vy = clickY;
 
-        var v:Number = Math.sqrt(vx*vx+vy*vy)/PlayerConstants.PLAYER_SPEED_PER_MS;
+        var v:Number = Math.sqrt(vx * vx + vy * vy) / PlayerConstants.PLAYER_SPEED_PER_MS;
 
-        if(v != 0){
-            vx/= v;
-            vy/= v;
+        if (v != 0) {
+            vx /= v;
+            vy /= v;
         }
+
+        actorModel.velocity.x = vx;
+        actorModel.velocity.y = vy;
+
+        live(timePass, actor, world);
+
+        actorModel.look.x = world.inputStates.mousePosition.x - actorModel.position.x;
+        actorModel.look.y = world.inputStates.mousePosition.y - actorModel.position.y;
+    }
+
+    public function liveClient(timePass:Number, actor:Actor, world:GameEnvironment):void {
+
+        var actorModel:SimplePlayerModel = SimplePlayerModel(actor.model);
+
+        var vx:Number = actorModel.velocity.x;
+        var vy:Number = actorModel.velocity.y;
+
+        var x:Number = actorModel.position.x;
+        var y:Number = actorModel.position.y;
+
 
         actorModel.velocity.x = vx;
         actorModel.velocity.y = vy;
 
         actorModel.position.x = x + vx * timePass;
         actorModel.position.y = y + vy * timePass;
+    }
 
-        actorModel.look.x = mouseX - x;
-        actorModel.look.y = mouseY - y;
+    protected function live(timePass:Number, actor:Actor, world:GameEnvironment){
+
     }
 
     private function shoot(actorModel:SimplePlayerModel, world:GameEnvironment):void {

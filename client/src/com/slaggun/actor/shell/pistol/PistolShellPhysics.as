@@ -20,7 +20,11 @@ import com.slaggun.GameEnvironment;
  */
 public class PistolShellPhysics implements ActorPhysics {
 
-    public function live(deltaTime:Number, actor:Actor, world:GameEnvironment):void {
+    public function liveServer(deltaTime:Number, actor:Actor, world:GameEnvironment):void {
+        liveClient(deltaTime, actor, world);
+    }
+
+    public function liveClient(deltaTime:Number, actor:Actor, world:GameEnvironment):void {
         var shell:PistolShell = PistolShell(actor);
         var shellModel:PistolShellModel = PistolShellModel(actor.model);
         translateShell(shellModel);

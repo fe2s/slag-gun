@@ -335,7 +335,11 @@ public class GameEnvironment extends EventDispatcher {
         var len:int = _actors.length;
         for (i = 0; i < len; i++) {
             actor = _actors[i];
-            actor.physics.live(deltaTime, actor, this);
+            if(isMineActor(actor)){
+                actor.physics.liveServer(deltaTime, actor, this);
+            }else{
+                actor.physics.liveClient(deltaTime, actor, this);
+            }
         }
 
         _bitmap.fillRect(_bitmap.rect, 0xFFFFFF);

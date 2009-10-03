@@ -27,6 +27,14 @@ import com.slaggun.GameEnvironment;
          * @param actor     - actor to be proccessed
          * @param world     - game world
          */
-        function live(deltaTime:Number, actor:Actor, world:GameEnvironment):void;
+        function liveClient(deltaTime:Number, actor:Actor, world:GameEnvironment):void;
+
+        /**
+         * Process world iteration
+         * @param deltaTime - time pass
+         * @param actor     - actor to be proccessed
+         * @param world     - game world
+         */
+        function liveServer(deltaTime:Number, actor:Actor, world:GameEnvironment):void;
     }
 }
