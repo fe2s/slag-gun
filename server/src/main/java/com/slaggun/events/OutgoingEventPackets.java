@@ -65,15 +65,6 @@ public class OutgoingEventPackets {
 
             log.debug("Outgoing event packets queue size is " +
                     packetsForRecipient.size() + " for recipient " + recipient);
-
-            if (queueSize >= queueSizeLimit) {
-                // TODO: this is to spot bugs when the outgoing queue is growing
-                // TODO: such fast as we don't manage to sent packets
-                // TODO: In future need to impl smth more sensible
-                throw new IllegalStateException("Outgoing event packets queue size is " +
-                        packetsForRecipient.size() + " for recipient " + recipient);
-            }
-
         }
     }
 

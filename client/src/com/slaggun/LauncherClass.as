@@ -12,6 +12,7 @@
 package com.slaggun {
 import com.slaggun.actor.player.simple.SimplePlayerFactory;
 import com.slaggun.actor.player.simple.bot.BotFactory;
+import com.slaggun.util.Utils;
 import com.slaggun.util.log.Logger;
 
 import flash.display.BitmapData;
@@ -25,12 +26,18 @@ import flash.display.Graphics;
  * @see com.slaggun.GameEnvironment
  */
 public class LauncherClass {
+    private static const DESIRABLE_TIME_PER_EVENT:int = 1000/25;
 
     private var gamePaused:Boolean = true;
     private var lastTime:Date;
     private var world:GameEnvironment = new GameEnvironment();    
     private var log:Logger = Logger.getLogger();
+    private var sysTimeSpent:Number = 0;
+    private var timeQuote:Number = DESIRABLE_TIME_PER_EVENT;
+    private var timeQuoteSpent:Number = 0;
 
+    private var networkProcessingTimeArray:Array = [];
+    private var lastVar:int = -1;
 
     public function LauncherClass() {
     }
@@ -49,10 +56,10 @@ public class LauncherClass {
 
         world.add(playerFactory.create(mineActor), mineActor, replicatedOnce);
 
+        networkProcessingTimeArray.length = 20;
+
         //world.drawAnimationCalibrateGrid = true;
         //addBots(350, new BotFactory());
-
-        start();
     }
 
     /**
@@ -60,30 +67,45 @@ public class LauncherClass {
      */
     private function addBots(number:int, botFactory:BotFactory): void {
         const mineActor:Boolean = true;
-        const replicatedOnce:Boolean = true;
+        const replicatedOnce:Boolean = false;
         var i: int;
         for (i = 0; i < number; i++) {
             world.add(botFactory.create(), mineActor, replicatedOnce);
         }
     }
 
+
     /**
      * Start game engine simulation
      */
-    private function start():void {
+    public function start():void {
         lastTime = new Date();
         gamePaused = false;
+    }
+
+    /**
+     * Sleep the thread for the specified time
+     * !!!! Must be us only for debug purposes !!!
+     * @param delay
+     * @return
+     */
+    private function sleep(delay:int):void{
+        var nowTime:Number = new Date().getTime();
+        while(delay > (new Date().getTime() - nowTime)){}
     }
 
     /**
      * Proccess frame
      * @param g - graphics
      * @return time between live cycles
+     *
+     * @author Dmitry Brazhnik 
      */
     public function enterFrame(g:Graphics):Number {
         if (!gamePaused) {
             var nowTime:Date = new Date();
             var mils:Number = (nowTime.getTime() - lastTime.getTime());
+
             if (mils > 1)
             {
                 lastTime = nowTime;
@@ -96,10 +118,60 @@ public class LauncherClass {
             g.drawRect(0, 0, bitmapData.rect.width, bitmapData.rect.height);
             g.endFill();
 
+
+            //TODO document this algorithm (and protect as personal patent :-D)            
+            
+            sysTimeSpent = mils - timeQuoteSpent;
+
+            var requestTimeQuote:Number;
+
+            if(sysTimeSpent > DESIRABLE_TIME_PER_EVENT){
+                requestTimeQuote = sysTimeSpent / 10;
+            }else{
+                requestTimeQuote = (DESIRABLE_TIME_PER_EVENT - sysTimeSpent);
+            }
+
+            // This expression is disbalance the upper equation,
+            // to find maximum possible requestTimeQuote  
+            requestTimeQuote += 2;
+
+            if(requestTimeQuote < sysTimeSpent / 10){
+                requestTimeQuote = sysTimeSpent/10;
+            }
+
+            timeQuote += requestTimeQuote;
+
+            timeQuoteSpent = 0;
+
+            var eventsCount:int = 0;
+
+            var startEnterFrameTime:Number = new Date().getTime();
+            var enterFrameTime:Number = 0;            
+            while(timeQuote > 0){
+                if(!world.enterFrame()){
+                    timeQuote = 0;
+                }
+
+                var currTime:Number = new Date().getTime();
+                enterFrameTime = currTime - startEnterFrameTime;
+                startEnterFrameTime = currTime;
+
+                timeQuote -= enterFrameTime;
+                timeQuoteSpent += enterFrameTime;
+                eventsCount++;
+            }
+
+            lastVar = (lastVar + 1) % networkProcessingTimeArray.length;
+            networkProcessingTimeArray[lastVar] = timeQuoteSpent;
+
             return mils;
         }
 
         return 0;
+    }
+
+    public function  get networkProcessingTime():String{
+        return Utils.getAvg(networkProcessingTimeArray); 
     }
 
     public function get latency():Number{

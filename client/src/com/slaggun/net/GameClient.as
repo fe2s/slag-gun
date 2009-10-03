@@ -97,11 +97,15 @@ public class GameClient extends EventDispatcher {
     /**
      * Handles incoming binary data
      */
-    private function dataHandler(progressEvent:ProgressEvent):void {
+    public function dataHandler(progressEvent:ProgressEvent):Boolean {
 //        trace("dataHandler: " + progressEvent);
         // TODO: need to consider case when header has been read,
         // TODO: but body is not available yet
-        while (socket.bytesAvailable > EventHeader.BINARY_SIZE) {
+        if(socket == null){
+            return false;
+        }
+        
+        if (socket.bytesAvailable > EventHeader.BINARY_SIZE) {
             // read header
 
             log.info("Message income, size: " + socket.bytesAvailable);
@@ -123,6 +127,10 @@ public class GameClient extends EventDispatcher {
             }else{
                 Alert.show("Can't successfuly read");
             }
+
+            return true;
+        }else{
+            return false;
         }
     }
 
@@ -144,12 +152,13 @@ public class GameClient extends EventDispatcher {
         socket.addEventListener(Event.CLOSE, closeHandler);
         socket.addEventListener(Event.CONNECT, connectHandler);
         socket.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-        socket.addEventListener(ProgressEvent.SOCKET_DATA, dataHandler);
+        //socket.addEventListener(ProgressEvent.SOCKET_DATA, dataHandler);
         socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
         socket.addEventListener(ErrorEvent.ERROR, errorHandler);
     }
 
     private function closeHandler(event:Event):void {
+        socket = null;
         trace("closeHandler: " + event);
     }
 

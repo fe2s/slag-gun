@@ -11,16 +11,17 @@
   -->
 
 <mx:Application layout="horizontal"
-                initialize="initApp();"
                 enterFrame="enterFrame()"
 
-                applicationComplete="hookKeyboard()"
+                initialize="initVariables()"
+                applicationComplete="start()"
 
                 resize="resize()"
 
                 xmlns:mx="http://www.adobe.com/2006/mxml">
     <mx:Script>
 <![CDATA[
+        import com.slaggun.util.Utils;
         import com.slaggun.util.log.LoggerConfig;
 
         import mx.core.Application;
@@ -35,7 +36,7 @@
 
         private var policyServer:String;
 
-        private function initApp():void {
+        private function initVariables():void{
             var hostParameter:String = Application.application.parameters["host"];
             if(hostParameter != null){
                 txtHost.text = hostParameter;
@@ -48,31 +49,23 @@
 
             LoggerConfig.instance.setTextArea(logOutput);
             launcher = new LauncherClass();
+
             launcher.resize(Application.application.width, Application.application.height);
+
             launcher.inititalize();
+
             initLogScrollTimer();
+        }
+
+        private function start():void {
+            hookKeyboard();
+            launcher.start();
         }
 
         private function updateLatency():void {
             var latenciesSize:uint = latencies.length;
             lastLatencyUpdated = (lastLatencyUpdated + 1) % latenciesSize;
             latencies[lastLatencyUpdated] = launcher.latency;
-            _latency = 0;
-
-            var i:int;
-            for (i = 0; i < latenciesSize; i++) {
-                _latency += latencies[i];
-            }
-
-            _latency /= latenciesSize;
-
-            _statisticLatencyDeviation = 0;
-
-            for (i = 0; i < latenciesSize; i++) {
-                _statisticLatencyDeviation += Math.abs(_latency - latencies[i]);
-            }
-
-            _statisticLatencyDeviation /= latenciesSize;
         }
 
 
@@ -88,7 +81,8 @@
             updateLatency();
 
             fpsOut.text = "fps: " + 1000 / launcher.enterFrame(output.graphics);
-            latencyOut.text = "latency: " + int(latency) + " +/- " + int(statisticLatencyDeviation);
+            latencyOut.text = "latency: " + Utils.getAvg(latencies);
+            networkProccessingTime.text = "network: " + launcher.networkProcessingTime; 
         }
 
         private function hookKeyboard():void {
@@ -148,19 +142,21 @@
             />
     
     <mx:HBox height="100%">
-        <mx:VBox height="50" width="200">
+        <mx:VBox height="100" width="200">
             <mx:Text id="fpsOut" color="red"/>
             <mx:Text id="latencyOut" color="red"/>
+            <mx:Text id="networkProccessingTime" color="red"/>
         </mx:VBox>
         <mx:VBox height="100%">
             <!--   Use http://mycoputername/Launcher.swf?host=mycoputername&policyServer=policy.org -->
-            <mx:TextInput id="txtHost" text="127.0.0.1" />
+            <mx:TextInput id="txtHost" text="127.0.0.1" />            
             <mx:Button label="connect" click="launcher.connect(txtHost.text, policyServer)"/>
             <mx:TextArea id="logOutput"
                 height="100%"
                 width="200"
                 backgroundAlpha="0"
-                editable="false"/>
+                editable="false"
+                text="Version: 0.9.519"/>
         </mx:VBox>
     </mx:HBox>
 

@@ -316,6 +316,10 @@ public class GameEnvironment extends EventDispatcher {
         _lalatency = lastReplicateTime.getTime() - lastMilsTime; 
     }
 
+    public function enterFrame():Boolean {
+        return gameClient.dataHandler(null);
+    }
+
     /**
      * Process world live iteration
      * @param deltaTime - time pass

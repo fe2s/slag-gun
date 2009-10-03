@@ -63,6 +63,8 @@ public class GameServer {
 
     private PhysicalWorld world;
 
+	private Map<Integer, Set<Integer>> waitingFor;
+
     public GameServer(ServerProperties serverProperties) {
         notNull(serverProperties, "serverProperties must not be null");
         this.serverProperties = serverProperties;
@@ -117,6 +119,7 @@ public class GameServer {
 
         // no live sessions yet
         liveSessionIds = new HashMap<Integer, SelectionKey>();
+	    waitingFor = new HashMap<Integer, Set<Integer>>();
 
         return this;
     }
@@ -212,9 +215,10 @@ public class GameServer {
 		} catch (AmfSerializerException e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		outgoingPackets.put(eventPacket, Utils.setOf(clientID));
-		liveSessionIds.get(clientID).interestOps(SelectionKey.OP_WRITE);
+		waitingFor.get(clientID).addAll(liveSessionIds.keySet());
+		waitingFor.get(clientID).remove(clientID);
 		selector.wakeup();
 	}
 
@@ -242,6 +246,7 @@ public class GameServer {
         // we'd like to be notified when there's data waiting to be read
 	    SelectionKey clientKey = socketChannel.register(this.selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE, attachement);	    
 	    liveSessionIds.put(sessionId, clientKey);
+	    waitingFor.put(sessionId, new HashSet());
 
 	    requestSnapshot(sessionId);
     }
@@ -376,4 +381,13 @@ public class GameServer {
     public void setRunning(boolean running) {
         this.running = running;
     }
+
+	public boolean checkWaiting(Integer recipient, int sender) {
+		Set<Integer> set = waitingFor.get(recipient);
+		if(set.contains(sender)){
+			set.remove(sender);
+			return true;
+		}
+		return false;
+	}
 }

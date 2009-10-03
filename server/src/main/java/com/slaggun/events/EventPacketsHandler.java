@@ -67,7 +67,6 @@ public class EventPacketsHandler implements Runnable {
     public void run() {
         log.debug("start processing new incoming packets");
         log.debug(incomingPackets);
-
 	    AmfSerializer serializer = Amf3Factory.instance().getAmfSerializer();
         for (EventPacket eventPacket : incomingPackets) {
             try {
@@ -80,7 +79,13 @@ public class EventPacketsHandler implements Runnable {
                 Set<Integer> liveSessionIdsCopy =  new HashSet<Integer>(liveSessionIds);
                 RecipientsVisitor recipientsVisitor = new RecipientsVisitor(packetsOwner, liveSessionIdsCopy);
                 gameEvent.accept(recipientsVisitor);
-                Set<Integer> recipients = recipientsVisitor.getRecipients();
+                Set<Integer> allPossibleRecipients = recipientsVisitor.getRecipients();
+	            Set<Integer> recipients = new HashSet<Integer>();
+	            for (Integer recipient : allPossibleRecipients) {
+		            if(gameServer.checkWaiting(recipient, packetsOwner)){
+			            recipients.add(recipient);
+		            }
+	            }
 
                 // setup owner
                 OwnerVisitor ownerVisitor = new OwnerVisitor(packetsOwner);

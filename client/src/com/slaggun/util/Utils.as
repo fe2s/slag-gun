@@ -9,23 +9,34 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player.simple.bot {
-import com.slaggun.actor.base.Actor;
-import com.slaggun.actor.player.ActorIdGenerator;
-import com.slaggun.actor.player.simple.SimplePlayer;
-import com.slaggun.actor.player.simple.SimplePlayerFactory;
+package com.slaggun.util {
+/**
+ * @author Dmitry Brazhnik (amid.ukr@gmail.com)
+ */
+public class Utils {
+    public static function getAvg(arr:Array):String{
+        var avgTime:int;
+        var deviationTime:int;
 
-public class BotFactory {
+        var size:uint = arr.length;
 
-    public function create(mine:Boolean = false):Actor {
-        var actor:SimplePlayer = SimplePlayer(new SimplePlayerFactory().create(mine));
-        actor.physics = new BotPhysics();
 
-        if (mine) {
-            actor.id = ActorIdGenerator.nextId();
+        var i:int;
+        for (i = 0; i < size; i++) {
+            avgTime += arr[i];
         }
 
-        return actor;
+        avgTime /= size;
+
+        deviationTime = 0;
+
+        for (i = 0; i < size; i++) {
+            deviationTime += Math.abs(avgTime - arr[i]);
+        }
+
+        deviationTime /= size;
+
+        return avgTime + "+/-" + deviationTime;
     }
 }
 }
