@@ -13,7 +13,6 @@ package com.slaggun.actor.player.simple;
 
 import com.slaggun.actor.base.ActorModel;
 import com.slaggun.geom.Point2D;
-import com.slaggun.geom.Vector2D;
 import com.slaggun.util.RemoteClass;
 
 /**
@@ -23,8 +22,8 @@ import com.slaggun.util.RemoteClass;
 public class SimplePlayerModel implements ActorModel {
 
     private Point2D position;
-    private Vector2D velocity;
-    private Vector2D look;
+    private Point2D velocity;
+    private Point2D look;
 
     public Point2D getPosition() {
         return position;
@@ -34,19 +33,19 @@ public class SimplePlayerModel implements ActorModel {
         this.position = position;
     }
 
-    public Vector2D getVelocity() {
+    public Point2D getVelocity() {
         return velocity;
     }
 
-    public void setVelocity(Vector2D velocity) {
+    public void setVelocity(Point2D velocity) {
         this.velocity = velocity;
     }
 
-    public Vector2D getLook() {
+    public Point2D getLook() {
         return look;
     }
 
-    public void setLook(Vector2D look) {
+    public void setLook(Point2D look) {
         this.look = look;
     }
 

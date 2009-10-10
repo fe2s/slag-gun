@@ -16,8 +16,6 @@ import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorPhysics;
 import com.slaggun.actor.player.PlayerConstants;
 import com.slaggun.actor.shell.pistol.PistolShellFactory;
-import com.slaggun.geom.Point2d;
-import com.slaggun.geom.Vector2d;
 import com.slaggun.util.log.Logger;
 
 import flash.geom.Point;
@@ -33,6 +31,7 @@ import flash.ui.Keyboard;
 public class SimplePlayerPhysics implements ActorPhysics{
 
     private var log:Logger = Logger.getLogger();
+    private var serverModel:SimplePlayerModel;
 
     public function liveServer(timePass:Number, actor:Actor, world:GameEnvironment):void {
         
@@ -77,7 +76,7 @@ public class SimplePlayerPhysics implements ActorPhysics{
         actorModel.velocity.x = vx;
         actorModel.velocity.y = vy;
 
-        live(timePass, actor, world);
+        live(timePass, actorModel);
 
         actorModel.look.x = world.inputStates.mousePosition.x - actorModel.position.x;
         actorModel.look.y = world.inputStates.mousePosition.y - actorModel.position.y;
@@ -87,6 +86,50 @@ public class SimplePlayerPhysics implements ActorPhysics{
 
         var actorModel:SimplePlayerModel = SimplePlayerModel(actor.model);
 
+        live(timePass, serverModel);
+
+        var actorX:Number = actorModel.position.x;
+        var actorY:Number = actorModel.position.y;
+
+        var serverActorX:Number = serverModel.position.x;
+        var serverActorY:Number = serverModel.position.y;
+
+        var vx:Number = (serverActorX - actorX);
+        var vy:Number = (serverActorY - actorY);
+        var distance:Number = Math.sqrt(vx*vx + vy*vy);
+        if(distance != 0){
+            vx/=distance;
+            vy/=distance;
+
+            var v:Number = distance/10;
+            var minSpeed:Number = timePass*PlayerConstants.PLAYER_SPEED_PER_MS;
+
+            if(v < minSpeed){
+                v = minSpeed;
+            }
+
+            if(v > distance){
+                v = distance;
+            }
+
+            actorX = vx*v + actorX;
+            actorY = vy*v + actorY;
+
+            if(v > timePass * PlayerConstants.PLAYER_SPEED_PER_MS/2){
+                actorModel.velocity.x = v*vx/timePass;
+                actorModel.velocity.y = v*vy/timePass;
+            }else{
+                actorModel.velocity.x = serverModel.velocity.x;
+                actorModel.velocity.y = serverModel.velocity.y;
+            }
+
+
+            actorModel.position.x = actorX;
+            actorModel.position.y = actorY;
+        }
+    }
+
+    protected function live(timePass:Number, actorModel:SimplePlayerModel):void{
         var vx:Number = actorModel.velocity.x;
         var vy:Number = actorModel.velocity.y;
 
@@ -101,20 +144,44 @@ public class SimplePlayerPhysics implements ActorPhysics{
         actorModel.position.y = y + vy * timePass;
     }
 
-    protected function live(timePass:Number, actor:Actor, world:GameEnvironment){
 
+    public function createSnapshot(actor:Actor, world:GameEnvironment):Object {
+        return actor.model;
     }
+
+    public function receiveSnapshot(object:Object, actor:Actor, world:GameEnvironment):void {
+
+        var receivedModel:SimplePlayerModel = SimplePlayerModel(object);
+
+        var currentPosition:Point;
+
+        var actorModel:SimplePlayerModel = SimplePlayerModel(actor.model);
+
+        if(serverModel == null){
+            currentPosition = receivedModel.position.clone();
+        }else{
+            currentPosition = actorModel.position;
+        }
+
+        serverModel = SimplePlayerModel(object);
+
+        actorModel = serverModel.clone();
+        actorModel.position = currentPosition;
+
+        actor.model = actorModel; 
+    }
+
 
     private function shoot(actorModel:SimplePlayerModel, world:GameEnvironment):void {
         const mineActor:Boolean = false;
         const replicatedOnce:Boolean = true;
 
-        var shellPosition:Point2d = Point2d.valueOf(actorModel.position);
-        var shellDirection:Vector2d = new Vector2d(actorModel.look.x, actorModel.look.y);
+        var shellPosition:Point = actorModel.position.clone();
+        var shellDirection:Point = new Point(actorModel.look.x, actorModel.look.y);
 
         // to not kill yourself =)
         shellDirection.normalize(PlayerConstants.RADIUS + 1);
-        shellPosition.translate(shellDirection);
+        shellPosition.offset(shellDirection.x, shellDirection.y);
 
         var shellFactory:PistolShellFactory = new PistolShellFactory();
         var shell:Actor = shellFactory.create(shellPosition, shellDirection);

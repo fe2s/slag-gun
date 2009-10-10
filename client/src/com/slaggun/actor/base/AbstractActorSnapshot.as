@@ -10,6 +10,7 @@
  */
 
 package com.slaggun.actor.base {
+import com.slaggun.GameEnvironment;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.util.NotImplementedException;
 
@@ -21,9 +22,9 @@ public class AbstractActorSnapshot implements ActorSnapshot{
 
     protected var _id:int;
     protected var _owner:int;
-    protected var _model:ActorModel;
+    protected var _model:Object;
 
-    public function resurrect():Actor {
+    public function resurrect(game:GameEnvironment):Actor {
         throw new NotImplementedException("Should be implemented in child");
     }
 
@@ -43,13 +44,17 @@ public class AbstractActorSnapshot implements ActorSnapshot{
         _owner = value;
     }
 
-    public function get model():ActorModel {
+    public function get model():Object {
         return _model;
     }
 
-    public function set model(value:ActorModel):void {
+    public function set model(value:Object):void {
         _model = value;
     }
 
+
+    public function toString():String {
+        return "AbstractActorSnapshot{_id=" + String(_id) + ",_owner=" + String(_owner) + ",_model=" + String(_model) + "}";
+    }
 }
 }

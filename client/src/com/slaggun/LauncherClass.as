@@ -17,6 +17,8 @@ import com.slaggun.util.log.Logger;
 
 import flash.display.BitmapData;
 import flash.display.Graphics;
+import flash.geom.Point;
+import flash.net.registerClassAlias;
 
 /**
  * Lucnher class that integrates game engine and mxml
@@ -47,6 +49,8 @@ public class LauncherClass {
      * @return
      */
     public function inititalize():void {
+
+        registerClassAlias("com.slaggun.geom.Point2D", Point);        
 
         var playerFactory:SimplePlayerFactory = new SimplePlayerFactory();
         var botFactory:BotFactory = new BotFactory();

@@ -10,12 +10,11 @@
  */
 
 package com.slaggun.actor.shell.pistol {
+import com.slaggun.GameEnvironment;
 import com.slaggun.actor.base.AbstractActor;
+import com.slaggun.actor.base.Action;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorSnapshot;
-import com.slaggun.actor.base.Action;
-import com.slaggun.geom.Point2d;
-import com.slaggun.geom.Vector2d;
 
 /**
  *
@@ -30,10 +29,10 @@ public class PistolShell extends AbstractActor implements Actor{
     }
 
 
-    override public function makeSnapshot():ActorSnapshot {
+    override public function makeSnapshot(game:GameEnvironment):ActorSnapshot {
         var snapshot:PistolShellSnapshot = new PistolShellSnapshot();
         snapshot.id = _id;
-        snapshot.model = _model;
+        snapshot.model = _physics.createSnapshot(this, game);
         snapshot.owner = _owner;
         return snapshot;
     }

@@ -36,5 +36,18 @@ import com.slaggun.GameEnvironment;
          * @param world     - game world
          */
         function liveServer(deltaTime:Number, actor:Actor, world:GameEnvironment):void;
+
+        /**
+         * Returns actor snapshot object.
+         * It will be invoked on server side during replicate cycle.
+         * @return actor snapshot object.
+         */
+        function createSnapshot(actor:Actor, world:GameEnvironment):Object;
+
+        /**
+         * Handles client replicate event
+         * @param object
+         */
+        function receiveSnapshot(object:Object, actor:Actor, world:GameEnvironment):void;
     }
 }

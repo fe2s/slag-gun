@@ -13,7 +13,6 @@ package com.slaggun.actor.shell.pistol;
 
 import com.slaggun.actor.base.ActorModel;
 import com.slaggun.geom.Point2D;
-import com.slaggun.geom.Vector2D;
 import com.slaggun.util.RemoteClass;
 
 /**
@@ -23,7 +22,7 @@ import com.slaggun.util.RemoteClass;
 public class PistolShellModel implements ActorModel{
 
     private Point2D position;
-    private Vector2D speedVector;
+    private Point2D speedVector;
 
     public PistolShellModel() {
         // need for AMF
@@ -37,11 +36,11 @@ public class PistolShellModel implements ActorModel{
         this.position = position;
     }
 
-    public Vector2D getSpeedVector() {
+    public Point2D getSpeedVector() {
         return speedVector;
     }
 
-    public void setSpeedVector(Vector2D speedVector) {
+    public void setSpeedVector(Point2D speedVector) {
         this.speedVector = speedVector;
     }
 

@@ -18,10 +18,10 @@ import flash.geom.Point;
  */
 public class Circle {
 
-    private var _center:Point2d;
+    private var _center:Point;
     private var _radius:Number;
 
-    public function Circle(center:Point2d, radius:Number) {
+    public function Circle(center:Point, radius:Number) {
         _center = center;
         _radius = radius;
     }
@@ -33,15 +33,15 @@ public class Circle {
      * @param point
      * @return true if inside
      */
-    public function isInside(point:Point2d):Boolean {
+    public function isInside(point:Point):Boolean {
         return Point.distance(point, _center) <= _radius;
     }
 
-    public function get center():Point2d {
+    public function get center():Point {
         return _center;
     }
 
-    public function set center(value:Point2d):void {
+    public function set center(value:Point):void {
         _center = value;
     }
 

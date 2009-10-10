@@ -18,6 +18,7 @@
  * @see PhysicalWorld
  */
 package com.slaggun.actor.base {
+import com.slaggun.GameEnvironment;
 
 public interface Actor {
 
@@ -28,7 +29,7 @@ public interface Actor {
      * 
      * @return snapshot of the actor
      */
-    function makeSnapshot():ActorSnapshot;
+    function makeSnapshot(game:GameEnvironment):ActorSnapshot;
 
 
     /**

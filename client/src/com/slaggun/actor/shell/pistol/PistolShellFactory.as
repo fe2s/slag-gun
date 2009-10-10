@@ -10,10 +10,9 @@
  */
 
 package com.slaggun.actor.shell.pistol {
-import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.player.ActorIdGenerator;
-import com.slaggun.geom.Point2d;
-import com.slaggun.geom.Vector2d;
+
+import flash.geom.Point;
 
 /**
  *
@@ -29,7 +28,7 @@ public class PistolShellFactory  {
         return pistolShell;
     }
     
-    public function create(startPosition:Point2d, direction:Vector2d):PistolShell {
+    public function create(startPosition:Point, direction:Point):PistolShell {
         direction.normalize(PistolShellConstants.SPEED);
 
         var pistolShellModel:PistolShellModel = new PistolShellModel();

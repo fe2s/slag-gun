@@ -10,17 +10,13 @@
  */
 
 package com.slaggun.actor.shell.pistol {
+import com.slaggun.GameEnvironment;
 import com.slaggun.actor.base.Action;
 import com.slaggun.actor.player.PlayerConstants;
 import com.slaggun.actor.player.simple.SimplePlayer;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
-import com.slaggun.GameEnvironment;
 import com.slaggun.geom.Circle;
-import com.slaggun.geom.Point2d;
-
 import com.slaggun.util.log.Logger;
-
-import mx.effects.easing.Circular;
 
 /**
  * How different actors should react on the pistol shell hit

@@ -10,8 +10,6 @@
  */
 
 package com.slaggun.actor.shell.pistol {
-import com.slaggun.geom.Vector2d;
-
 /**
  *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)

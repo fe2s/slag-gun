@@ -259,10 +259,10 @@ public class GameEnvironment extends EventDispatcher {
         var actorSnapsots:ArrayCollection = new ArrayCollection();
 
         for each (var actor:Actor in _mineActors) {
-            actorSnapsots.addItem(actor.makeSnapshot());
+            actorSnapsots.addItem(actor.makeSnapshot(this));
         }
         for each (var publishOnce:Actor in toBeReplicatedOnce) {
-            actorSnapsots.addItem(publishOnce.makeSnapshot());
+            actorSnapsots.addItem(publishOnce.makeSnapshot(this));
         }
 
         toBeReplicatedOnce = [];
@@ -289,16 +289,16 @@ public class GameEnvironment extends EventDispatcher {
                 for each (var existingActor:Actor in existingActors) {
                     if (existingActor.id == actorSnapshot.id) {
                         // found actor, update it
-                        existingActor.model = actorSnapshot.model;
+                        existingActor.physics.receiveSnapshot(actorSnapshot.model, existingActor, this);
                         knownActor = true;
                         break;
                     }
                 }
                 if (!knownActor) {
-                    add(actorSnapshot.resurrect(), mineActor, replicatedOnce);
+                    add(actorSnapshot.resurrect(this), mineActor, replicatedOnce);
                 }
             } else {
-                add(actorSnapshot.resurrect(), mineActor, replicatedOnce);
+                add(actorSnapshot.resurrect(this), mineActor, replicatedOnce);
             }
         }
     }

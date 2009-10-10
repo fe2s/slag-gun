@@ -36,6 +36,8 @@ public class EventPacket {
         var body:EventBody = new EventBody(eventBytes);
         var header:EventHeader = new EventHeader(body.size);
 
+        var test:Object = serializer.fromAmfBytes(eventBytes);
+
         return new EventPacket(header, body);
     }
 

@@ -10,6 +10,7 @@
  */
 
 package com.slaggun.actor.base {
+import com.slaggun.GameEnvironment;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorModel;
 
@@ -30,11 +31,11 @@ public interface ActorSnapshot {
      * @see Actor.makeSnapshot()
      * @return actor
      */
-    function resurrect():Actor;
+    function resurrect(game:GameEnvironment):Actor;
 
-    function get model():ActorModel;
+    function get model():Object;
 
-    function set model(model:ActorModel):void;
+    function set model(model:Object):void;
 
     function set owner(owner:int):void;
 

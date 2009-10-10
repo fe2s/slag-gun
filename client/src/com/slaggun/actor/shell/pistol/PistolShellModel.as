@@ -11,8 +11,8 @@
 
 package com.slaggun.actor.shell.pistol {
 import com.slaggun.actor.base.ActorModel;
-import com.slaggun.geom.Point2d;
-import com.slaggun.geom.Vector2d;
+
+import flash.geom.Point;
 
 /**
  *
@@ -21,22 +21,22 @@ import com.slaggun.geom.Vector2d;
 [RemoteClass(alias="com.slaggun.actor.shell.pistol.PistolShellModel")]
 public class PistolShellModel implements ActorModel{
 
-    private var _position:Point2d;
-    private var _speedVector:Vector2d;
+    private var _position:Point;
+    private var _speedVector:Point;
 
-    public function get position():Point2d {
+    public function get position():Point {
         return _position;
     }
 
-    public function get speedVector():Vector2d {
+    public function get speedVector():Point {
         return _speedVector;
     }
 
-    public function set position(value:Point2d):void {
+    public function set position(value:Point):void {
         _position = value;
     }
 
-    public function set speedVector(value:Vector2d):void {
+    public function set speedVector(value:Point):void {
         _speedVector = value;
     }
 }

@@ -12,10 +12,9 @@
 package com.slaggun.actor.player.simple {
 import com.slaggun.actor.base.ActorModel;
 import com.slaggun.actor.player.PlayerConstants;
-import com.slaggun.geom.Point2d;
-import com.slaggun.geom.Vector2d;
 import com.slaggun.util.log.Logger;
 
+import flash.geom.Point;
 
 /**
  * This is model for the SimplePlayer
@@ -29,9 +28,9 @@ public class SimplePlayerModel implements ActorModel{
 
     private var log:Logger = Logger.getLogger();
 
-    private var _position:Point2d = new Point2d(50, 50);
-    private var _velocity:Vector2d = new Vector2d();
-    private var _look:Vector2d = new Vector2d();
+    private var _position:Point = new Point(50, 50);
+    private var _velocity:Point = new Point();
+    private var _look:Point = new Point();
     private var _health:int = PlayerConstants.MAX_HEALTH_HP; // in hit points
 
     /**
@@ -53,14 +52,14 @@ public class SimplePlayerModel implements ActorModel{
     public function respawn():void {
         log.info("respawned");
         _health = PlayerConstants.MAX_HEALTH_HP;
-        _position = new Point2d(50, 50);
+        _position = new Point(50, 50);
     }
 
     /**
      * Return player position
      * @return player position
      */
-    public function get position():Point2d {
+    public function get position():Point {
         return _position;
     }
 
@@ -68,7 +67,7 @@ public class SimplePlayerModel implements ActorModel{
      * Sets player position
      * @param value - new position
      */
-    public function set position(value:Point2d):void {
+    public function set position(value:Point):void {
         _position = value;
     }
 
@@ -76,7 +75,7 @@ public class SimplePlayerModel implements ActorModel{
      * Returns velocity vector.
      * @return velocity vector.
      */
-    public function get velocity():Vector2d {
+    public function get velocity():Point {
         return _velocity;
     }
 
@@ -84,7 +83,7 @@ public class SimplePlayerModel implements ActorModel{
      * Sets velocity vector
      * @param value - new velocity vector
      */
-    public function set velocity(value:Vector2d):void {
+    public function set velocity(value:Point):void {
         _velocity = value;
     }
 
@@ -92,7 +91,7 @@ public class SimplePlayerModel implements ActorModel{
      * Return vector where user look
      * @return coordinate where user look
      */
-    public function get look():Vector2d {
+    public function get look():Point {
         return _look;
     }
 
@@ -100,7 +99,7 @@ public class SimplePlayerModel implements ActorModel{
      * Sets vector where user looks.
      * @param value - look coordinate
      */
-    public function set look(value:Vector2d):void {
+    public function set look(value:Point):void {
         _look = value;
     }
 
@@ -110,6 +109,25 @@ public class SimplePlayerModel implements ActorModel{
 
     public function set health(value:int):void {
         _health = value;
+    }
+
+    /**
+     * Copy values from src to dst and returns dst
+     * @param src
+     * @param dst
+     * @return
+     */
+    protected function copyValues(src:SimplePlayerModel, dst:SimplePlayerModel):SimplePlayerModel{
+        dst._position = src._position.clone();
+        dst._velocity = src._velocity.clone();
+        dst._look = src._look.clone();
+        dst._health = src._health;
+
+        return dst;
+    }
+
+    public function clone():SimplePlayerModel {
+        return copyValues(this, new SimplePlayerModel());
     }
 
     public function toString():String {

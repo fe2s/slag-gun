@@ -73,6 +73,7 @@ public class GameClient extends EventDispatcher {
      * @param event game event
      */
     public function sendEvent(event:GameEvent):void {
+        trace("send = " + event);
         if (socket != null && socket.connected) {
             var eventPacket:EventPacket = EventPacket.of(event);
             send(eventPacket.content);

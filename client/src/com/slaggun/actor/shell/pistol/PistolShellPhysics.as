@@ -10,31 +10,32 @@
  */
 
 package com.slaggun.actor.shell.pistol {
-import com.slaggun.actor.base.Actor;
-import com.slaggun.actor.base.ActorPhysics;
 import com.slaggun.GameEnvironment;
+import com.slaggun.actor.base.Actor;
+import com.slaggun.actor.base.BaseActorPhysics;
 
 /**
  *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public class PistolShellPhysics implements ActorPhysics {
+public class PistolShellPhysics extends BaseActorPhysics {
 
-    public function liveServer(deltaTime:Number, actor:Actor, world:GameEnvironment):void {
-        liveClient(deltaTime, actor, world);
-    }
-
-    public function liveClient(deltaTime:Number, actor:Actor, world:GameEnvironment):void {
+    public override function liveClient(deltaTime:Number, actor:Actor, world:GameEnvironment):void {
         var shell:PistolShell = PistolShell(actor);
         var shellModel:PistolShellModel = PistolShellModel(actor.model);
         translateShell(shellModel);
         hit(shell, world);
 
-        // TODO: if is out of the world, destruct it
+        var x:Number = shellModel.position.x;
+        var y:Number = shellModel.position.y;
+
+        if(x<0 || y<0 || x > world.width || y > world.width){
+            world.remove(actor);
+        }
     }
 
     private function translateShell(shell:PistolShellModel):void {
-        shell.position.translate(shell.speedVector);
+        shell.position.offset(shell.speedVector.x, shell.speedVector.y);
     }
 
     private function hit(shell:PistolShell, world:GameEnvironment):void{
