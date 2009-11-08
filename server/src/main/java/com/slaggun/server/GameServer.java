@@ -11,383 +11,209 @@
 
 package com.slaggun.server;
 
-import static com.slaggun.util.Assert.notNull;
-import com.slaggun.util.Utils;
-import com.slaggun.events.EventPacket;
-import com.slaggun.events.EventPacketsHandler;
-import com.slaggun.events.OutgoingEventPackets;
-import com.slaggun.events.RequestSnapshotEvent;
-import com.slaggun.actor.world.PhysicalWorld;
-import com.slaggun.amf.AmfSerializerException;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.util.*;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Multiplexed multithreaded non-blocking game server.
- *
- * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-public class GameServer {
+public class GameServer extends BaseUnblockedServer<GameServer.GameSession> {
 
-    private static Logger log = Logger.getLogger(GameServer.class);
+	private final int INT_SIZE = Integer.SIZE/8;
 
-    private ServerProperties serverProperties;
-    private Selector selector;
-    private boolean running;
+	private Logger log = Logger.getLogger(GameServer.class);
 
-    // blocking queue to hold submitted tasks of incoming events packets processing
-    private ArrayBlockingQueue<Runnable> packetHandlers;
+	public abstract class GameClient{
+		private final int sessionId;
+		private Map<GameClient, Object> dataRetrieved = new ConcurrentHashMap<GameClient, Object>();
 
-    // executes submitted tasks of incoming events packets processing
-    private ThreadPoolExecutor workersPool;
-
-    // ids of sessions which are currently connected to this server
-    private HashMap<Integer, SelectionKey> liveSessionIds;
-
-    // used to generate session id for newcomer connection
-    private int sessionIdGenerator = 1;
-
-    // holds outgoing binary packets that are waiting for being sent
-    private OutgoingEventPackets outgoingPackets;
-
-    private PhysicalWorld world;
-
-	private Map<Integer, Set<Integer>> waitingFor;
-
-    public GameServer(ServerProperties serverProperties) {
-        notNull(serverProperties, "serverProperties must not be null");
-        this.serverProperties = serverProperties;
-    }
-
-    /**
-     * Start game server, so it will be ready to accept connections
-     *
-     * @throws IOException problems with server initializtion
-     */
-    public void start() throws IOException {
-        initialize();
-        acceptConnections();
-    }
-
-    /**
-     * Prepare game server:
-     * - listen socket
-     * - prepare workers thread pool
-     * - create game world from scratch
-     *
-     * @return game server
-     * @throws IOException error during attempt to listen socket
-     */
-    public GameServer initialize() throws IOException {
-        log.info("Initializing game server");
-        ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-        selector = Selector.open();
-        serverSocketChannel.configureBlocking(false);
-
-        // bind to localhost:port
-        int port = serverProperties.getGameServerPort();
-        log.info("Listening port: " + port);
-        serverSocketChannel.socket().bind(new InetSocketAddress(port));
-
-        // register the channel with the selector to handle new socket connections
-        serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-
-        // blocking bounded queue to hold submitted tasks setOf incoming events packets processing
-        int packetHandlersQueueSize = serverProperties.getPacketHandlersQueueSize();
-        packetHandlers = new ArrayBlockingQueue<Runnable>(packetHandlersQueueSize);
-
-        // blocking bounded queue to hold outgoing events packets
-        int outgoingPacketsQueueSize = serverProperties.getOutgoingPacketsQueueSize();
-        outgoingPackets = new OutgoingEventPackets(outgoingPacketsQueueSize);
-
-        // thread pool for events packets processing
-        initializeWorkersPool();
-
-        // create world
-        world = new PhysicalWorld();
-
-        // no live sessions yet
-        liveSessionIds = new HashMap<Integer, SelectionKey>();
-	    waitingFor = new HashMap<Integer, Set<Integer>>();
-
-        return this;
-    }
-
-    /**
-     * Accept connections. Main loop of the server.
-     */
-    public void acceptConnections() {
-        running = true;
-        log.debug("Accept connections");
-
-        workersPool.prestartAllCoreThreads();
-        log.debug("Workers pool is ready to process event packets");
-
-        while (running) {
-	        try {
-                // set OP_WRITE for those keys which we have waiting events for
-                Set<SelectionKey> allKeys = selector.keys();
-                for (SelectionKey key : allKeys) {
-                    Object attachment = key.attachment();
-                    if (attachment == null){
-                        continue;
-                    }
-
-                    int sessionId = ((Attachment) attachment).getSessionId();	                
-                    if (outgoingPackets.hasPackets(sessionId)) {
-                        key.interestOps(SelectionKey.OP_WRITE);
-                    }
-                }
-
-                // blocking select, may wait for connection for a long time
-                int interestingKeysNumber = selector.select();
-
-                if (interestingKeysNumber == 0) {
-                    // nothing to do if there are no new acceptable channels
-                    continue;
-                }
-
-                Set<SelectionKey> readyKeys = selector.selectedKeys();
-                Iterator<SelectionKey> keysIterator = readyKeys.iterator();
-                while (keysIterator.hasNext()) {
-                    SelectionKey key = keysIterator.next();
-                    keysIterator.remove();
-
-                    if (!key.isValid()) {
-                        continue;
-                    }
-
-                    if (key.isAcceptable()) {
-                        accept(key);
-                    }
-                    if (key.isReadable()) {
-                        read(key);
-                    }
-                    if (key.isWritable()) {
-                        write(key);
-                    }
-                }
-                // don't bother with exceptions in the loop
-            } catch (Exception e) {
-                log.debug("Error in the loop", e);
-            }
-        }
-
-    }
-
-    /**
-     * Initialize workers thread pool with server properties
-     */
-    private void initializeWorkersPool() {
-        int availableProcessors = serverProperties.getAvailableProcessors();
-        int ioThreadsNumber = 1;
-        // TODO: for testing
-        int corePoolSize = 2;
-        int maxPoolSize = 2;
-//        int maxPoolSize = availableProcessors == 1 ? 1 : availableProcessors - ioThreadsNumber;
-        long keepAliveTime = 10;
-        TimeUnit unit = TimeUnit.SECONDS;
-
-        workersPool = new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveTime, unit, packetHandlers);
-
-        log.info("Workers thread pool is initialized with the following:");
-        log.info("Core pool size: " + corePoolSize);
-        log.info("Max pool size: " + maxPoolSize);
-        log.info("Keep alive time: " + "10 " + unit);
-    }
-
-	public void requestSnapshot(int clientID) {
-
-		EventPacket eventPacket;
-		try {
-			eventPacket = EventPacket.of(new RequestSnapshotEvent());
-		} catch (AmfSerializerException e) {
-			throw new RuntimeException(e);
+		protected GameClient() {
+			this(freeSessionId.getAndIncrement());
 		}
 
-		outgoingPackets.put(eventPacket, Utils.setOf(clientID));
-		waitingFor.get(clientID).addAll(liveSessionIds.keySet());
-		waitingFor.get(clientID).remove(clientID);
-		selector.wakeup();
+		public GameClient(int id) {
+			sessionId = id;
+			clients.put(sessionId, this);
+		}
+
+		public int getSessionId() {
+			return sessionId;
+		}
+
+		protected abstract void dataReceived(GameClient from, ByteBuffer byteBuffer, boolean skipable);
+
+		public void postData(GameClient from, ByteBuffer byteBuffer){
+			postData(from, byteBuffer, false);
+		}
+
+		public void postData(GameClient from, ByteBuffer byteBuffer, boolean skip){
+			if(!skip){
+				dataReceived(from, byteBuffer, skip);
+			}else if(!dataRetrieved.containsKey(from)){
+				dataReceived(from, byteBuffer, skip);
+				dataRetrieved.put(from, new Object());
+			}
+		}
+
+		public void requestSnapshot(){
+			dataRetrieved.clear();
+		}
+
+		public void unregister() {
+			clients.remove(getSessionId());
+		}
+
+		@Override
+		public String toString() {
+			return "GameClient{" +
+					"sessionId=" + sessionId +
+					'}';
+		}
 	}
 
-    /**
-     * Accept new connection
-     *
-     * @param key represents channel of new connection
-     * @throws IOException -
-     */
-    private void accept(SelectionKey key) throws IOException {
-        log.debug("Accepting new connection ...");
-        ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
+	public class GameSession extends BaseUnblockedServer.Session{
+		private final GameSessionClient sessionClient;
 
-        // accept new connection
-        SocketChannel socketChannel = serverSocketChannel.accept();
-        // turn Nagle's algorithm off, use non blocking socket
-        socketChannel.socket().setTcpNoDelay(true);
-        socketChannel.configureBlocking(false);
-
-        // issue a session id
-        int sessionId = nextSessionId();
-
-        Attachment attachement = new Attachment(serverProperties.getReadBufferSize(), sessionId);
-
-        // we'd like to be notified when there's data waiting to be read
-	    SelectionKey clientKey = socketChannel.register(this.selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE, attachement);	    
-	    liveSessionIds.put(sessionId, clientKey);
-	    waitingFor.put(sessionId, new HashSet());
-
-	    requestSnapshot(sessionId);
-    }
-
-    /**
-     * Reads from channel, hands the data off to the worker threads
-     * If we've managed to read at least one complete event, set interest in OP_WRITE
-     *
-     * @param key represents channel of the connection
-     * @throws IOException -
-     */
-    private void read(SelectionKey key) throws IOException {
-        log.debug("reading from channel ...");
-        SocketChannel socketChannel = (SocketChannel) key.channel();
-        Attachment attachment = (Attachment) key.attachment();
-
-        int sessionId = attachment.getSessionId();
-        log.debug("session id: " + sessionId + "...");
-
-        ByteBuffer readBuffer = attachment.getReadBuff();
-        log.debug("readBuffer postion: " + readBuffer.position());
-
-        // attempt to read the channel
-        int numRead;
-        try {
-            numRead = socketChannel.read(readBuffer);
-        } catch (IOException e) {
-            // client forcibly closed the connection, cancel the selection key and close the channel
-            // remove this session from live ones as well
-            key.cancel();
-            socketChannel.close();
-            sessionWasDisconnected(sessionId);
-            return;
-        }
-
-        if (numRead == -1) {
-            // client closed the socket 
-            key.cancel();
-            socketChannel.close();
-            sessionWasDisconnected(sessionId);
-            return;
-        }
-
-        // check that we have at least one completely read header
-        if (attachment.isHeaderReadCompletely()) {
-
-            List<EventPacket> eventPackets = attachment.cutOffEventPackets();
-            log.debug("read " + eventPackets.size() + " event packets");
-            log.debug("Enqueue new incoming event packets");
-
-            // protect from modifying
-            HashSet<Integer> liveSessionIds = new HashSet<Integer>(this.liveSessionIds.keySet());
-
-            EventPacketsHandler handler = new EventPacketsHandler(this, world, eventPackets, sessionId, liveSessionIds,
-                    outgoingPackets, selector);
-
-            // Hands the data off to our worker threads
-            packetHandlers.add(handler);
-            log.debug("Packet handlers queue size: " + packetHandlers.size());
-
-        }
-        log.debug("reading done");
-    }
-
-    /**
-     * Writes to channel.
-     * Look at the head packet of outgoing queue.
-     * If we intersted in it, send to client.
-     * <p/>
-     *
-     * @param key represents channel of the connection
-     * @throws IOException -
-     */
-    private void write(SelectionKey key) throws IOException {
-        log.debug("writing to channel...");
-        SocketChannel socketChannel = (SocketChannel) key.channel();
-        Attachment attachment = (Attachment) key.attachment();
-
-        int sessionId = attachment.getSessionId();
-
-        if (outgoingPackets.hasPackets(sessionId)) {
-            // let's send all packets we have for this recipient
-            // need to be tested under the load, probably we should split it into the portions
-
-            log.debug("recepient: " + sessionId);
-
-            Queue<EventPacket> packets = outgoingPackets.popAll(sessionId);
-
-            for (EventPacket packet : packets) {
-                ByteBuffer packetBuffer = packet.getContentAsBuffer();
-                packetBuffer.flip();
-                socketChannel.write(packetBuffer);
-            }
-
-            log.debug("writing done");
-
-        } else {
-            log.debug("Outgoing packets queue for recipient " + sessionId + " is empty. " +
-                    "Nothing to write.");
-        }
-
-        // resume interest in OP_READ (interest in OP_WRITE is removed)
-        key.interestOps(SelectionKey.OP_READ);
-    }
-
-    /**
-     * Genereates session id for new connection
-     *
-     * @return session id
-     */
-    private int nextSessionId() {
-        return sessionIdGenerator++;
-    }
-
-    /**
-     * Notify game server about session disconnect
-     *
-     * @param sessionId id of the session that was disconnected
-     */
-    private void sessionWasDisconnected(int sessionId) {
-        boolean wasRemoved = liveSessionIds.containsKey(sessionId);
-        if (!wasRemoved) {
-            throw new IllegalStateException("Client closed the connection, tried to remove his session id " +
-                    sessionId + " from live sessions, but didn't find it there. Live session ids:" + liveSessionIds);
-        }
-    }
-
-    public boolean isRunning() {
-        return running;
-    }
-
-    public void setRunning(boolean running) {
-        this.running = running;
-    }
-
-	public boolean checkWaiting(Integer recipient, int sender) {
-		Set<Integer> set = waitingFor.get(recipient);
-		if(set.contains(sender)){
-			set.remove(sender);
-			return true;
+		public GameSession(GameSessionClient sessionClient) {
+			this.sessionClient = sessionClient;
+			this.sessionClient.setSession(this);
 		}
-		return false;
+
+		public GameClient getGameClient() {
+			return sessionClient;
+		}
+	}
+
+	public class GameSessionClient extends GameClient{
+		private GameSession session;
+
+		public void requestSnapshot(){
+			ByteBuffer requestSnapshotEvent = ByteBuffer.allocate(INT_SIZE);
+			requestSnapshotEvent.putInt(0);
+			requestSnapshotEvent.clear();
+
+			sendDate(serverSide, this, requestSnapshotEvent);
+
+			super.requestSnapshot();
+		}
+
+		@Override
+		protected void dataReceived(GameClient from, ByteBuffer byteBuffer, boolean skipable) {
+			getSession().postBuffer(byteBuffer);
+		}
+
+		public GameSession getSession() {
+			return session;
+		}
+
+		public void setSession(GameSession session) {
+			this.session = session;
+		}
+	}
+
+	public class ServerSide extends GameClient{
+
+		public ServerSide(int id) {
+			super(id);
+		}
+
+		@Override
+		protected void dataReceived(GameClient from, ByteBuffer byteBuffer, boolean skipable) {
+	        for (GameClient receiver : clients.values()) {
+			    // otherSession can be null if it deatached due to concurrecny
+			    if(receiver != null
+			    && receiver != from
+			    && receiver != this){
+				    receiver.postData(from, byteBuffer.slice(), skipable);
+				}
+	        }
+		}
+
+		@Override
+		public void postData(GameClient from, ByteBuffer byteBuffer, boolean skip) {
+			dataReceived(from, byteBuffer, skip);
+		}
+	}
+
+	private final AtomicInteger freeSessionId;
+	private final Map<Integer, GameClient> clients = new ConcurrentHashMap<Integer, GameClient>();
+	private final ServerSide serverSide;
+	
+	public GameServer(ServerProperties serverProperties) {
+		super(serverProperties);
+		int id = 0;
+		serverSide = new ServerSide(id++);
+		freeSessionId = new AtomicInteger(id);
+	}
+
+	public void sendDate(GameClient from, GameClient to, ByteBuffer data, boolean skip){
+
+		int packetSize = INT_SIZE  + data.remaining();
+		ByteBuffer sendBuffer = ByteBuffer.allocate(INT_SIZE + packetSize);
+		sendBuffer.putInt(packetSize);
+		sendBuffer.putInt(from.getSessionId());
+		sendBuffer.put(data);
+		sendBuffer.clear();
+
+		to.postData(from, sendBuffer, skip);
+	}
+
+	public void sendDate(GameClient from, GameClient to, ByteBuffer data){
+		sendDate(from, to, data, false);
+	}
+
+	@Override
+	protected GameSession createSession() {
+		log.debug("New client accepting: ");
+		return new GameSession(new GameSessionClient());
+	}
+
+	@Override
+	protected void onAccept(GameSession session) {
+		GameClient attachment = session.getGameClient();
+		int sessionId = attachment.getSessionId();
+        log.debug("New client accepted: " + sessionId + "...");
+		attachment.requestSnapshot();
+	}
+
+
+	@Override
+	protected void onDataReceived(GameSession session) {
+		ByteBuffer inputBuffer = session.getInputBuffer();
+		GameClient from = session.getGameClient();
+		log.debug("Reading session id: " + from.getSessionId());
+
+
+		final int PACKET_HEADER_SIZE = INT_SIZE;
+
+		while (inputBuffer.remaining() > PACKET_HEADER_SIZE ) {
+			int oldPosition = inputBuffer.position();
+
+			int messageSize = inputBuffer.getInt();
+
+            if (inputBuffer.remaining() >= messageSize){
+
+	            ByteBuffer packetBuffer = ByteBuffer.allocate(messageSize);
+	            packetBuffer.put(inputBuffer);
+	            packetBuffer.clear();
+
+	            int receiverID = packetBuffer.getInt();
+	            GameServer.GameClient receiver = clients.get(receiverID);
+	            sendDate(from, receiver, packetBuffer, true);
+            }else{
+	            inputBuffer.position(oldPosition);
+            }
+        }
+
+		from.requestSnapshot();
+	}
+
+	@Override
+	protected void onClose(GameSession session) {
+		session.getGameClient().unregister();
 	}
 }

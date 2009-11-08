@@ -14,7 +14,7 @@ package com.slaggun.amf;
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public class AmfSerializerException extends Exception {
+public class AmfSerializerException extends RuntimeException {
 
     public AmfSerializerException() {
         super();

@@ -9,17 +9,36 @@
  * and limitations under the License.
  */
 
-package com.slaggun.events {
+package com.slaggun.transport;
+
+import junit.framework.TestCase;
+
 /**
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-[RemoteClass(alias="com.slaggun.events.RequestSnapshotEvent")]
-public class RequestSnapshotEvent extends BaseGameEvent {
+public class Timeout {
+	private long startTime;
+	private long duration;
+	private String message = "Timeout exceed fail";
 
-    public static const REQUEST_SNAPSHOT:String = "RequestSnapshot";
+	public Timeout(String message, long duration) {
+		this.message = "Timeout exceeed: " + message;
+		start(duration);
+	}
 
-    public function RequestSnapshotEvent(type:String = REQUEST_SNAPSHOT, bubbles:Boolean = false, cancelable:Boolean = false) {
-        super(type, bubbles, cancelable);
-    }
-}
+	public Timeout(long duration) {
+		start(duration);		
+		this.duration = duration;
+	}
+
+	public void start(long duration){
+		this.startTime = System.currentTimeMillis();
+		this.duration = duration;
+	}
+
+	public void assertExceed(){
+		if(System.currentTimeMillis() - startTime > duration){
+			TestCase.fail(message);
+		}
+	}
 }

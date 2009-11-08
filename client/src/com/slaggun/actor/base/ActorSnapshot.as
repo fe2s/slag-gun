@@ -31,15 +31,11 @@ public interface ActorSnapshot {
      * @see Actor.makeSnapshot()
      * @return actor
      */
-    function resurrect(game:GameEnvironment):Actor;
+    function resurrect(game:GameEnvironment, owner:int):Actor;
 
     function get model():Object;
 
     function set model(model:Object):void;
-
-    function set owner(owner:int):void;
-
-    function get owner():int;
 
     function set id(id:int):void;
 

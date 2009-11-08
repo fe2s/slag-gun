@@ -21,10 +21,10 @@ import com.slaggun.actor.base.ActorSnapshot;
 [RemoteClass(alias="com.slaggun.actor.player.simple.SimplePlayerSnapshot")]
 public class SimplePlayerSnapshot extends AbstractActorSnapshot implements ActorSnapshot{
 
-    override public function resurrect(game:GameEnvironment):Actor {
+    override public function resurrect(game:GameEnvironment, owner:int):Actor {
         var actor:Actor = new SimplePlayerFactory().create(false);
         actor.id = _id;
-        actor.owner = _owner;
+        actor.owner = owner;
         actor.physics.receiveSnapshot(_model, actor, game);
         return actor;
     }

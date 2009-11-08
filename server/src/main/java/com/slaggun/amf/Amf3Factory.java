@@ -33,7 +33,7 @@ public class Amf3Factory implements AmfFactory {
 
     public AmfSerializer getAmfSerializer() {
         if (serializer == null){
-            serializer = new Amf3Serializer(SerializationContext.getSerializationContext());;
+            serializer = new Amf3Serializer(SerializationContext.getSerializationContext());
         }
         return serializer;
     }

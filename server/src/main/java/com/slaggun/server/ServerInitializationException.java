@@ -14,7 +14,7 @@ package com.slaggun.server;
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public class ServerInitializationException extends Exception {
+public class ServerInitializationException extends RuntimeException {
 
     public ServerInitializationException() {
     }

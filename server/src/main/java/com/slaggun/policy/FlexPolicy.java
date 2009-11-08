@@ -60,7 +60,7 @@ public class FlexPolicy {
 
 				if (REQUEST_POLICY_COMMAND.equals(request)) {
 					sessionSocket.getOutputStream().write(responseXMLMessage);
-					LOGGER.info("Policy file request");
+					LOGGER.debug("Policy file request");
 				} else {
 					LOGGER.warn("Unknown command retrieved: " + request);
 					sessionSocket.getOutputStream().write(responseErrorMessage);
@@ -112,7 +112,7 @@ public class FlexPolicy {
 				start();
 				wait();
 
-			} catch (InterruptedException e) {}
+			} catch (InterruptedException ignored) {}
 		}
 
 		public void doStop() throws IOException {

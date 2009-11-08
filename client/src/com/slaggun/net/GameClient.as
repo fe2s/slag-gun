@@ -11,7 +11,9 @@
 
 package com.slaggun.net {
 import com.slaggun.amf.AmfSerializer;
+import com.slaggun.events.BaseGameEvent;
 import com.slaggun.events.GameEvent;
+import com.slaggun.events.RequestSnapshotEvent;
 import com.slaggun.util.log.Logger;
 
 import flash.events.ErrorEvent;
@@ -27,6 +29,8 @@ import flash.utils.ByteArray;
 import mx.controls.Alert;
 
 public class GameClient extends EventDispatcher {
+
+    public static const BROADCAST_ADDRESS:int = 0;
 
     private var log:Logger = Logger.getLogger();
 
@@ -72,22 +76,13 @@ public class GameClient extends EventDispatcher {
      * Sends givent event to the server
      * @param event game event
      */
-    public function sendEvent(event:GameEvent):void {
+    public function sendEvent(event:GameEvent, recipient:int):void {
         trace("send = " + event);
         if (socket != null && socket.connected) {
-            var eventPacket:EventPacket = EventPacket.of(event);
-            send(eventPacket.content);
-        } else {
-            // not connected yet, waiting for connection
-            //            outgointEvents.push(event);
-        }
-    }
-
-    /**
-     * send bytes to socket server
-     */
-    private function send(bytes:ByteArray):void {
-        if (socket.connected) {
+            var bytes:ByteArray = new ByteArray();
+            bytes.writeInt(recipient);
+            bytes.writeObject(event);
+            socket.writeInt(bytes.length);
             socket.writeBytes(bytes);
             socket.flush();
         } else {
@@ -121,8 +116,16 @@ public class GameClient extends EventDispatcher {
                 socket.readBytes(eventBody, 0, bodySize);
 
 
-                var object:Object = AmfSerializer.instance().fromAmfBytes(eventBody);
-                var event:Event = Event(object);
+                var event:BaseGameEvent;
+
+                var sender:int = eventBody.readInt();
+                if(sender == 0){
+                    event = new RequestSnapshotEvent();
+                }else{
+                    event = BaseGameEvent(eventBody.readObject());
+                }
+
+                event.sender = sender;
                 trace("Incoming event:" + event);
                 dispatchEvent(event);
             }else{
@@ -153,7 +156,6 @@ public class GameClient extends EventDispatcher {
         socket.addEventListener(Event.CLOSE, closeHandler);
         socket.addEventListener(Event.CONNECT, connectHandler);
         socket.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-        //socket.addEventListener(ProgressEvent.SOCKET_DATA, dataHandler);
         socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
         socket.addEventListener(ErrorEvent.ERROR, errorHandler);
     }

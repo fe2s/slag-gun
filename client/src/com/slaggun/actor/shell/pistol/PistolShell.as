@@ -33,7 +33,6 @@ public class PistolShell extends AbstractActor implements Actor{
         var snapshot:PistolShellSnapshot = new PistolShellSnapshot();
         snapshot.id = _id;
         snapshot.model = _physics.createSnapshot(this, game);
-        snapshot.owner = _owner;
         return snapshot;
     }
 

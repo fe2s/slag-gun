@@ -11,15 +11,8 @@
 
 package com.slaggun.amf;
 
-import com.slaggun.actor.base.ActorSnapshot;
-import com.slaggun.actor.player.simple.SimplePlayerModel;
-import com.slaggun.actor.player.simple.SimplePlayerSnapshot;
-import com.slaggun.events.SnapshotEvent;
 import junit.framework.TestCase;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
@@ -48,35 +41,4 @@ public class Amf3SerializerTest extends TestCase {
         System.out.println(amf);
         assertEquals(testBean, serializer.fromAmfString(amf));
     }
-
-    public void testEventRoundTrip() throws AmfSerializerException {
-        SimplePlayerModel playerModel = new SimplePlayerModel();
-
-        ActorSnapshot actorSnapshot = new SimplePlayerSnapshot();
-        actorSnapshot.setOwner(2);
-        actorSnapshot.setId(1);
-        actorSnapshot.setModel(playerModel);
-
-        List<ActorSnapshot> actorSnapshots = new ArrayList<ActorSnapshot>();
-        actorSnapshots.add(actorSnapshot);
-
-        SnapshotEvent snapshot = new SnapshotEvent();
-        snapshot.setActorSnapshots(actorSnapshots);
-
-        AmfSerializer serializer = Amf3Factory.instance().getAmfSerializer();
-        byte[] snapShotBytes = serializer.toAmfBytes(snapshot);
-        SnapshotEvent snapshotAfterTrip = (SnapshotEvent) serializer.fromAmfBytes(snapShotBytes);
-
-        assertEquals(snapshotAfterTrip.getActorSnapshots().size(),
-                snapshot.getActorSnapshots().size());
-
-        assertEquals(snapshotAfterTrip.getActorSnapshots().get(0).getId(),
-                snapshot.getActorSnapshots().get(0).getId());
-
-        assertEquals(snapshotAfterTrip.getActorSnapshots().get(0).getOwner(),
-                snapshot.getActorSnapshots().get(0).getOwner());
-
-
-    }
-
 }

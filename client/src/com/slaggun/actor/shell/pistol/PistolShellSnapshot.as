@@ -23,10 +23,10 @@ import com.slaggun.actor.base.ActorSnapshot;
 [RemoteClass(alias="com.slaggun.actor.shell.pistol.PistolShellSnapshot")]
 public class PistolShellSnapshot extends AbstractActorSnapshot implements ActorSnapshot {
 
-    override public function resurrect(game:GameEnvironment):Actor {
+    override public function resurrect(game:GameEnvironment, owner:int):Actor {
         var actor:Actor = new PistolShellFactory().createNew();
         actor.id = _id;
-        actor.owner = _owner;
+        actor.owner = owner;
         actor.physics.receiveSnapshot(model, actor, game);
         return actor;
     }

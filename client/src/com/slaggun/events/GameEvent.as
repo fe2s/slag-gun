@@ -16,7 +16,7 @@ package com.slaggun.events {
  */
 [RemoteClass(alias="com.slaggun.events.GameEvent")]
 public interface GameEvent {
-
-    
+    function get sender():int;
+    function set sender(value:int):void;
 }
 }

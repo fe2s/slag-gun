@@ -279,10 +279,13 @@ public class GameEnvironment extends EventDispatcher {
     public function handleSnapshot(snapshotEvent:SnapshotEvent):void {
         const mineActor:Boolean = false;
         const replicatedOnce:Boolean = false;
+
+        var owner:int = snapshotEvent.sender;
+        var existingActors:Array = actorsByOwner[owner];
+        trace("handle owner = " + owner);
+
         for each (var actorSnapshot:ActorSnapshot in snapshotEvent.actorSnapshots) {
-
-            var existingActors:Array = actorsByOwner[actorSnapshot.owner];
-
+            
             if (existingActors != null) {
                 // known owner, try to find given actor
                 var knownActor:Boolean = false;
@@ -295,10 +298,10 @@ public class GameEnvironment extends EventDispatcher {
                     }
                 }
                 if (!knownActor) {
-                    add(actorSnapshot.resurrect(this), mineActor, replicatedOnce);
+                    add(actorSnapshot.resurrect(this, owner), mineActor, replicatedOnce);
                 }
             } else {
-                add(actorSnapshot.resurrect(this), mineActor, replicatedOnce);
+                add(actorSnapshot.resurrect(this, owner), mineActor, replicatedOnce);
             }
         }
     }
@@ -310,7 +313,7 @@ public class GameEnvironment extends EventDispatcher {
      */
     public function replicate():void {
         LOG.debug("Replicates count" + repl++);
-        _gameClient.sendEvent(buildSnapshot());
+        _gameClient.sendEvent(buildSnapshot(), GameClient.BROADCAST_ADDRESS);
         var lastMilsTime:Number = lastReplicateTime.getTime();
         lastReplicateTime = new Date();
         _lalatency = lastReplicateTime.getTime() - lastMilsTime; 

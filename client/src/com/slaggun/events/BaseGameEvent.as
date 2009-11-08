@@ -9,17 +9,26 @@
  * and limitations under the License.
  */
 
-package com.slaggun.events;
-
-import com.slaggun.util.RemoteClass;
+package com.slaggun.events {
+import flash.events.Event;
 
 /**
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-@RemoteClass
-public class RequestSnapshotEvent implements GameEvent{
+public class BaseGameEvent extends Event implements GameEvent{
 
-	public void accept(EventVisitor visitor) {
-		visitor.visit(this);
-	}
+    private var _sender:int;
+
+    public function BaseGameEvent(type:String, bubbles:Boolean = false, cancelable:Boolean = false) {
+        super(type, bubbles, cancelable);
+    }
+
+    public function get sender():int {
+        return _sender;
+    }
+
+    public function set sender(value:int):void {
+        _sender = value;
+    }
+}
 }

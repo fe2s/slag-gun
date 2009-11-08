@@ -10,15 +10,13 @@
  */
 
 package com.slaggun.events {
-import flash.events.Event;
-
 import mx.collections.ArrayCollection;
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
 [RemoteClass(alias="com.slaggun.events.SnapshotEvent")]
-public class SnapshotEvent extends Event implements GameEvent {
+public class SnapshotEvent extends BaseGameEvent{
 
     public static const INCOMING:String = "IncomingSnapshot";
     public static const OUTGOING:String = "OutgoingSnapshot";

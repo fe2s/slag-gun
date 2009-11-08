@@ -34,14 +34,12 @@ public class ServerProperties {
 	private static String FLEX_POLICY_PORT_KEY = "flex.policy.port";
     private static String READ_BUFFER_SIZE_KEY = "read.buffer.size";
     private static String PACKET_HANDLERS_QUEUE_SIZE_KEY = "packet.handlers.queue.size";
-    private static String OUTGOING_PACKETS_QUEUE_SIZE_KEY = "outgoing.packets.queue.size";
 
     private int gameServerPort;
 	private int flexPolicyPort;
     private int availableProcessors;
     private int readBufferSize;
     private int packetHandlersQueueSize;
-    private int outgoingPacketsQueueSize;
 
 
     /**
@@ -91,10 +89,6 @@ public class ServerProperties {
         // get events handlers queue size
         packetHandlersQueueSize = Integer.parseInt(findProperty(PACKET_HANDLERS_QUEUE_SIZE_KEY));
         log.info(" packet handlers queue size: " + packetHandlersQueueSize);
-
-         // get the outgoing packets queue size
-        outgoingPacketsQueueSize = Integer.parseInt(findProperty(OUTGOING_PACKETS_QUEUE_SIZE_KEY));
-        log.info(" outgoing packets queue size: " + outgoingPacketsQueueSize);
     }
 
     private String findProperty(String propertyKey) throws ServerInitializationException {
@@ -144,14 +138,6 @@ public class ServerProperties {
 
     public void setPacketHandlersQueueSize(int packetHandlersQueueSize) {
         this.packetHandlersQueueSize = packetHandlersQueueSize;
-    }
-
-    public int getOutgoingPacketsQueueSize() {
-        return outgoingPacketsQueueSize;
-    }
-
-    public void setOutgoingPacketsQueueSize(int outgoingPacketsQueueSize) {
-        this.outgoingPacketsQueueSize = outgoingPacketsQueueSize;
     }
 
     @Override

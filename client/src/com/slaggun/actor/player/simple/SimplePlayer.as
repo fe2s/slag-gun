@@ -38,7 +38,6 @@ public class SimplePlayer extends AbstractActor implements Actor {
         var snapshot:SimplePlayerSnapshot = new SimplePlayerSnapshot();
         snapshot.id = _id;
         snapshot.model = _physics.createSnapshot(this, game);
-        snapshot.owner = _owner;
         return snapshot;
     }
 
