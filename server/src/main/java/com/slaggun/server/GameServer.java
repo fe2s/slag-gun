@@ -27,7 +27,7 @@ public class GameServer extends BaseUnblockedServer<GameServer.GameSession> {
 
 	private Logger log = Logger.getLogger(GameServer.class);
 
-	public abstract class GameClient{
+    public abstract class GameClient{
 		private final int sessionId;
 		private Map<GameClient, Object> dataRetrieved = new ConcurrentHashMap<GameClient, Object>();
 
@@ -150,7 +150,7 @@ public class GameServer extends BaseUnblockedServer<GameServer.GameSession> {
 		freeSessionId = new AtomicInteger(id);
 	}
 
-	public void sendDate(GameClient from, GameClient to, ByteBuffer data, boolean skip){
+	public void sendData(GameClient from, GameClient to, ByteBuffer data, boolean skip){
 
 		int packetSize = INT_SIZE  + data.remaining();
 		ByteBuffer sendBuffer = ByteBuffer.allocate(INT_SIZE + packetSize);
@@ -163,7 +163,7 @@ public class GameServer extends BaseUnblockedServer<GameServer.GameSession> {
 	}
 
 	public void sendDate(GameClient from, GameClient to, ByteBuffer data){
-		sendDate(from, to, data, false);
+		sendData(from, to, data, false);
 	}
 
 	@Override
@@ -203,7 +203,7 @@ public class GameServer extends BaseUnblockedServer<GameServer.GameSession> {
 
 	            int receiverID = packetBuffer.getInt();
 	            GameServer.GameClient receiver = clients.get(receiverID);
-	            sendDate(from, receiver, packetBuffer, true);
+	            sendData(from, receiver, packetBuffer, true);
             }else{
 	            inputBuffer.position(oldPosition);
             }

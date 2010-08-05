@@ -31,15 +31,15 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public abstract class BaseUnblockedServer<T extends BaseUnblockedServer.Session> {
+public abstract class BaseUnblockedServer<S extends BaseUnblockedServer.Session> {
 
 	protected abstract class Session{
 		private SelectionKey clientKey;
 		private ByteBuffer inputBuffer = ByteBuffer.allocate(serverProperties.getReadBufferSize());
-		private ConcurrentLinkedQueue<ByteBuffer> outputQueuue = new ConcurrentLinkedQueue<ByteBuffer>();
+		private ConcurrentLinkedQueue<ByteBuffer> outputQueue = new ConcurrentLinkedQueue<ByteBuffer>();
 		private boolean closed = false;
 
-		public ByteBuffer getInputBuffer(){
+        public ByteBuffer getInputBuffer(){
 			return inputBuffer;
 		}
 
@@ -60,7 +60,7 @@ public abstract class BaseUnblockedServer<T extends BaseUnblockedServer.Session>
 		 * @param lockedBuffer - buffer to be posted on write queue
 		 */
 		public void postBuffer(ByteBuffer lockedBuffer){
-			outputQueuue.offer(lockedBuffer);
+			outputQueue.offer(lockedBuffer);
 			flush();
 		}
 
@@ -72,7 +72,7 @@ public abstract class BaseUnblockedServer<T extends BaseUnblockedServer.Session>
 		 * @param lockedArray - array to be postend in write queue
 		 */
 		public void postArray(byte[] lockedArray){
-			outputQueuue.offer(ByteBuffer.wrap(lockedArray));
+			outputQueue.offer(ByteBuffer.wrap(lockedArray));
 			flush();
 		}
 
@@ -84,7 +84,7 @@ public abstract class BaseUnblockedServer<T extends BaseUnblockedServer.Session>
 		 * @param lenght - length of byte set after the ofsset to be written
 		 */
 		public void postArray(byte[] lockedArray, int offset, int lenght){
-			outputQueuue.offer(ByteBuffer.wrap(lockedArray, offset, lenght));
+			outputQueue.offer(ByteBuffer.wrap(lockedArray, offset, lenght));
 			flush();
 		}
 
@@ -119,7 +119,7 @@ public abstract class BaseUnblockedServer<T extends BaseUnblockedServer.Session>
 			SocketChannel socketChannel = (SocketChannel) clientKey.channel();
 
 			ByteBuffer outputBuffer ;
-			while((outputBuffer = outputQueuue.poll()) != null){
+			while((outputBuffer = outputQueue.poll()) != null){
 				try {
 					socketChannel.write(outputBuffer);
 				} catch (IOException e) {
@@ -203,10 +203,10 @@ public abstract class BaseUnblockedServer<T extends BaseUnblockedServer.Session>
         return this;
     }
 
-	protected abstract T createSession();
-	protected abstract void onAccept(T session);
-	protected abstract void onDataReceived(T session);
-	protected abstract void onClose(T session);
+	protected abstract S createSession();
+	protected abstract void onAccept(S session);
+	protected abstract void onDataReceived(S session);
+	protected abstract void onClose(S session);
 
     /**
      * Accept connections. Main loop of the server.
@@ -267,7 +267,7 @@ public abstract class BaseUnblockedServer<T extends BaseUnblockedServer.Session>
     }
 
 	private void close(SelectionKey key) {
-		T session = (T) key.attachment();
+		S session = (S) key.attachment();
 		if(!session.closed){
 			session.closed = true;
 			onClose(session);
@@ -311,7 +311,7 @@ public abstract class BaseUnblockedServer<T extends BaseUnblockedServer.Session>
         socketChannel.socket().setTcpNoDelay(true);
         socketChannel.configureBlocking(false);
 
-	    T session = createSession();
+	    S session = createSession();
 
 	    // we'd like to be notified when there's data waiting to be read
 	    SelectionKey clientKey = socketChannel.register(this.selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE, session);
@@ -330,7 +330,7 @@ public abstract class BaseUnblockedServer<T extends BaseUnblockedServer.Session>
      */
     private void read(SelectionKey key) throws IOException {
         log.debug("reading from channel ...");
-        T session = (T) key.attachment();
+        S session = (S) key.attachment();
 
         session.updateBuffer();
 
