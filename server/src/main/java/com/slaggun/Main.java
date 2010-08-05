@@ -11,7 +11,7 @@
 
 package com.slaggun;
 
-import com.slaggun.server.BaseUnblockedServer;
+import com.slaggun.server.BaseUnblockingServer;
 import com.slaggun.server.ServerProperties;
 import com.slaggun.server.GameServer;
 import com.slaggun.util.LoggerUtils;
@@ -39,7 +39,7 @@ public class Main {
     public void start() throws Exception {
         LoggerUtils.initializeLogger();
 
-        BaseUnblockedServer server;
+        BaseUnblockingServer server;
 	    FlexPolicy flexPolicy = null;
         try {
             ServerProperties serverProperties = new ServerProperties().initialize();
