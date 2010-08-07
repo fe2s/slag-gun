@@ -25,16 +25,22 @@ public class HaskellServer {
     public static void main(String[] args) throws IOException {
 
         ServerSocket serverSocket = new ServerSocket(5555);
-        Socket clientSocket = serverSocket.accept();
+        while (true){
+            try {
+                Socket clientSocket = serverSocket.accept();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
 
-        String inputLine;
-        while ((inputLine = in.readLine()) != null) {
-            System.out.println(inputLine);
-            out.write("Reply from Java: " + inputLine + "\n");
-            out.flush();
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    System.out.println(inputLine);
+                    out.write("Reply from Java: " + inputLine + "\n");
+                    out.flush();
+                }
+            } catch (IOException e) {
+                System.out.println(e);
+            } 
         }
 
     }

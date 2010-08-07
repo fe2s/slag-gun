@@ -20,8 +20,10 @@ import Data.IORef
 import Data.Map as Map
 import Graphics.Rendering.OpenGL
 import Graphics.UI.GLUT
-import Network.Socket
+import Network.Socket hiding (recv)
+import Network.Socket.ByteString
 import System.IO
+import qualified Data.ByteString.Char8 as C
 
 import SlagGun as S
 
@@ -94,30 +96,25 @@ processKey key world =
 
 -----------------------------------------------------------------------------
 
-openConnection :: IO Handle
-openConnection = withSocketsDo $ do
+testConnection :: IO ()
+testConnection = withSocketsDo $ do
     print $ "opening connection " ++ hostName ++ ":" ++ port
     addrinfos <- getAddrInfo Nothing (Just hostName) (Just port)
     let addr = head addrinfos
     sock <- socket (addrFamily addr) Stream defaultProtocol
     connect sock (addrAddress addr)
-    socketToHandle sock ReadWriteMode
+    sendAll sock $ C.pack "Greetings from Haskell\n"
+    msg <- recv sock readBuff
+    C.putStrLn msg
+    sClose sock
         where hostName = "localhost"
               port     = "5555"
+              readBuff = 1024
 
 -----------------------------------------------------------------------------
 
-testConnection = do
-    h <- openConnection
-    sendString "Greetings from Haskell" h
-    l <- hGetLine h
-    print l
 
------------------------------------------------------------------------------
 
-sendString str handle = hPutStrLn handle str >> hFlush handle
-
------------------------------------------------------------------------------
 
 
 
