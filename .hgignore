@@ -1,3 +1,4 @@
 ﻿syntax: glob
 glob:client/bin
 glob:server/target
+glob:haskell-client/dist

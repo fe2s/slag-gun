@@ -20,6 +20,8 @@ import Data.IORef
 import Data.Map as Map
 import Graphics.Rendering.OpenGL
 import Graphics.UI.GLUT
+import Network.Socket
+import System.IO
 
 import SlagGun as S
 
@@ -53,6 +55,7 @@ keyPrefs = fromList [((Char 'w'), S.Up),
 main :: IO ()
 main = do
     (progname, _) <- getArgsAndInitialize
+    testConnection
     -- initialDisplayMode $= [DoubleBuffered]
     createWindow progname
     world <- newIORef bigBangBoom
@@ -91,10 +94,30 @@ processKey key world =
 
 -----------------------------------------------------------------------------
 
+openConnection :: IO Handle
+openConnection = withSocketsDo $ do
+    print $ "opening connection " ++ hostName ++ ":" ++ port
+    addrinfos <- getAddrInfo Nothing (Just hostName) (Just port)
+    let addr = head addrinfos
+    sock <- socket (addrFamily addr) Stream defaultProtocol
+    connect sock (addrAddress addr)
+    socketToHandle sock ReadWriteMode
+        where hostName = "localhost"
+              port     = "5555"
 
---idle = do
-         -- postRedisplay Nothing
+-----------------------------------------------------------------------------
 
+testConnection = do
+    h <- openConnection
+    sendString "Greetings from Haskell" h
+    l <- hGetLine h
+    print l
+
+-----------------------------------------------------------------------------
+
+sendString str handle = hPutStrLn handle str >> hFlush handle
+
+-----------------------------------------------------------------------------
 
 
 

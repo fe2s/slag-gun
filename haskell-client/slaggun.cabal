@@ -6,7 +6,8 @@ license: AllRightsReserved
 license-file: ""
 copyright:
 maintainer: Oleksiy Dyagilev aka.fe2s@gmail.com
-build-depends: GLUT -any, OpenGL -any, base -any, containers -any
+build-depends: GLUT -any, OpenGL -any, base -any, containers -any,
+               network -any
 stability:
 homepage: http://code.google.com/p/slag-gun/
 package-url:
