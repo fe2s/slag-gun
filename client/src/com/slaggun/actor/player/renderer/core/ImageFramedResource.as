@@ -43,6 +43,7 @@ public class ImageFramedResource {
     private var _xStart:int;
     private var _yStart:int;
     private var _image:DisplayObject ;
+    private var _frames:Array;
     private var _xFramesCount:int;
     private var _yFramesCount:int;
 
@@ -152,6 +153,19 @@ public class ImageFramedResource {
         return _yFramesCount;
     }
 
+    protected function createFrames() : Array {
+        var result:Array = [];
+        for(var i:int = 0; i < _xFramesCount; i++){
+            var arr:Array = [];
+            result.push(arr);
+            for(var j:int = 0; j < _yFramesCount; j++){
+                arr.push(cropFrame(i, j));
+            }
+        }
+        
+        return result;
+    }
+
     /**
      * Updates resource value 
      * @param image - new source image
@@ -166,6 +180,24 @@ public class ImageFramedResource {
         _yStart = getYStart();
         _xFramesCount = getXFramesCount();
         _yFramesCount = getYFramesCount();
+        _frames       = createFrames();
+    }
+
+    protected function cropFrame(x : int, y : int) : IBitmapDrawable{
+
+        var srcX:Number = x * (_frameWidth + 1) + 1;
+        var srcY:Number = y * (_frameHeight + 1) + 1;
+        
+        var result:BitmapData = new BitmapData(_frameWidth, _frameHeight, true, 0x00000000);
+        var matrix:Matrix = new Matrix();
+        matrix.translate(- srcX, - srcY);
+        result.draw(image, matrix, null, null, new Rectangle(0, 0, _frameWidth, _frameHeight));
+        
+        return result;
+    }
+
+    protected function getFrame(x : int, y : int) : IBitmapDrawable{
+        return _frames[x][y];
     }
 
     /**
@@ -180,12 +212,17 @@ public class ImageFramedResource {
      * @param srcWidth - width of the rectange, that will be copied on destination image.
      * @param srcHeight - height of the rectange, that will be copied on destination image.     
      */
-    private function drawRect(dst:BitmapData, dstX: int, dstY:int, src:IBitmapDrawable, srcX:int, srcY:int, srcWidth:int, srcHeight:int):void {
-        var matrix:Matrix = new Matrix();
-        matrix.translate(dstX - srcX,
-                dstY - srcY);
+    private function drawRect(dst:BitmapData, matrix:Matrix, dstX: int, dstY:int, src:IBitmapDrawable, srcX:int, srcY:int, srcWidth:int, srcHeight:int):void {
+        //var workMatrix:Matrix = matrix.clone();
+        var workMatrix:Matrix = new Matrix();
+        workMatrix.translate(- srcX, - srcY);
+        workMatrix.translate(-srcWidth/2, -srcHeight/2);
+        workMatrix.concat(matrix)//.concat(matrix);
+        workMatrix.translate(srcWidth/2, srcHeight/2);
+        workMatrix.translate(dstX,
+                             dstY);
 
-        dst.draw(image, matrix, null, null, new Rectangle(dstX, dstY, srcWidth, srcHeight));
+        dst.draw(src, workMatrix, null, null, new Rectangle(dstX, dstY, srcWidth, srcHeight));
     }
 
     /**
@@ -198,14 +235,20 @@ public class ImageFramedResource {
      * @param xFrame - column index of the frame
      * @param yFrame - row index of the frame     
      */
-    public function draw(bitmap:BitmapData, x:int, y:int, xFrame:Number, yFrame:Number):void {
+    public function draw(bitmap:BitmapData, x:int, y:int, xFrame:Number, yFrame:Number, arguments:DrawOption = null):void {
+
+        if(arguments == null){
+            arguments = DrawOption.create();
+        }
+
 
         drawRect(bitmap,
+                arguments.matrix,
                 x - _frameCentexPointX,
                 y - _frameCentexPointY,
-                image,
-                _xStart + (_frameWidth + 1) * xFrame,
-                _yStart + (_frameHeight + 1) * yFrame,
+                getFrame(xFrame, yFrame),
+                _xStart,
+                _yStart,
                 _frameWidth,
                 _frameHeight);
     }

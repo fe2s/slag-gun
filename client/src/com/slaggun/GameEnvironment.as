@@ -183,34 +183,6 @@ public class GameEnvironment extends EventDispatcher {
         return _bitmap;
     }
 
-    /**
-     * Add all actors that are waiting
-     */
-    private function addAll():void {
-
-        var actorName:String;
-
-        var len:int = toBeAdded.length;
-        var i:int;
-
-        for (i = 0; i < len; i++)
-        {
-            _actors.push(toBeAdded[i]);
-        }
-
-        toBeAdded = [];
-
-        len = toBeRemoved.length;
-        for (i = 0; i < len; i++)
-        {
-            var actor:Actor = toBeRemoved[i];
-            var actorIndex:Number = _actors.indexOf(actor);
-            _actors.splice(actorIndex, 1);
-        }
-
-        toBeRemoved = [];
-    }
-
     private function drawDebugLines(bitmap:BitmapData):void {
         var debugShape:Shape = new Shape();
 
@@ -324,11 +296,39 @@ public class GameEnvironment extends EventDispatcher {
     }
 
     /**
+     * Add all actors that are waiting
+     */
+    private function updateActors():void {
+
+        var actorName:String;
+
+        var len:int = toBeAdded.length;
+        var i:int;
+
+        for (i = 0; i < len; i++)
+        {
+            _actors.push(toBeAdded[i]);
+        }
+
+        toBeAdded = [];
+
+        len = toBeRemoved.length;
+        for (i = 0; i < len; i++)
+        {
+            var actor:Actor = toBeRemoved[i];
+            var actorIndex:Number = _actors.indexOf(actor);
+            _actors.splice(actorIndex, 1);
+        }
+
+        toBeRemoved = [];
+    }
+
+    /**
      * Process world live iteration
      * @param deltaTime - time pass
      */
     public function live(deltaTime:Number):void {
-        addAll();
+        updateActors();
 
         var actorName:String;
         var actor:Actor;

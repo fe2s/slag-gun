@@ -187,10 +187,7 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
 		GameClient from = session.getGameClient();
 		log.debug("Reading session id: " + from.getSessionId());
 
-
-		final int PACKET_HEADER_SIZE = INT_SIZE;
-
-		while (inputBuffer.remaining() > PACKET_HEADER_SIZE ) {
+		while (inputBuffer.remaining() > INT_SIZE) {
 			int oldPosition = inputBuffer.position();
 
 			int messageSize = inputBuffer.getInt();

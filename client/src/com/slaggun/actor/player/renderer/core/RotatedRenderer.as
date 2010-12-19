@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 SlagGunTeam
+ * Copyright 2010 SlagGunTeam
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -13,38 +13,29 @@ package com.slaggun.actor.player.renderer.core {
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
 
-/**
- * This is renderer for the framed image file.
- * @see DirectedResource
- */
-public class DirectedRenderer extends AnimatedRenderer{
+import flash.display.BitmapData;
+import flash.geom.Matrix;
 
-    /**
-     * Constructs DirectedRenderer with the specified png resource and frameSpeedFactor.
-     *
-     * @param resource - refence to x*8 png resource
-     * @param frameSpeedFactor - is factor that used to synchronize actor velocity and animation timesteps 
-     */
-    public function DirectedRenderer(resource:DirectedResource, frameSpeedFactor:Number) {
+/**
+ * @author Dmitry Brazhnik (amid.ukr@gmail.com)
+ */
+public class RotatedRenderer extends AnimatedRenderer{
+    
+    public function RotatedRenderer(resource:DirectedResource, frameSpeedFactor:Number) {
         super(resource, frameSpeedFactor);
     }
 
-    /**
-     * Returns clockwise angle between positive x axis and specified (x, y) vector.
-     * Thre returned is lied in   
-     * @param x
-     * @param y
-     * @return
-     */
     private function getAngle(x:Number, y:Number):Number {
+
         var angle:Number = Math.atan(((1.0) * y) / x);
-        angle = x > 0 ? angle : angle + Math.PI;
+        angle = x >= 0 ? angle : angle + Math.PI;
         angle += 2 * Math.PI;
         angle %= 2 * Math.PI;
         return angle;
     }
 
-    protected override function getRow(deltaTime:Number, actor:Actor):int{
+    protected override function drawFrame(actor:Actor, bitmap:BitmapData, x:int, y:int, xFrame:Number, yFrame:Number):void{
+
         var model:SimplePlayerModel = SimplePlayerModel(actor.model);
 
         var vx:Number = model.velocity.x;
@@ -59,11 +50,12 @@ public class DirectedRenderer extends AnimatedRenderer{
         }
 
         var lookAngle:Number = getAngle(lx, ly);
+        //lookAngle %= 2 * Math.PI;
 
-        lookAngle += Math.PI / 2;
-        lookAngle %= 2 * Math.PI;
-
-        return resource.yFramesCount * lookAngle / (2 * Math.PI);
+        var mat:Matrix =  new Matrix();
+        mat.rotate(lookAngle);
+        
+        resource.draw(bitmap, x, y, xFrame, yFrame, DrawOption.create().setMatrix(mat));
     }
 }
 }

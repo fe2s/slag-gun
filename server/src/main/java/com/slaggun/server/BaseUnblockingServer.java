@@ -342,9 +342,7 @@ public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Sessio
 	    }catch(CancelledKeyException e){
 		    log.warn("onDataReceived: CancelledKeyException have been retrieved while read(see debug log for details).");
 		    log.error("onDataReceived CancelledKeyException exception", e);
-			throw e;
-	    }catch (Exception e){
-		    log.error("Error while reading",e);
+			throw e;	    
 	    }finally {
 		    buffer.compact();
 	    }
