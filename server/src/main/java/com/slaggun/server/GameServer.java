@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-public class GameServer extends BaseUnblockedServer<GameServer.GameSession> {
+public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
 
 	private final int INT_SIZE = Integer.SIZE/8;
 
@@ -75,7 +75,7 @@ public class GameServer extends BaseUnblockedServer<GameServer.GameSession> {
 		}
 	}
 
-	public class GameSession extends BaseUnblockedServer.Session{
+	public class GameSession extends BaseUnblockingServer.Session{
 		private final GameSessionClient sessionClient;
 
 		public GameSession(GameSessionClient sessionClient) {
