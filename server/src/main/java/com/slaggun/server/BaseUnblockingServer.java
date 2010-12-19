@@ -31,9 +31,9 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public abstract class BaseUnblockedServer<S extends BaseUnblockedServer.Session> {
+public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Session> {
 
-	protected abstract class Session{
+    protected abstract class Session{
 		private SelectionKey clientKey;
 		private ByteBuffer inputBuffer = ByteBuffer.allocate(serverProperties.getReadBufferSize());
 		private ConcurrentLinkedQueue<ByteBuffer> outputQueue = new ConcurrentLinkedQueue<ByteBuffer>();
@@ -131,7 +131,7 @@ public abstract class BaseUnblockedServer<S extends BaseUnblockedServer.Session>
 		}
 	}
 
-    private static Logger log = Logger.getLogger(BaseUnblockedServer.class);
+    private static Logger log = Logger.getLogger(BaseUnblockingServer.class);
 
     private ServerProperties serverProperties;
     private Selector selector;
@@ -143,7 +143,7 @@ public abstract class BaseUnblockedServer<S extends BaseUnblockedServer.Session>
     // executes submitted tasks of incoming events packets processing
     private ThreadPoolExecutor workersPool;
 
-    public BaseUnblockedServer(ServerProperties serverProperties) {
+    public BaseUnblockingServer(ServerProperties serverProperties) {
         notNull(serverProperties, "serverProperties must not be null");
         this.serverProperties = serverProperties;
     }
@@ -179,7 +179,7 @@ public abstract class BaseUnblockedServer<S extends BaseUnblockedServer.Session>
      * @return game server
      * @throws IOException error during attempt to listen socket
      */
-    public BaseUnblockedServer initialize() throws IOException {
+    public BaseUnblockingServer initialize() throws IOException {
         log.info("Initializing game server");
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
         selector = Selector.open();
