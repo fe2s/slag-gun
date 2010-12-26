@@ -10,7 +10,7 @@
   ~ and limitations under the License.
   -->
 
-<project name="Slag-Gun client" default="main" basedir=".">
+<project name="Slag-Gun client" default="deploy" basedir=".">
 
 
     <target name="init" description="Properties and tasks initialisation">
