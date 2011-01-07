@@ -15,6 +15,9 @@ import com.slaggun.actor.base.ActorSnapshot;
 import com.slaggun.events.RequestSnapshotEvent;
 import com.slaggun.events.SnapshotEvent;
 import com.slaggun.net.GameClient;
+import flash.display.DisplayObject;
+import flash.geom.Matrix;
+import flash.geom.Rectangle;
 
 import com.slaggun.util.log.Logger;
 
@@ -33,6 +36,10 @@ import mx.collections.ArrayCollection;
 public class GameEnvironment extends EventDispatcher {
 
     private var LOG:Logger = Logger.getLogger();
+	
+	[Embed(source="res/background.png")]
+	private var _backgroundClass:Class;
+	private var _background:DisplayObject;
 
     private var _inputStates:InputState = new InputState();
     private var _gameClient:GameClient = new GameClient();
@@ -67,6 +74,7 @@ public class GameEnvironment extends EventDispatcher {
     public function GameEnvironment() {
         _gameClient.addEventListener(SnapshotEvent.INCOMING, handleSnapshot);
         _gameClient.addEventListener(RequestSnapshotEvent.REQUEST_SNAPSHOT,  handleRequestSnapshot);
+		_background = new _backgroundClass();
     }
 
     /**
@@ -322,6 +330,20 @@ public class GameEnvironment extends EventDispatcher {
 
         toBeRemoved = [];
     }
+	
+	protected function renderBackground(_bitmap : BitmapData):void {
+		//_bitmap.fillRect(_bitmap.rect, 0xFFFFFF);
+		//_bitmap.rect
+		var matrix:Matrix = new Matrix();
+		for (var i:int = 0; i <= int(_bitmap.width / _background.width); i++ ) {
+			for (var j:int = 0; j <= int(_bitmap.height / _background.height); j++ ) {
+				matrix.tx = i * _background.width;
+				matrix.ty = j * _background.height;
+				_bitmap.draw(_background, matrix, null, null, new Rectangle(0, 0, _bitmap.width, _bitmap.height), false);
+			}
+		}
+		
+	}
 
     /**
      * Process world live iteration
@@ -345,7 +367,8 @@ public class GameEnvironment extends EventDispatcher {
             }
         }
 
-        _bitmap.fillRect(_bitmap.rect, 0xFFFFFF);
+        renderBackground(_bitmap);
+		
 
         for (i = 0; i < len; i++) {
             actor = _actors[i];
@@ -358,7 +381,7 @@ public class GameEnvironment extends EventDispatcher {
         if(mustBeReplicated){
             mustBeReplicated = false;
             replicate();
-        }        
+        }
     }
 
     private var replReq:int = 0;

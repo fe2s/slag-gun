@@ -35,14 +35,19 @@
         private var _latency:Number = 0;
 
         private var policyServer:String;
+		
+		
 
-        private function initVariables():void{
-            var hostParameter:String = Application.application.parameters["host"];
+        private function initVariables():void {
+			
+			var application:Application = Application(Application.application);
+			
+            var hostParameter:String = application.parameters["host"];
             if(hostParameter != null){
                 txtHost.text = hostParameter;
             }
 
-            policyServer = Application.application.parameters["policyServer"];
+            policyServer = application.parameters["policyServer"];
 
             latencies = [];
             latencies.length = 100;
@@ -50,7 +55,7 @@
             LoggerConfig.instance.setTextArea(logOutput);
             launcher = new LauncherClass();
 
-            launcher.resize(Application.application.width, Application.application.height);
+            launcher.resize(application.width, application.height);
 
             launcher.inititalize();
 
