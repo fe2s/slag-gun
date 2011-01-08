@@ -39,7 +39,7 @@ public class GameEnvironment extends EventDispatcher {
 	
 	[Embed(source="res/background.png")]
 	private var _backgroundClass:Class;
-	private var _background:DisplayObject;
+	private var _background:BitmapData;
 
     private var _inputStates:InputState = new InputState();
     private var _gameClient:GameClient = new GameClient();
@@ -74,7 +74,6 @@ public class GameEnvironment extends EventDispatcher {
     public function GameEnvironment() {
         _gameClient.addEventListener(SnapshotEvent.INCOMING, handleSnapshot);
         _gameClient.addEventListener(RequestSnapshotEvent.REQUEST_SNAPSHOT,  handleRequestSnapshot);
-		_background = new _backgroundClass();
     }
 
     /**
@@ -93,6 +92,22 @@ public class GameEnvironment extends EventDispatcher {
         _drawAnimationCalibrateGrid = value;
     }
 
+    protected function createBackground(width:Number, height:Number):BitmapData{
+        var result:BitmapData = new BitmapData(width, height);
+        var _template:DisplayObject = new _backgroundClass();
+
+        var matrix:Matrix = new Matrix();
+		for (var i:int = 0; i <= int(width / _template.width); i++ ) {
+			for (var j:int = 0; j <= int(height / _template.height); j++ ) {
+				matrix.tx = i * _template.width;
+				matrix.ty = j * _template.height;
+				result.draw(_template, matrix, null, null, new Rectangle(0, 0, width, height), false);
+			}
+		}
+
+        return result;
+    }
+
     /**
      * Recreate offscreen buffer
      * @param width - screen width
@@ -102,6 +117,8 @@ public class GameEnvironment extends EventDispatcher {
         _bitmap = new BitmapData(width, height);
         _worldWidth = width;
         _worldHeight = height;
+
+        _background = createBackground(width, height);
     }
 
     /**
@@ -332,17 +349,7 @@ public class GameEnvironment extends EventDispatcher {
     }
 	
 	protected function renderBackground(_bitmap : BitmapData):void {
-		//_bitmap.fillRect(_bitmap.rect, 0xFFFFFF);
-		//_bitmap.rect
-		var matrix:Matrix = new Matrix();
-		for (var i:int = 0; i <= int(_bitmap.width / _background.width); i++ ) {
-			for (var j:int = 0; j <= int(_bitmap.height / _background.height); j++ ) {
-				matrix.tx = i * _background.width;
-				matrix.ty = j * _background.height;
-				_bitmap.draw(_background, matrix, null, null, new Rectangle(0, 0, _bitmap.width, _bitmap.height), false);
-			}
-		}
-		
+        _bitmap.draw(_background, null, null, null, new Rectangle(0, 0, _background.width, _background.height), false);
 	}
 
     /**
