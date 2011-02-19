@@ -61,7 +61,11 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <properties>
+        <class-main>com.slaggun.Main</class-main>
+    </properties>
     <build>
+        <defaultGoal>package</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -80,22 +84,24 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.slaggun.Main</mainClass>
+                            <mainClass>${class-main}</mainClass>
                             <packageName>com.slaggun</packageName>
                         </manifest>
                     </archive>
                 </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals><goal>single</goal></goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.2</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2</version>
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.slaggun.Main</mainClass>
-                        </manifest>
-                    </archive>
+                    <mainClass>${class-main}</mainClass>
                 </configuration>
             </plugin>
         </plugins>

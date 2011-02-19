@@ -2,3 +2,4 @@
 glob:client/bin
 glob:server/target
 glob:haskell-client/dist
+glob:lib\flex_sdk

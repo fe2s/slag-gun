@@ -13,7 +13,6 @@ package com.slaggun.policy;
 
 import com.slaggun.server.ServerInitializationException;
 import com.slaggun.server.ServerProperties;
-import com.slaggun.util.LoggerUtils;
 import com.slaggun.util.Utils;
 import org.apache.log4j.Logger;
 
@@ -165,7 +164,6 @@ public class FlexPolicy {
 	}
 
 	public static void main(String[] args) throws ServerInitializationException, IOException, InterruptedException {
-		LoggerUtils.initializeLogger();
 
 		ServerProperties serverProperties = new ServerProperties().initialize();
 

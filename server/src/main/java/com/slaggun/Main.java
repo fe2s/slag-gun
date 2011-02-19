@@ -14,7 +14,6 @@ package com.slaggun;
 import com.slaggun.server.BaseUnblockingServer;
 import com.slaggun.server.ServerProperties;
 import com.slaggun.server.GameServer;
-import com.slaggun.util.LoggerUtils;
 import com.slaggun.policy.FlexPolicy;
 import org.apache.log4j.Logger;
 
@@ -33,11 +32,9 @@ public class Main {
         } catch (Throwable e) {
             log.error("Error occured", e);
         }
-
     }
 
     public void start() throws Exception {
-        LoggerUtils.initializeLogger();
 
         BaseUnblockingServer server;
 	    FlexPolicy flexPolicy = null;
