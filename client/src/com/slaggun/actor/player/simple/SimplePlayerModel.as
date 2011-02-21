@@ -26,7 +26,7 @@ import flash.geom.Point;
 [RemoteClass(alias="com.slaggun.actor.player.simple.SimplePlayerModel")]
 public class SimplePlayerModel implements ActorModel{
 
-    private var log:Logger = Logger.getLogger();
+    private var log:Logger = Logger.getLogger(SimplePlayerModel);
 
     private var _position:Point = new Point(50, 50);
     private var _velocity:Point = new Point();

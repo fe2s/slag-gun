@@ -32,7 +32,7 @@ public class GameClient extends EventDispatcher {
 
     public static const BROADCAST_ADDRESS:int = 0;
 
-    private var log:Logger = Logger.getLogger();
+    private var log:Logger = Logger.getLogger(GameClient);
 
     private static const gameServerPort:int = 4001;
 

@@ -33,7 +33,7 @@ public class LauncherClass {
     private var gamePaused:Boolean = true;
     private var lastTime:Date;
     private var world:GameEnvironment = new GameEnvironment();    
-    private var log:Logger = Logger.getLogger();
+    private var log:Logger = Logger.getLogger(LauncherClass);
     private var sysTimeSpent:Number = 0;
     private var timeQuote:Number = DESIRABLE_TIME_PER_EVENT;
     private var timeQuoteSpent:Number = 0;

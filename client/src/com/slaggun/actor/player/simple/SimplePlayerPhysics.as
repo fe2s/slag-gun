@@ -30,7 +30,7 @@ import flash.ui.Keyboard;
  */
 public class SimplePlayerPhysics implements ActorPhysics{
 
-    private var log:Logger = Logger.getLogger();
+    private var log:Logger = Logger.getLogger(SimplePlayerPhysics);
     private var serverModel:SimplePlayerModel;
 
     public function liveServer(timePass:Number, actor:Actor, world:GameEnvironment):void {

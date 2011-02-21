@@ -35,7 +35,7 @@ import mx.collections.ArrayCollection;
  */
 public class GameEnvironment extends EventDispatcher {
 
-    private var LOG:Logger = Logger.getLogger();
+    private var LOG:Logger = Logger.getLogger(GameEnvironment);
 	
 	[Embed(source="res/background.png")]
 	private var _backgroundClass:Class;

@@ -25,7 +25,7 @@ import com.slaggun.util.log.Logger;
  */
 public class PistolShellHitAction implements Action{
 
-    private var log:Logger = Logger.getLogger();
+    private var log:Logger = Logger.getLogger(PistolShellHitAction);
 
     private var shell:PistolShell;
     private var world:GameEnvironment;

@@ -10,6 +10,7 @@
  */
 
 package com.slaggun.util.log {
+import flash.system.Capabilities;
 import flash.utils.getDefinitionByName;
 
 /**
@@ -21,6 +22,7 @@ public class Logger {
     private static var config:LoggerConfig = LoggerConfig.instance;
 
     // stacktrace format
+    private static const NONE:String = "<NONE>";
     private static const STACKTRACE_PREFIX:String = "at ";
     private static const STACKTRACE_SUFFIX:String = "()";
     private static const STACKTRACE_CLASS_SPLITTER:String = "::";
@@ -33,14 +35,11 @@ public class Logger {
     // full class name with package (e.g. com.slaggun::Main)
     private var callerFullClassName:String;
 
-    // class name (e.g. Main)
-    private var callerClassName:String;
-
     private var categories:Array = [];
 
-    public static function getLogger():Logger {
+    public static function getLogger(clazz:Class):Logger {
         var logger:Logger = new Logger();
-        logger.init();
+        logger.init(clazz);
         return logger;
     }
 
@@ -60,27 +59,15 @@ public class Logger {
         for each (var category:Category in categories) {
             if (priority.greaterOrEqualThan(category.priority)) {
                 for each (var appender:Appender in category.appenders) {
-                    appender.append(callerClassName + ": " + msg + "\n");
+                    appender.append(callerClass + ": " + msg + "\n");
                 }
             }
         }
     }
 
-    private function init():void {
-        this.callerFullClassName = getCallerFullClassName();
-        this.callerClassName = callerFullClassName.substr(
-                callerFullClassName.indexOf(STACKTRACE_CLASS_SPLITTER) + STACKTRACE_CLASS_SPLITTER_LENGHT,
-                callerFullClassName.length);
-        this.callerClass = Class(getDefinitionByName(callerFullClassName));
+    private function init(clazz:Class):void {
+        this.callerClass = clazz;
         setupCategories();
-    }
-
-    private function getCallerFullClassName():String {
-        var callerString : String = new Error().getStackTrace().split("\n")[4];
-        return callerString.substring(
-                callerString.indexOf(STACKTRACE_PREFIX) + STACKTRACE_PREFIX_LENGTH,
-                callerString.indexOf(STACKTRACE_SUFFIX));
-
     }
 
     private function setupCategories():void {
