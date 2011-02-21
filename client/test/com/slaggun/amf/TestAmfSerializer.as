@@ -17,9 +17,9 @@ import flexunit.framework.TestCase;
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public class AmfSerializerTest extends TestCase {
+public class TestAmfSerializer extends TestCase {
 
-    public function AmfSerializerTest() {
+    public function TestAmfSerializer() {
     }
 
     /**

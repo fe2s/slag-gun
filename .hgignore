@@ -2,4 +2,7 @@
 glob:client/bin
 glob:server/target
 glob:haskell-client/dist
-glob:lib\flex_sdk
+glob:client/target
+glob:web-app/target
+glob:server/slag-gun-server.log
+glob:web-app/src/main/webapp/Launcher.swf

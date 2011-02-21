@@ -10,7 +10,7 @@
  */
 
 package com.slaggun {
-import com.slaggun.amf.AmfSerializerTest;
+import com.slaggun.amf.TestAmfSerializer;
 
 import flexunit.framework.TestSuite;
 
@@ -23,7 +23,7 @@ public class AllTests {
 
     public static function getAllTests() : TestSuite {
         var testSuite:TestSuite = new TestSuite();
-        testSuite.addTestSuite(AmfSerializerTest);
+        testSuite.addTestSuite(TestAmfSerializer);
 
         return testSuite;
 

@@ -1,0 +1,1 @@
+start mvn tomcat:run

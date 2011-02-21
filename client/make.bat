@@ -1,2 +1,2 @@
-ant
+mvn
 pause
