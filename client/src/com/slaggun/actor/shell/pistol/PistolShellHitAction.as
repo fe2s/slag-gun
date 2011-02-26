@@ -10,7 +10,7 @@
  */
 
 package com.slaggun.actor.shell.pistol {
-import com.slaggun.GameEnvironment;
+import com.slaggun.Game;
 import com.slaggun.actor.base.Action;
 import com.slaggun.actor.player.PlayerConstants;
 import com.slaggun.actor.player.simple.SimplePlayer;
@@ -28,9 +28,9 @@ public class PistolShellHitAction implements Action{
     private var log:Logger = Logger.getLogger(PistolShellHitAction);
 
     private var shell:PistolShell;
-    private var world:GameEnvironment;
+    private var world:Game;
 
-    public function PistolShellHitAction(shell:PistolShell, world:GameEnvironment) {
+    public function PistolShellHitAction(shell:PistolShell, world:Game) {
         this.shell = shell;
         this.world = world;
     }
@@ -50,7 +50,7 @@ public class PistolShellHitAction implements Action{
 
         if (hit) {
             // updating only mine models
-            if (world.isMineActor(player)){
+            if (world.gameActors.isMineActor(player)){
                 var isLive:Boolean = player.hit(PistolShellConstants.DAMAGE);
                 if (!isLive) {
                     player.respawn();
@@ -58,7 +58,7 @@ public class PistolShellHitAction implements Action{
             }
             
             // remove shell from this client, it won't be removed from other clients!
-            world.remove(shell);
+            world.gameActors.remove(shell);
         }
     }
 

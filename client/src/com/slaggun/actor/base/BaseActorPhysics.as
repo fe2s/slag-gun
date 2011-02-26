@@ -10,12 +10,12 @@
  */
 
 package com.slaggun.actor.base {
-import com.slaggun.GameEnvironment;
-import com.slaggun.GameEnvironment;
-import com.slaggun.GameEnvironment;
-import com.slaggun.GameEnvironment;
-import com.slaggun.GameEnvironment;
-import com.slaggun.GameEnvironment;
+import com.slaggun.Game;
+import com.slaggun.Game;
+import com.slaggun.Game;
+import com.slaggun.Game;
+import com.slaggun.Game;
+import com.slaggun.Game;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.Actor;
@@ -29,19 +29,19 @@ import com.slaggun.util.NotImplementedException;
  */
 public class BaseActorPhysics implements ActorPhysics {
 
-    public function liveServer(deltaTime:Number, actor:Actor, world:GameEnvironment):void {
+    public function liveServer(deltaTime:Number, actor:Actor, world:Game):void {
         liveClient(deltaTime, actor, world);
     }
 
-    public function liveClient(deltaTime:Number, actor:Actor, world:GameEnvironment):void {
+    public function liveClient(deltaTime:Number, actor:Actor, world:Game):void {
         throw new NotImplementedException("liveClient must be overrided in subclasses of BaseActorPhysics");
     }
 
-    public function createSnapshot(actor:Actor, world:GameEnvironment):Object {
+    public function createSnapshot(actor:Actor, world:Game):Object {
         return actor.model;
     }
 
-    public function receiveSnapshot(object:Object, actor:Actor, world:GameEnvironment):void{
+    public function receiveSnapshot(object:Object, actor:Actor, world:Game):void{
         actor.model = ActorModel(object);
     }
 }

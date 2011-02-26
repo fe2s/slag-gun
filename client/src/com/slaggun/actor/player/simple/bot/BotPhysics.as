@@ -10,7 +10,7 @@
  */
 
 package com.slaggun.actor.player.simple.bot {
-import com.slaggun.GameEnvironment;
+import com.slaggun.Game;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.player.PlayerConstants;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
@@ -36,7 +36,7 @@ public class BotPhysics extends SimplePlayerPhysics{
         public function BotPhysics() {
         }
 
-        public override function liveServer(deltaTime:Number, actor:Actor, world:GameEnvironment):void {
+        public override function liveServer(deltaTime:Number, actor:Actor, world:Game):void {
             var actorModel:SimplePlayerModel = SimplePlayerModel(actor.model);
 
             timePass+=deltaTime;
@@ -47,23 +47,23 @@ public class BotPhysics extends SimplePlayerPhysics{
             var x:Number = actorModel.position.x;
             var y:Number = actorModel.position.y;
 
-            if(x <0 || x > world.width){
+            if(x <0 || x > world.mapWidth){
 
                 if(actorModel.position.x <0){
                     x = 0;
                 }else{
-                    x = world.width - 1;
+                    x = world.mapWidth - 1;
                 }
 
                 vx = - actorModel.velocity.x;
             }
 
-            if(y <0 || y > world.height){
+            if(y <0 || y > world.mapHeight){
 
                 if(y <0){
                     y = 0;
                 }else{
-                    y = world.height - 1;
+                    y = world.mapHeight - 1;
                 }
 
                 vy = - actorModel.velocity.y;
@@ -75,10 +75,10 @@ public class BotPhysics extends SimplePlayerPhysics{
                 vx = randV() * PlayerConstants.PLAYER_SPEED_PER_MS;
                 vy = randV() * PlayerConstants.PLAYER_SPEED_PER_MS;
 
-                var rect:Rectangle = world.bitmap.rect;
+                var rect:Rectangle = world.gameRenderer.bitmap.rect;
 
-                actorModel.look.x = Math.random()*world.width;
-                actorModel.look.y = Math.random()*world.height;
+                actorModel.look.x = Math.random()*world.mapWidth;
+                actorModel.look.y = Math.random()*world.mapHeight;
             }
 
             actorModel.velocity.x = vx;

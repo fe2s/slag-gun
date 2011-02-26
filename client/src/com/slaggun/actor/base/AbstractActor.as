@@ -10,7 +10,7 @@
  */
 
 package com.slaggun.actor.base {
-import com.slaggun.GameEnvironment;
+import com.slaggun.Game;
 import com.slaggun.actor.base.Action;
 import com.slaggun.util.NotImplementedException;
 
@@ -30,7 +30,7 @@ public class AbstractActor implements Actor {
     protected var _id:int = NOT_SET_ID;
     protected var _owner:int = NOT_SET_OWNER_ID;
 
-    public function makeSnapshot(game:GameEnvironment):ActorSnapshot {
+    public function makeSnapshot(game:Game):ActorSnapshot {
         throw new NotImplementedException("AbstractActor.makeSnapshot() method not implemented. " +
                                           "Probably is not overridden in child");
     }

@@ -10,7 +10,7 @@
  */
 
 package com.slaggun.actor.shell.pistol {
-import com.slaggun.GameEnvironment;
+import com.slaggun.Game;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.BaseActorPhysics;
 
@@ -20,7 +20,7 @@ import com.slaggun.actor.base.BaseActorPhysics;
  */
 public class PistolShellPhysics extends BaseActorPhysics {
 
-    public override function liveClient(deltaTime:Number, actor:Actor, world:GameEnvironment):void {
+    public override function liveClient(deltaTime:Number, actor:Actor, world:Game):void {
         var shell:PistolShell = PistolShell(actor);
         var shellModel:PistolShellModel = PistolShellModel(actor.model);
         translateShell(shellModel);
@@ -29,8 +29,8 @@ public class PistolShellPhysics extends BaseActorPhysics {
         var x:Number = shellModel.position.x;
         var y:Number = shellModel.position.y;
 
-        if(x<0 || y<0 || x > world.width || y > world.width){
-            world.remove(actor);
+        if(x<0 || y<0 || x > world.mapWidth || y > world.mapHeight){
+            world.gameActors.remove(actor);
         }
     }
 
@@ -38,9 +38,9 @@ public class PistolShellPhysics extends BaseActorPhysics {
         shell.position.offset(shell.speedVector.x, shell.speedVector.y);
     }
 
-    private function hit(shell:PistolShell, world:GameEnvironment):void{
+    private function hit(shell:PistolShell, world:Game):void{
         var hitAction:PistolShellHitAction = new PistolShellHitAction(shell, world);
-        for each (var actor:Actor in world.actors){
+        for each (var actor:Actor in world.gameActors.actors){
             actor.apply(hitAction);
         }
     }

@@ -9,7 +9,8 @@
  * and limitations under the License.
  */
 
-package com.slaggun.net {
+package com.slaggun {
+import com.slaggun.net.*;
 import com.slaggun.amf.AmfSerializer;
 import com.slaggun.events.BaseGameEvent;
 import com.slaggun.events.GameEvent;
@@ -28,11 +29,11 @@ import flash.utils.ByteArray;
 
 import mx.controls.Alert;
 
-public class GameClient extends EventDispatcher {
+public class GameNetworking extends EventDispatcher {
 
     public static const BROADCAST_ADDRESS:int = 0;
 
-    private var log:Logger = Logger.getLogger(GameClient);
+    private var log:Logger = Logger.getLogger(GameNetworking);
 
     private static const gameServerPort:int = 4001;
 

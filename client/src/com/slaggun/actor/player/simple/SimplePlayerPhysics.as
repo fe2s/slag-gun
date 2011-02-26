@@ -10,7 +10,7 @@
  */
 
 package com.slaggun.actor.player.simple {
-import com.slaggun.GameEnvironment;
+import com.slaggun.Game;
 import com.slaggun.InputState;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorPhysics;
@@ -33,7 +33,7 @@ public class SimplePlayerPhysics implements ActorPhysics{
     private var log:Logger = Logger.getLogger(SimplePlayerPhysics);
     private var serverModel:SimplePlayerModel;
 
-    public function liveServer(timePass:Number, actor:Actor, world:GameEnvironment):void {
+    public function liveServer(timePass:Number, actor:Actor, world:Game):void {
         
         var actorModel:SimplePlayerModel = SimplePlayerModel(actor.model);
 
@@ -82,7 +82,7 @@ public class SimplePlayerPhysics implements ActorPhysics{
         actorModel.look.y = world.inputStates.mousePosition.y - actorModel.position.y;
     }
 
-    public function liveClient(timePass:Number, actor:Actor, world:GameEnvironment):void {
+    public function liveClient(timePass:Number, actor:Actor, world:Game):void {
 
         var actorModel:SimplePlayerModel = SimplePlayerModel(actor.model);
 
@@ -145,11 +145,11 @@ public class SimplePlayerPhysics implements ActorPhysics{
     }
 
 
-    public function createSnapshot(actor:Actor, world:GameEnvironment):Object {
+    public function createSnapshot(actor:Actor, world:Game):Object {
         return actor.model;
     }
 
-    public function receiveSnapshot(object:Object, actor:Actor, world:GameEnvironment):void {
+    public function receiveSnapshot(object:Object, actor:Actor, world:Game):void {
 
         var receivedModel:SimplePlayerModel = SimplePlayerModel(object);
 
@@ -172,7 +172,7 @@ public class SimplePlayerPhysics implements ActorPhysics{
     }
 
 
-    private function shoot(actorModel:SimplePlayerModel, world:GameEnvironment):void {
+    private function shoot(actorModel:SimplePlayerModel, world:Game):void {
         const mineActor:Boolean = false;
         const replicatedOnce:Boolean = true;
 
@@ -186,7 +186,7 @@ public class SimplePlayerPhysics implements ActorPhysics{
         var shellFactory:PistolShellFactory = new PistolShellFactory();
         var shell:Actor = shellFactory.create(shellPosition, shellDirection);
 
-        world.add(shell, mineActor, replicatedOnce);
+        world.gameActors.add(shell, mineActor, replicatedOnce);
     }
 }
 }

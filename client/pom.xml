@@ -39,9 +39,6 @@
                 <extensions>true</extensions>
                 <configuration>
 
-					<!--<debug>false</debug>-->
-                    <!--<verboseStacktraces>false</verboseStacktraces>-->
-
                     <sourceDirectory>src</sourceDirectory>
                     <mxmlFile>src/com/slaggun/Launcher.mxml</mxmlFile>
                     <buildFinalName>Launcher</buildFinalName>

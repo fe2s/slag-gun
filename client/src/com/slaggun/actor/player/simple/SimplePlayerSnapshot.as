@@ -10,7 +10,7 @@
  */
 
 package com.slaggun.actor.player.simple {
-import com.slaggun.GameEnvironment;
+import com.slaggun.Game;
 import com.slaggun.actor.base.AbstractActorSnapshot;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorSnapshot;
@@ -21,7 +21,7 @@ import com.slaggun.actor.base.ActorSnapshot;
 [RemoteClass(alias="com.slaggun.actor.player.simple.SimplePlayerSnapshot")]
 public class SimplePlayerSnapshot extends AbstractActorSnapshot implements ActorSnapshot{
 
-    override public function resurrect(game:GameEnvironment, owner:int):Actor {
+    override public function resurrect(game:Game, owner:int):Actor {
         var actor:Actor = new SimplePlayerFactory().create(false);
         actor.id = _id;
         actor.owner = owner;

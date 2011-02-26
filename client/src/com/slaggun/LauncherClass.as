@@ -25,14 +25,14 @@ import flash.net.registerClassAlias;
  *
  * Author Dmitry Brazhnik (amid.ukr@gmail.com)
  *
- * @see com.slaggun.GameEnvironment
+ * @see com.slaggun.Game
  */
 public class LauncherClass {
     private static const DESIRABLE_TIME_PER_EVENT:int = 1000/25;
 
     private var gamePaused:Boolean = true;
     private var lastTime:Date;
-    private var world:GameEnvironment = new GameEnvironment();    
+    private var world:Game = new Game();
     private var log:Logger = Logger.getLogger(LauncherClass);
     private var sysTimeSpent:Number = 0;
     private var timeQuote:Number = DESIRABLE_TIME_PER_EVENT;
@@ -58,7 +58,7 @@ public class LauncherClass {
         const mineActor:Boolean = true;
         const replicatedOnce:Boolean = false;
 
-        world.add(playerFactory.create(mineActor), mineActor, replicatedOnce);
+        world.gameActors.add(playerFactory.create(mineActor), mineActor, replicatedOnce);
 
         networkProcessingTimeArray.length = 20;
 
@@ -74,7 +74,7 @@ public class LauncherClass {
         const replicatedOnce:Boolean = false;
         var i: int;
         for (i = 0; i < number; i++) {
-            world.add(botFactory.create(), mineActor, replicatedOnce);
+            world.gameActors.add(botFactory.create(), mineActor, replicatedOnce);
         }
     }
 
@@ -116,14 +116,14 @@ public class LauncherClass {
                 world.live(mils);
             }
 
-            var bitmapData:BitmapData = world.bitmap;
+            var bitmapData:BitmapData = world.gameRenderer.bitmap;
             g.clear();
             g.beginBitmapFill(bitmapData);
             g.drawRect(0, 0, bitmapData.rect.width, bitmapData.rect.height);
             g.endFill();
 
 
-            //TODO document this algorithm (and protect as personal patent :-D)            
+            //TODO document this algorithm
             
             sysTimeSpent = mils - timeQuoteSpent;
 
@@ -179,7 +179,7 @@ public class LauncherClass {
     }
 
     public function get latency():Number{
-        return world.lalatency;
+        return world.latency;
     }
 
     /**
@@ -219,7 +219,7 @@ public class LauncherClass {
      * @param height - screen hright
      */
     public function resize(width:Number, height:Number):void {
-        world.updateBitMapSize(width, height);
+        world.resize(width, height);
     }
 
     /**
@@ -227,7 +227,7 @@ public class LauncherClass {
      * @return
      */
     public function connect(host:String, policyServer:String) : void {
-        world.gameClient.connect(host, policyServer);
+        world.gameNetworking.connect(host, policyServer);
     }
 }
 }

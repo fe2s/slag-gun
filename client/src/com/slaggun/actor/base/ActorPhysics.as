@@ -10,7 +10,7 @@
  */
 
 package com.slaggun.actor.base {
-import com.slaggun.GameEnvironment;
+import com.slaggun.Game;
 
     /**
      * This class proccess physical proccess of the Actor
@@ -27,7 +27,7 @@ import com.slaggun.GameEnvironment;
          * @param actor     - actor to be proccessed
          * @param world     - game world
          */
-        function liveClient(deltaTime:Number, actor:Actor, world:GameEnvironment):void;
+        function liveClient(deltaTime:Number, actor:Actor, world:Game):void;
 
         /**
          * Process world iteration
@@ -35,19 +35,19 @@ import com.slaggun.GameEnvironment;
          * @param actor     - actor to be proccessed
          * @param world     - game world
          */
-        function liveServer(deltaTime:Number, actor:Actor, world:GameEnvironment):void;
+        function liveServer(deltaTime:Number, actor:Actor, world:Game):void;
 
         /**
          * Returns actor snapshot object.
          * It will be invoked on server side during replicate cycle.
          * @return actor snapshot object.
          */
-        function createSnapshot(actor:Actor, world:GameEnvironment):Object;
+        function createSnapshot(actor:Actor, world:Game):Object;
 
         /**
          * Handles client replicate event
          * @param object
          */
-        function receiveSnapshot(object:Object, actor:Actor, world:GameEnvironment):void;
+        function receiveSnapshot(object:Object, actor:Actor, world:Game):void;
     }
 }

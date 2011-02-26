@@ -10,12 +10,12 @@
  */
 
 package com.slaggun.util.log {
-import com.slaggun.GameEnvironment;
+import com.slaggun.Game;
 import com.slaggun.LauncherClass;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
 import com.slaggun.actor.player.simple.SimplePlayerPhysics;
 
-import com.slaggun.net.GameClient;
+import com.slaggun.GameNetworking;
 
 import mx.controls.TextArea;
 
@@ -39,8 +39,8 @@ public class LoggerConfig {
         new Category(LauncherClass, Priority.ERROR, [consoleAppender, textAreaAppender]),
         new Category(SimplePlayerPhysics, Priority.DEBUG, [textAreaAppender]),
         new Category(SimplePlayerModel, Priority.INFO, [textAreaAppender]),
-        new Category(GameClient, Priority.DEBUG, [consoleAppender]),
-        new Category(GameEnvironment, Priority.DEBUG, [consoleAppender]),
+        new Category(GameNetworking, Priority.DEBUG, [consoleAppender]),
+        new Category(Game, Priority.DEBUG, [consoleAppender]),
     ];
 
     public static function get instance():LoggerConfig {
