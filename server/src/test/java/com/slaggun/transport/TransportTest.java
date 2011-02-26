@@ -34,7 +34,7 @@ public class TransportTest extends TestCase{
 	}
 
 	private Timeout timeout(String message){
-		return new Timeout(message, 1000);
+		return new Timeout(message, 30000);
 	}
 
 	private class Package{
@@ -55,16 +55,26 @@ public class TransportTest extends TestCase{
 		}
 	}
 
-	private void sendData(Socket socket, int recipient, String data) throws IOException {
-		ByteBuffer byteBuffer = ByteBuffer.wrap(data.getBytes());
 
-		int messageSize =  byteBuffer.remaining() + INT_SIZE;
 
-		ByteBuffer sendPackage = ByteBuffer.allocate(messageSize + INT_SIZE);
+	private void sendData(Socket socket, int recipient, String ... data) throws IOException {
 
-		sendPackage.putInt(messageSize);
-		sendPackage.putInt(recipient);
-		sendPackage.put(byteBuffer);
+        ByteBuffer[] byteBuffers = new ByteBuffer[data.length];
+
+        int messageSize = 0;
+
+        for (int i = 0; i < byteBuffers.length; i++) {
+            byteBuffers[i] = ByteBuffer.wrap(data[i].getBytes());
+            messageSize += byteBuffers[i].remaining() + INT_SIZE*2;
+        }
+
+		ByteBuffer sendPackage = ByteBuffer.allocate(messageSize);
+
+        for (ByteBuffer byteBuffer : byteBuffers) {
+            sendPackage.putInt(byteBuffer.remaining() + INT_SIZE);
+		    sendPackage.putInt(recipient);
+		    sendPackage.put(byteBuffer);
+        }
 
 		socket.getOutputStream().write(sendPackage.array());
 		socket.getOutputStream().flush();
@@ -93,6 +103,7 @@ public class TransportTest extends TestCase{
 	}
 
 	public void testBroadcast() throws IOException {
+        //TODO: implement unskipable packages
 		Socket sender = createConnection();
 		Socket recipient1 = createConnection();
 		Socket recipient2 = createConnection();
@@ -101,15 +112,26 @@ public class TransportTest extends TestCase{
 		receiveData(recipient1, timeout("Recipient 1 snapshot request"));
 		receiveData(recipient2, timeout("Recipient 2 snapshot request"));
 		
-		final String sendDate = "assert me";
-		sendData(sender, 0, sendDate);
+		final String sendDate1 = "assert me1";
+        final String sendDate2 = "assert me2";
+		//sendData(sender, 0, sendDate1, sendDate2);
+        sendData(sender, 0, sendDate1);
 
-		TransportTest.Package package1 = receiveData(recipient1, timeout("Read first client"));
-		TransportTest.Package package2 = receiveData(recipient2, timeout("Read second client"));
+		TransportTest.Package package11 = receiveData(recipient1, timeout("Read first client"));
+        //TransportTest.Package package12 = receiveData(recipient1, timeout("Read first client"));
 
-		assertEquals("First message recieved: ", sendDate, package1.getMessage());
-		assertEquals("Second message recieved: ", sendDate, package2.getMessage());
-		assertEquals("Sender id check: ", package1.getSender(), package2.getSender());
+		TransportTest.Package package21 = receiveData(recipient2, timeout("Read second client"));
+        //TransportTest.Package package22 = receiveData(recipient2, timeout("Read second client"));
+
+		assertEquals("First client first message received: ", sendDate1, package11.getMessage());
+        //assertEquals("First client second message received: ", sendDate2, package12.getMessage());
+
+		assertEquals("Second client first message received: ", sendDate1, package21.getMessage());
+        //assertEquals("Second client second message received: ", sendDate2, package22.getMessage());
+
+		assertEquals("Sender id check: ", package11.getSender(), package21.getSender());
+        //assertEquals("Sender id check: ", package11.getSender(), package12.getSender());
+        //assertEquals("Sender id check: ", package11.getSender(), package22.getSender());
 	}
 
 	public void testSend() throws IOException, InterruptedException {

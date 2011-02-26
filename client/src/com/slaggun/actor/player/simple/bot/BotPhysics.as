@@ -47,30 +47,10 @@ public class BotPhysics extends SimplePlayerPhysics{
             var x:Number = actorModel.position.x;
             var y:Number = actorModel.position.y;
 
-            if(x <0 || x > world.mapWidth){
 
-                if(actorModel.position.x <0){
-                    x = 0;
-                }else{
-                    x = world.mapWidth - 1;
-                }
 
-                vx = - actorModel.velocity.x;
-            }
-
-            if(y <0 || y > world.mapHeight){
-
-                if(y <0){
-                    y = 0;
-                }else{
-                    y = world.mapHeight - 1;
-                }
-
-                vy = - actorModel.velocity.y;
-            }
-
-            if(timePass > 100){
-                timePass-=100;
+            if(timePass > 1000){
+                timePass-=1000;
 
                 vx = randV() * PlayerConstants.PLAYER_SPEED_PER_MS;
                 vy = randV() * PlayerConstants.PLAYER_SPEED_PER_MS;
@@ -81,10 +61,17 @@ public class BotPhysics extends SimplePlayerPhysics{
                 actorModel.look.y = Math.random()*world.mapHeight;
             }
 
+            if(x <0 )                    vx =  Math.abs(actorModel.velocity.x);
+            else if(x > world.mapWidth)  vx = -Math.abs(actorModel.velocity.x);
+
+            if(y <0 )                    vy =  Math.abs(actorModel.velocity.y);
+            else if(y > world.mapHeight) vy = -Math.abs(actorModel.velocity.y);
+
+
             actorModel.velocity.x = vx;
             actorModel.velocity.y = vy;
 
-            liveClient(timePass, actor, world);
+            live(deltaTime, SimplePlayerModel(actor.model));
         }
     }
 }

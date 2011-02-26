@@ -194,9 +194,11 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
 
             if (inputBuffer.remaining() >= messageSize){
 
-	            ByteBuffer packetBuffer = ByteBuffer.allocate(messageSize);
-	            packetBuffer.put(inputBuffer);
-	            packetBuffer.clear();
+
+
+                ByteBuffer packetBuffer = inputBuffer.duplicate();
+                inputBuffer.position(inputBuffer.position() + messageSize);
+                packetBuffer.limit(inputBuffer.position());
 
 	            int receiverID = packetBuffer.getInt();
 	            GameServer.GameClient receiver = clients.get(receiverID);

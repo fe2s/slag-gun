@@ -62,8 +62,9 @@ public class LauncherClass {
 
         networkProcessingTimeArray.length = 20;
 
-        //world.drawAnimationCalibrateGrid = true;
+        //world.gameRenderer.drawAnimationCalibrateGrid = true;
         //addBots(350, new BotFactory());
+        //addBots(2, new BotFactory());
     }
 
     /**
@@ -135,7 +136,7 @@ public class LauncherClass {
                 requestTimeQuote = (DESIRABLE_TIME_PER_EVENT - sysTimeSpent);
             }
 
-            // This expression is disbalance the upper equation,
+            // This expression is used to disbalance the upper equation,
             // to find maximum possible requestTimeQuote  
             requestTimeQuote += 2;
 

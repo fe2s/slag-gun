@@ -126,9 +126,8 @@ public class Game extends EventDispatcher {
         _gameActors.prepareActors();
         _gameActors.live(deltaTime);
         _gameRenderer.renderBackground();
+        _gameRenderer.drawDebugLines();
         _gameActors.render(deltaTime);
-        _gameRenderer.drawDebugLines();
-        _gameRenderer.drawDebugLines();
         _gameActors.replicate();
     }
 

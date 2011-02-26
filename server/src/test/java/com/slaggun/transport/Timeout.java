@@ -22,7 +22,7 @@ public class Timeout {
 	private String message = "Timeout exceed fail";
 
 	public Timeout(String message, long duration) {
-		this.message = "Timeout exceeed: " + message;
+		this.message = "Timeout exceeds " + duration + " : " + message;
 		start(duration);
 	}
 
