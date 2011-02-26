@@ -205,6 +205,7 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
 	            sendData(from, receiver, packetBuffer, true);
             }else{
 	            inputBuffer.position(oldPosition);
+                return;
             }
         }
 

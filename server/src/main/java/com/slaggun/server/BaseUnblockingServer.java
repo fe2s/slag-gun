@@ -252,7 +252,7 @@ public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Sessio
 						}
 
 	                }catch(CancelledKeyException e){
-		                log.debug("Connection have been closed", e);
+		                log.info("Connection have been closed", e);
 		                close(key);
 		            }catch (Exception e){
 		                log.error("Error in the loop", e);
@@ -267,6 +267,7 @@ public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Sessio
     }
 
 	private void close(SelectionKey key) {
+        log.info("Connection closed");
 		S session = (S) key.attachment();
 		if(!session.closed){
 			session.closed = true;
@@ -302,7 +303,7 @@ public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Sessio
      * @throws IOException -
      */
     private void accept(SelectionKey key) throws IOException {
-        log.debug("Accepting new connection ...");
+        log.info("Accepting new connection ...");
         ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
 
         // accept new connection
