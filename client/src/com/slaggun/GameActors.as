@@ -9,13 +9,6 @@
  * and limitations under the License.
  */
 
-/**
- * Created by IntelliJ IDEA.
- * User: dimaadmin
- * Date: 26.02.11
- * Time: 15:56
- * To change this template use File | Settings | File Templates.
- */
 package com.slaggun {
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorSnapshot;
@@ -28,6 +21,9 @@ import flash.utils.Dictionary;
 
 import mx.collections.ArrayCollection;
 
+/**
+ * User: Dmitry Brazhnik
+ */
 public class GameActors {
 
     private var LOG:Logger = Logger.getLogger(GameActors);
@@ -214,9 +210,12 @@ public class GameActors {
 
         LOG.debug("Replicates count" + repl++);
         _game.gameNetworking.sendEvent(buildSnapshot(), GameNetworking.BROADCAST_ADDRESS);
+        mustBeReplicated = false;
         var lastMilsTime:Number = lastReplicateTime.getTime();
         lastReplicateTime = new Date();
         _latency = lastReplicateTime.getTime() - lastMilsTime;
+        Monitors.latency.appendValue(_latency);
+
     }
 
     private var replReq:int = 0;
