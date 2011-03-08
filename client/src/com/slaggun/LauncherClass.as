@@ -12,6 +12,7 @@
 package com.slaggun {
 import com.slaggun.actor.player.simple.SimplePlayerFactory;
 import com.slaggun.actor.player.simple.bot.BotFactory;
+import com.slaggun.util.AsyncThread;
 import com.slaggun.util.Utils;
 import com.slaggun.util.log.Logger;
 
@@ -34,12 +35,10 @@ public class LauncherClass {
     private var lastTime:Date;
     private var world:Game = new Game();
     private var log:Logger = Logger.getLogger(LauncherClass);
-    private var sysTimeSpent:Number = 0;
-    private var timeQuote:Number = DESIRABLE_TIME_PER_EVENT;
-    private var timeQuoteSpent:Number = 0;
 
     private var networkProcessingTimeArray:Array = [];
     private var lastVar:int = -1;
+    private var networkThread:AsyncThread = new AsyncThread(DESIRABLE_TIME_PER_EVENT);
 
     public function LauncherClass() {
     }
@@ -64,7 +63,7 @@ public class LauncherClass {
 
         //world.gameRenderer.drawAnimationCalibrateGrid = true;
         //addBots(350, new BotFactory());
-        //addBots(2, new BotFactory());
+        //addBots(16, new BotFactory());
     }
 
     /**
@@ -123,51 +122,12 @@ public class LauncherClass {
             g.drawRect(0, 0, bitmapData.rect.width, bitmapData.rect.height);
             g.endFill();
 
-
-            //TODO document this algorithm
-            
-            sysTimeSpent = mils - timeQuoteSpent;
-
-            var requestTimeQuote:Number;
-
-            if(sysTimeSpent > DESIRABLE_TIME_PER_EVENT){
-                requestTimeQuote = sysTimeSpent / 10;
-            }else{
-                requestTimeQuote = (DESIRABLE_TIME_PER_EVENT - sysTimeSpent);
-            }
-
-            // This expression is used to disbalance the upper equation,
-            // to find maximum possible requestTimeQuote  
-            requestTimeQuote += 2;
-
-            if(requestTimeQuote < sysTimeSpent / 10){
-                requestTimeQuote = sysTimeSpent/10;
-            }
-
-            timeQuote += requestTimeQuote;
-
-            timeQuoteSpent = 0;
-
-            var eventsCount:int = 0;
-
-            var startEnterFrameTime:Number = new Date().getTime();
-            var enterFrameTime:Number = 0;            
-            while(timeQuote > 0){
-                if(!world.enterFrame()){
-                    timeQuote = 0;
-                }
-
-                var currTime:Number = new Date().getTime();
-                enterFrameTime = currTime - startEnterFrameTime;
-                startEnterFrameTime = currTime;
-
-                timeQuote -= enterFrameTime;
-                timeQuoteSpent += enterFrameTime;
-                eventsCount++;
-            }
-
+            Monitors.networkTime.startMeasure();
+            var timeQuoteSpent:int = networkThread.invoke(mils, world.enterFrame);
+			
             lastVar = (lastVar + 1) % networkProcessingTimeArray.length;
             networkProcessingTimeArray[lastVar] = timeQuoteSpent;
+            Monitors.networkTime.stopMeasure();
 
             return mils;
         }
