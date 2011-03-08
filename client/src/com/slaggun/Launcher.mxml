@@ -178,7 +178,7 @@
                                  height="100%"
                                  backgroundAlpha="0"
                                  editable="false"
-                                 text="Version: 0.9.519"/>
+                                 text="Version: 0.9.519{'\n'}"/>
                 </mx:VDividedBox>
             </mx:VBox>
         </mx:HDividedBox>
