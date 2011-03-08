@@ -20,12 +20,15 @@ import com.slaggun.monitor.TimeMonitor;
 public class Monitors {
     public static const monitorTime : TimeMonitor = new TimeMonitor({name: "Monitor",
                                                                      commitOnFrame:false});
-    public static const physicsTime : TimeMonitor = new TimeMonitor({name: "Physics"});
-    public static const renderTime  : TimeMonitor = new TimeMonitor({name: "Render"});
     public static const fps         : Monitor     = new Monitor    ({name: "FPS"});
+
     public static const networkTime : TimeMonitor = new TimeMonitor({name: "Network time"});
     public static const latency     : Monitor     = new Monitor    ({name: "Latency", size: 100,
                                                                      commitOnFrame:false});
+    public static const actorsCounter : TimeMonitor = new TimeMonitor({name: "Actor count"});
+    public static const physicsTime : TimeMonitor = new TimeMonitor({name: "Physics"});
+    public static const renderTime  : TimeMonitor = new TimeMonitor({name: "Render"});
+
 
     public static function commitFrame():void{
         monitorTime.startMeasure();

@@ -153,6 +153,7 @@ public class GameActors {
 
     public function live(deltaTime:Number):void{
         var len:int = _actors.length;
+        Monitors.actorsCounter.value = len;
         for (var i:int = 0; i < len; i++) {
             var actor:Actor = _actors[i];
             if(isMineActor(actor)){
