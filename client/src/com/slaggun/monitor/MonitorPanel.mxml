@@ -17,6 +17,10 @@
         public var monitor:Monitor;
 
         public function refreshMonitor():void{
+            var color:* = monitor.metaData.color;
+            if(color != null){
+                value.setStyle("color", monitor.metaData.color)
+            }
             value.text = monitor.name + ": " + Utils.getAvg(monitor.values, monitor.size);
         }
 

@@ -18,9 +18,10 @@ import com.slaggun.monitor.MonitorContainer;
 import com.slaggun.monitor.TimeMonitor;
 
 public class Monitors {
+    public static const fps         : Monitor     = new Monitor    ({name: "FPS",
+                                                                     color:"red"});
     public static const monitorTime : TimeMonitor = new TimeMonitor({name: "Monitor",
                                                                      commitOnFrame:false});
-    public static const fps         : Monitor     = new Monitor    ({name: "FPS"});
 
     public static const networkTime : TimeMonitor = new TimeMonitor({name: "Network time"});
     public static const latency     : Monitor     = new Monitor    ({name: "Latency", size: 100,

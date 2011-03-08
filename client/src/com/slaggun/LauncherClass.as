@@ -110,6 +110,8 @@ public class LauncherClass {
             var nowTime:Date = new Date();
             var mils:Number = (nowTime.getTime() - lastTime.getTime());
 
+            Monitors.fps.appendValue(1000 / mils);
+
             if (mils > 1)
             {
                 lastTime = nowTime;

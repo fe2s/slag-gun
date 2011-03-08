@@ -13,7 +13,6 @@
  * Author: Dmitry Brazhnik
  */
 package com.slaggun.monitor {
-import com.slaggun.Monitors;
 import com.slaggun.util.Utils;
 
 public class Monitor {
@@ -21,6 +20,7 @@ public class Monitor {
     private var _initialized:Boolean = false;
     private var _name:String;
     private var _values:Array;
+    private var _value:*;
     private var _position:int = 0;
     private var _size:int = 0;
     private var _metaData:*;
@@ -38,16 +38,16 @@ public class Monitor {
 
     public function get value():*{
         if(!_initialized){
-            _values[_position] = prepareValue();
+            _value = prepareValue();
             _initialized = true;
         }
 
-        return _values[_position];
+        return _value;
     }
 
     public function set value(value:*):void{
         _initialized = true;
-        _values[_position] = value;
+        _value = value;
     }
 
     public function appendValue(value:*):void{
@@ -62,8 +62,11 @@ public class Monitor {
     }
 
     public function commit():void{
-        appendValue(value);
-        _initialized = false;
+        if(_initialized){
+            appendValue(value);
+            _initialized = false;
+        }
+
     }
 
     public function get values():Array{
