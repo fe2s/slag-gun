@@ -14,11 +14,12 @@ package com.slaggun.util {
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
 public class Utils {
-    public static function getAvg(arr:Array):String{
+    public static function getAvg(arr:Array, size:int = -1):String{
         var avgTime:int;
         var deviationTime:int;
 
-        var size:uint = arr.length;
+        if(size == -1)
+            size = arr.length;
 
 
         var i:int;
@@ -37,6 +38,10 @@ public class Utils {
         deviationTime /= size;
 
         return avgTime + "+/-" + deviationTime;
+    }
+
+    public static function getDefault(value:*, def:*):*{
+        return value != null?value:def;
     }
 }
 }

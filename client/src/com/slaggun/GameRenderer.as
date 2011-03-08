@@ -9,13 +9,7 @@
  * and limitations under the License.
  */
 
-/**
- * Created by IntelliJ IDEA.
- * User: dimaadmin
- * Date: 26.02.11
- * Time: 15:56
- * To change this template use File | Settings | File Templates.
- */
+
 package com.slaggun {
 import flash.display.BitmapData;
 import flash.display.DisplayObject;
@@ -23,6 +17,9 @@ import flash.display.Shape;
 import flash.geom.Matrix;
 import flash.geom.Rectangle;
 
+/**
+ * User: Dmitry Brazhnik
+ */
 public class GameRenderer {
 
     [Embed(source="res/background.png")]

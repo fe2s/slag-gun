@@ -21,9 +21,11 @@
                 paddingTop="0"
                 paddingBottom="0"
 
-                xmlns:mx="http://www.adobe.com/2006/mxml">
+                xmlns:mx="http://www.adobe.com/2006/mxml"
+                xmlns:monitor="com.slaggun.monitor.*">
     <mx:Script>
 <![CDATA[
+        import com.slaggun.monitor.MonitorContainer;
         import com.slaggun.util.Utils;
         import com.slaggun.util.log.LoggerConfig;
 
@@ -38,15 +40,14 @@
         private var _latency:Number = 0;
 
         private var policyServer:String;
-		
-		
+
 
         private function initVariables():void {
-			
-			var application:Application = Application(Application.application);
-			
+
+            var application:Application = Application(Application.application);
+
             var hostParameter:String = application.parameters["host"];
-            if(hostParameter != null){
+            if (hostParameter != null) {
                 txtHost.text = hostParameter;
             }
 
@@ -90,7 +91,10 @@
 
             fpsOut.text = "fps: " + 1000 / launcher.enterFrame(output.graphics);
             latencyOut.text = "latency: " + Utils.getAvg(latencies);
-            networkProccessingTime.text = "network: " + launcher.networkProcessingTime; 
+            networkProccessingTime.text = "network: " + launcher.networkProcessingTime;
+
+            Monitors.commitFrame();
+            monitors.refreshMonitors();
         }
 
         private function hookKeyboard():void {
@@ -140,35 +144,42 @@
         private function autoScrollTextArea(target:TextArea):void {
             target.verticalScrollPosition = target.maxVerticalScrollPosition;
         }
-
-]]>
+        ]]>
 </mx:Script>
     <mx:Canvas x="0" y="0" width="100%" height="100%">
-        <mx:Canvas y = "0" x = "0" id="output" width="100%" height="100%"
-                mouseDown="mouseDown(event)"
-                mouseUp="mouseUp(event)"
-                mouseMove="mouseMove(event)"
-                resize="resize()"
+        <mx:Canvas y="0" x="0" id="output" width="100%" height="100%"
+                   mouseDown="mouseDown(event)"
+                   mouseUp="mouseUp(event)"
+                   mouseMove="mouseMove(event)"
+                   resize="resize()"
                 />
-
-        <mx:HBox width="100%" height="100%">
+        <mx:HDividedBox width="100%" height="100%">
             <mx:Spacer width="100%"/>
-            <mx:VBox height="100" width="200">
+            <mx:VBox height="100%"
+                backgroundColor="gray"
+                backgroundAlpha="0.6">
+
+                <!--   Use http://mycoputername/Launcher.swf?host=mycoputername&policyServer=policy.org -->
+                <mx:TextInput id="txtHost" text="127.0.0.1"/>
+                <mx:Button label="connect" click="launcher.connect(txtHost.text, policyServer)"/>
                 <mx:Text id="fpsOut" color="red"/>
                 <mx:Text id="latencyOut" color="red"/>
                 <mx:Text id="networkProccessingTime" color="red"/>
+
+                <mx:VDividedBox height="100%"
+                                width="100%">
+                    <monitor:MonitorListPanel id="monitors"
+                                              width="100%"
+                                              color="cyan"
+                                              horizontalScrollPolicy="off"/>
+                    <mx:TextArea id="logOutput"
+                                 width="100%"
+                                 height="100%"
+                                 backgroundAlpha="0"
+                                 editable="false"
+                                 text="Version: 0.9.519"/>
+                </mx:VDividedBox>
             </mx:VBox>
-            <mx:VBox height="100%">
-                <!--   Use http://mycoputername/Launcher.swf?host=mycoputername&policyServer=policy.org -->
-                <mx:TextInput id="txtHost" text="127.0.0.1" />
-                <mx:Button label="connect" click="launcher.connect(txtHost.text, policyServer)"/>
-                <mx:TextArea id="logOutput"
-                    height="100%"
-                    width="200"
-                    backgroundAlpha="0"
-                    editable="false"
-                    text="Version: 0.9.519"/>
-            </mx:VBox>
-        </mx:HBox>
+        </mx:HDividedBox>
     </mx:Canvas>
 </mx:Application>

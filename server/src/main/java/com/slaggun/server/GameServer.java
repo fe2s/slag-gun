@@ -194,8 +194,6 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
 
             if (inputBuffer.remaining() >= messageSize){
 
-
-
                 ByteBuffer packetBuffer = inputBuffer.duplicate();
                 inputBuffer.position(inputBuffer.position() + messageSize);
                 packetBuffer.limit(inputBuffer.position());
