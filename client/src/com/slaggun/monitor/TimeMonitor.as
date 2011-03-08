@@ -17,29 +17,29 @@ public class TimeMonitor extends Monitor{
     private var lastTime:Number;
     private var measure:Boolean = false;
 
-    public function TimeMonitor(data) {
+    public function TimeMonitor(data:*) {
         super(data);
     }
 
-    protected override function initValue(){
-        value = 0;
+    protected override function prepareValue():*{
+        return 0;
     }
 
-    public function startMeasure(){
+    public function startMeasure():void{
         if(!measure){
             lastTime = new Date().time;
             measure = true;
         }
     }
 
-    public function stopMeasure(){
+    public function stopMeasure():void{
         if(measure){
             value += new Date().time - lastTime;
             measure = false;
         }
     }
 
-    public override function commit(){
+    public override function commit():void{
         stopMeasure();
         super.commit();
     }

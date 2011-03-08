@@ -19,7 +19,7 @@ import com.slaggun.util.log.Logger;
 import mx.utils.LoaderUtil;
 
 public class MonitorContainer {
-    private static const LOG = Logger.getLogger(MonitorContainer);
+    private static const LOG:Logger = Logger.getLogger(MonitorContainer);
 
     public static const instance:MonitorContainer = new MonitorContainer();
 
@@ -29,7 +29,7 @@ public class MonitorContainer {
     public function MonitorContainer() {
     }
 
-    public function registerMonitor(monitor:Monitor){
+    public function registerMonitor(monitor:Monitor):void{
         if(_monitorMap[monitor.name] == null){
             _monitorMap[monitor.name] = monitor;
             _monitors.push(monitor);

@@ -33,7 +33,7 @@ public class Monitors {
     public static function commitFrame():void{
         monitorTime.startMeasure();
         var monitors:Array = MonitorContainer.instance.monitors;
-        for(var i = 0; i < monitors.length; i++){
+        for(var i:int = 0; i < monitors.length; i++){
             var monitor:Monitor = monitors[i];
             if(   monitor.metaData.commitOnFrame == null
                || monitor.metaData.commitOnFrame)

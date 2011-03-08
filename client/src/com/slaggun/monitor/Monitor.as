@@ -38,30 +38,30 @@ public class Monitor {
 
     public function get value():*{
         if(!_initialized){
-            initValue();
+            _values[_position] = prepareValue();
             _initialized = true;
         }
 
         return _values[_position];
     }
 
-    public function set value(value:*){
+    public function set value(value:*):void{
         _initialized = true;
         _values[_position] = value;
     }
 
-    public function appendValue(value:*){
+    public function appendValue(value:*):void{
         _values[_position] = value;
         _position = (_position + 1) % _values.length;
         if(_size < _values.length)
             _size++;
     }
 
-    protected function initValue(){
-        value = null;
+    protected function prepareValue():*{
+        return null;
     }
 
-    public function commit(){
+    public function commit():void{
         appendValue(value);
         _initialized = false;
     }
@@ -78,7 +78,7 @@ public class Monitor {
         return _position;
     }
 
-    public function get metaData(){
+    public function get metaData():*{
         return _metaData;
     }
 }

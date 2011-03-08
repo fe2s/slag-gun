@@ -17,13 +17,15 @@
 
         private var knownMonitors:Array = [];
 
-        public function refreshMonitors(){
+        public function refreshMonitors():void{
 
             Monitors.monitorTime.startMeasure();
 
+            var i:int;
+
             var monitors:Array = MonitorContainer.instance.monitors;
             if(monitors.length != knownMonitors.length){
-                for(var i = 0; i < monitors.length; i++){
+                for(i = 0; i < monitors.length; i++){
                     var monitor:Monitor = monitors[i];
                     if(knownMonitors.indexOf(monitor) == -1){
                         knownMonitors.push(monitor);
@@ -32,16 +34,16 @@
                 }
             }
 
-            var children = container.getChildren();
-            for(var i = 0; i < children.length; i++){
+            var children:Array = container.getChildren();
+            for(i = 0; i < children.length; i++){
                 MonitorPanel(children[i]).refreshMonitor();
             }
 
             Monitors.monitorTime.stopMeasure();
         }
 
-        public function addMonitor(monitor:Monitor){
-            var panel = new MonitorPanel();
+        public function addMonitor(monitor:Monitor):void{
+            var panel:MonitorPanel = new MonitorPanel();
             panel.monitor = monitor;
             container.addChild(panel);
 
