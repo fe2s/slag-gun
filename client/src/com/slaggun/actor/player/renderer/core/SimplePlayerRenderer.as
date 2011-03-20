@@ -19,9 +19,9 @@ import flash.geom.Matrix;
 /**
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-public class RotatedRenderer extends AnimatedRenderer{
+public class SimplePlayerRenderer extends AnimatedRenderer{
     
-    public function RotatedRenderer(resource:DirectedResource, frameSpeedFactor:Number) {
+    public function SimplePlayerRenderer(resource:DirectedResource, frameSpeedFactor:Number) {
         super(resource, frameSpeedFactor);
     }
 
@@ -44,18 +44,27 @@ public class RotatedRenderer extends AnimatedRenderer{
         var lx:Number = model.look.x;
         var ly:Number = model.look.y;
 
-        if (vx != 0 || vy != 0) {
-            lx = vx;
-            ly = vy;
+        if (vx == 0 && vy == 0) {
+            vx = lx;
+            vy = ly;
         }
 
-        var lookAngle:Number = getAngle(lx, ly);
-        //lookAngle %= 2 * Math.PI;
+        var revesrs:Boolean = false;
 
-        var mat:Matrix =  new Matrix();
-        mat.rotate(lookAngle);
+        if(vx*lx + vy*ly < 0){
+            vx = -vx;
+            vy = -vy;
+            revesrs = true
+        }
+
+        var lookMat:Matrix =  new Matrix();
+        lookMat.rotate(getAngle(lx, ly));
+
+        var veloMat:Matrix =  new Matrix();
+        veloMat.rotate(getAngle(vx, vy));
         
-        resource.draw(bitmap, x, y, xFrame, yFrame, DrawOption.create().setMatrix(mat));
+        resource.draw(bitmap, x, y, revesrs ? resource.xFramesCount - xFrame : xFrame, 0, DrawOption.create().setMatrix(veloMat));
+        resource.draw(bitmap, x, y, 0,                                                 1, DrawOption.create().setMatrix(lookMat));
     }
 }
 }

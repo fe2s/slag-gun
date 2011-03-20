@@ -14,7 +14,7 @@ import com.slaggun.actor.base.ActorRenderer;
 import com.slaggun.actor.player.renderer.core.AnimatedRenderer;
 import com.slaggun.actor.player.renderer.core.DirectedRenderer;
 import com.slaggun.actor.player.renderer.core.DirectedResource;
-import com.slaggun.actor.player.renderer.core.RotatedRenderer;
+import com.slaggun.actor.player.renderer.core.SimplePlayerRenderer;
 
 /**
  * This is renderer for the SimplePlayer
@@ -37,7 +37,11 @@ public class StalkerPlayerResource extends DirectedResource{
     public static function createRenderer():ActorRenderer{
         //return new DirectedRenderer(INSTANCE, 1/15);
         //return new AnimatedRenderer(INSTANCE, 1/15);
-        return new RotatedRenderer(INSTANCE, 1/15);
+        return new SimplePlayerRenderer(INSTANCE, 1/15);
+    }
+
+    override protected function getYFramesCount():int {
+        return 8;
     }
 
     /**

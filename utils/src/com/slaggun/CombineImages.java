@@ -25,7 +25,7 @@ import java.util.Arrays;
 public class CombineImages {
 	public static void main(String[] args) throws IOException {
 
-		File dir = new File("C:/development/stalker/out/top2/frames");
+		File dir = new File(".");
 		File[] images = dir.listFiles(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
 				return name.endsWith(".png");
@@ -33,8 +33,11 @@ public class CombineImages {
 		});
 		Arrays.sort(images);
 
+
+        BufferedImage first = ImageIO.read(images[0]);
+
 		BufferedImage result = new BufferedImage(
-                               images.length * 104, 833, //work these out
+                               images.length * (first.getWidth() + 1), first.getHeight(), //work these out
                                BufferedImage.TYPE_INT_ARGB);
         Graphics g = result.getGraphics();
 
@@ -53,8 +56,7 @@ public class CombineImages {
 
 
 
-		ImageIO.write(result, "png", new File("C:/development/slag-gun/trunk/hg/client/src/com/slaggun/actor/player/renderer/res/stalker.png"));
-		//ImageIO.write(result, "png", new File("C:/development/stalker/out/top2/temp.png"));
+		ImageIO.write(result, "png", new File("../result.png"));
 
 		System.out.println("Done");
 	}
