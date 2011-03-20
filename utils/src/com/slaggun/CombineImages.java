@@ -37,20 +37,20 @@ public class CombineImages {
         BufferedImage first = ImageIO.read(images[0]);
 
 		BufferedImage result = new BufferedImage(
-                               images.length * (first.getWidth() + 1), first.getHeight(), //work these out
+                               1 + images.length * first.getWidth(), first.getHeight(), //work these out
                                BufferedImage.TYPE_INT_ARGB);
         Graphics g = result.getGraphics();
 
 
 
-		int x = 0;
+		int x = 1;
 
 		System.out.println("----------");
 		for(File image : images){
 			System.out.println("Reading: " + image.getPath());
             BufferedImage bi = ImageIO.read(image);
             g.drawImage(bi, x, 0, null);
-            x += 104;
+            x += bi.getWidth();
         }
 		System.out.println("----------");
 
