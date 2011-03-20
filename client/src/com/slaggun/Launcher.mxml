@@ -34,11 +34,6 @@
         private var launcher:LauncherClass;
         private var logScrollTimer:Timer;
 
-        private var latencies:Array;
-        private var lastLatencyUpdated:Number = -1;
-        private var _statisticLatencyDeviation:Number = 0;
-        private var _latency:Number = 0;
-
         private var policyServer:String;
 
 
@@ -52,9 +47,6 @@
             }
 
             policyServer = application.parameters["policyServer"];
-
-            latencies = [];
-            latencies.length = 100;
 
             LoggerConfig.instance.setTextArea(logOutput);
             launcher = new LauncherClass();
@@ -71,27 +63,9 @@
             launcher.start();
         }
 
-        private function updateLatency():void {
-            var latenciesSize:uint = latencies.length;
-            lastLatencyUpdated = (lastLatencyUpdated + 1) % latenciesSize;
-            latencies[lastLatencyUpdated] = launcher.latency;
-        }
-
-
-        public function get statisticLatencyDeviation():Number {
-            return _statisticLatencyDeviation;
-        }
-
-        public function get latency():Number {
-            return _latency;
-        }
-
         private function enterFrame():void {
-            updateLatency();
 
-            fpsOut.text = "fps: " + 1000 / launcher.enterFrame(output.graphics);
-            latencyOut.text = "latency: " + Utils.getAvg(latencies);
-            networkProccessingTime.text = "network: " + launcher.networkProcessingTime;
+            launcher.enterFrame(output.graphics);
 
             Monitors.commitFrame();
             monitors.refreshMonitors();
@@ -162,10 +136,6 @@
                 <!--   Use http://mycoputername/Launcher.swf?host=mycoputername&policyServer=policy.org -->
                 <mx:TextInput id="txtHost" text="127.0.0.1"/>
                 <mx:Button label="connect" click="launcher.connect(txtHost.text, policyServer)"/>
-                <mx:Text id="fpsOut" color="red"/>
-                <mx:Text id="latencyOut" color="red"/>
-                <mx:Text id="networkProccessingTime" color="red"/>
-
                 <mx:VDividedBox height="100%"
                                 width="100%">
                     <monitor:MonitorListPanel id="monitors"

@@ -13,7 +13,6 @@ package com.slaggun {
 import com.slaggun.actor.player.simple.SimplePlayerFactory;
 import com.slaggun.actor.player.simple.bot.BotFactory;
 import com.slaggun.util.AsyncThread;
-import com.slaggun.util.Utils;
 import com.slaggun.util.log.Logger;
 
 import flash.display.BitmapData;
@@ -36,8 +35,6 @@ public class LauncherClass {
     private var world:Game = new Game();
     private var log:Logger = Logger.getLogger(LauncherClass);
 
-    private var networkProcessingTimeArray:Array = [];
-    private var lastVar:int = -1;
     private var networkThread:AsyncThread = new AsyncThread(DESIRABLE_TIME_PER_EVENT);
 
     public function LauncherClass() {
@@ -59,11 +56,9 @@ public class LauncherClass {
 
         world.gameActors.add(playerFactory.create(mineActor), mineActor, replicatedOnce);
 
-        networkProcessingTimeArray.length = 20;
-
         //world.gameRenderer.drawAnimationCalibrateGrid = true;
         //addBots(350, new BotFactory());
-        //addBots(16, new BotFactory());
+        addBots(2, new BotFactory());
     }
 
     /**
@@ -110,12 +105,11 @@ public class LauncherClass {
             var nowTime:Date = new Date();
             var mils:Number = (nowTime.getTime() - lastTime.getTime());
 
-            Monitors.fps.appendValue(1000 / mils);
-
             if (mils > 1)
             {
                 lastTime = nowTime;
                 world.live(mils);
+                Monitors.fps.appendValue(1000 / mils);
             }
 
             var bitmapData:BitmapData = world.gameRenderer.bitmap;
@@ -125,20 +119,13 @@ public class LauncherClass {
             g.endFill();
 
             Monitors.networkTime.startMeasure();
-            var timeQuoteSpent:int = networkThread.invoke(mils, world.enterFrame);
-			
-            lastVar = (lastVar + 1) % networkProcessingTimeArray.length;
-            networkProcessingTimeArray[lastVar] = timeQuoteSpent;
+            networkThread.invoke(mils, world.enterFrame);
             Monitors.networkTime.stopMeasure();
 
             return mils;
         }
 
         return 0;
-    }
-
-    public function  get networkProcessingTime():String{
-        return Utils.getAvg(networkProcessingTimeArray); 
     }
 
     public function get latency():Number{
