@@ -9,33 +9,15 @@
  * and limitations under the License.
  */
 
-package com.slaggun.util.log {
+package com.slaggun.log {
 /**
+ * Implement this interface for your own strategies
+ * for outputting log messages
  *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public class Category {
+public interface Appender {
 
-    private var _clazz:Class;
-    private var _priority:Priority;
-    private var _appenders:Array;
-
-    public function Category(clazz:Class, priority:Priority, appenders:Array) {
-        this._clazz = clazz;
-        this._priority = priority;
-        this._appenders = appenders;
-    }
-
-    public function get clazz():Class {
-        return _clazz;
-    }
-
-    public function get priority():Priority {
-        return _priority;
-    }
-
-    public function get appenders():Array {
-        return _appenders;
-    }
+    function append(str:String):void;
 }
 }

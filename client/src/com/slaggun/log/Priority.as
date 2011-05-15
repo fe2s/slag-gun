@@ -9,7 +9,7 @@
  * and limitations under the License.
  */
 
-package com.slaggun.util.log {
+package com.slaggun.log {
 /**
  *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)

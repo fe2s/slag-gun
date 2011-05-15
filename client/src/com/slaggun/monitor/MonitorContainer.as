@@ -14,7 +14,7 @@
  */
 package com.slaggun.monitor {
 import com.slaggun.util.Utils;
-import com.slaggun.util.log.Logger;
+import com.slaggun.log.Logger;
 
 import mx.utils.LoaderUtil;
 

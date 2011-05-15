@@ -9,7 +9,7 @@
  * and limitations under the License.
  */
 
-package com.slaggun.util.log {
+package com.slaggun.log {
 import flash.system.Capabilities;
 import flash.utils.getDefinitionByName;
 

@@ -16,7 +16,7 @@ import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorPhysics;
 import com.slaggun.actor.player.PlayerConstants;
 import com.slaggun.actor.shell.pistol.PistolShellFactory;
-import com.slaggun.util.log.Logger;
+import com.slaggun.log.Logger;
 
 import flash.geom.Point;
 import flash.ui.Keyboard;

@@ -9,27 +9,16 @@
  * and limitations under the License.
  */
 
-package com.slaggun.util.log {
-import mx.controls.TextArea;
-
+package com.slaggun.log {
 /**
  *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public class TextAreaAppender implements Appender{
-
-    private var _textArea:TextArea;
-
-    public function TextAreaAppender(textArea:TextArea) {
-        _textArea = textArea;
-    }
-
-    public function set textArea(value:TextArea):void {
-        _textArea = value;
-    }
+public class ConsoleAppender implements Appender {
 
     public function append(str:String):void {
-        _textArea.text += str;
+        trace(str);
     }
+
 }
 }

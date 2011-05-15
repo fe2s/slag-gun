@@ -13,7 +13,7 @@ package com.slaggun {
 import com.slaggun.actor.player.simple.SimplePlayerFactory;
 import com.slaggun.actor.player.simple.bot.BotFactory;
 import com.slaggun.util.AsyncThread;
-import com.slaggun.util.log.Logger;
+import com.slaggun.log.Logger;
 
 import flash.display.BitmapData;
 import flash.display.Graphics;

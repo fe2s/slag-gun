@@ -12,7 +12,7 @@
 package com.slaggun.actor.player.simple {
 import com.slaggun.actor.base.ActorModel;
 import com.slaggun.actor.player.PlayerConstants;
-import com.slaggun.util.log.Logger;
+import com.slaggun.log.Logger;
 
 import flash.geom.Point;
 

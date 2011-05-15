@@ -19,7 +19,7 @@ import flash.display.DisplayObject;
 import flash.geom.Matrix;
 import flash.geom.Rectangle;
 
-import com.slaggun.util.log.Logger;
+import com.slaggun.log.Logger;
 
 import flash.display.BitmapData;
 import flash.display.Shape;

@@ -15,7 +15,7 @@ import com.slaggun.amf.AmfSerializer;
 import com.slaggun.events.BaseGameEvent;
 import com.slaggun.events.GameEvent;
 import com.slaggun.events.RequestSnapshotEvent;
-import com.slaggun.util.log.Logger;
+import com.slaggun.log.Logger;
 
 import flash.events.ErrorEvent;
 import flash.events.Event;

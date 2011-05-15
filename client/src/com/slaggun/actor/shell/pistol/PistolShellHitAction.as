@@ -16,7 +16,7 @@ import com.slaggun.actor.player.PlayerConstants;
 import com.slaggun.actor.player.simple.SimplePlayer;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
 import com.slaggun.geom.Circle;
-import com.slaggun.util.log.Logger;
+import com.slaggun.log.Logger;
 
 /**
  * How different actors should react on the pistol shell hit

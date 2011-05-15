@@ -9,7 +9,7 @@
  * and limitations under the License.
  */
 
-package com.slaggun.util.log {
+package com.slaggun.log {
 import com.slaggun.Game;
 import com.slaggun.LauncherClass;
 import com.slaggun.actor.player.simple.SimplePlayerModel;

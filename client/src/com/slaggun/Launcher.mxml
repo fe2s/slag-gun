@@ -27,7 +27,7 @@
 <![CDATA[
         import com.slaggun.monitor.MonitorContainer;
         import com.slaggun.util.Utils;
-        import com.slaggun.util.log.LoggerConfig;
+        import com.slaggun.log.LoggerConfig;
 
         import mx.core.Application;
 

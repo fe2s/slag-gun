@@ -14,7 +14,7 @@ import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorSnapshot;
 import com.slaggun.events.RequestSnapshotEvent;
 import com.slaggun.events.SnapshotEvent;
-import com.slaggun.util.log.Logger;
+import com.slaggun.log.Logger;
 
 import flash.display.BitmapData;
 import flash.utils.Dictionary;
