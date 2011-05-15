@@ -54,7 +54,7 @@ public class LauncherClass {
         const mineActor:Boolean = true;
         const replicatedOnce:Boolean = false;
 
-        world.gameActors.add(playerFactory.create(mineActor), mineActor, replicatedOnce);
+        world.gameActors.add(playerFactory.create(mineActor));
 
         //world.gameRenderer.drawAnimationCalibrateGrid = true;
         //addBots(350, new BotFactory());
@@ -69,7 +69,7 @@ public class LauncherClass {
         const replicatedOnce:Boolean = false;
         var i: int;
         for (i = 0; i < number; i++) {
-            world.gameActors.add(botFactory.create(), mineActor, replicatedOnce);
+            world.gameActors.add(botFactory.create());
         }
     }
 

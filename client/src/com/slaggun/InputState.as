@@ -73,6 +73,10 @@ public class InputState{
         return keyboard[keyCode];
     }
 
+    public function isPressedChar(keyCode: String):Boolean {
+        return isPressed(keyCode.charCodeAt());
+    }
+
     /**
      * Check whether mouse button is pressed.
      * @return true if button is pressed, otherwise false

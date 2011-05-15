@@ -62,7 +62,7 @@ public class GameActors {
      * @param replicateOnce whether to replicate this actor only one time
      * @return
      */
-    public function add(actor:Actor, mine:Boolean, replicateOnce:Boolean):void {
+    private function _add(actor:Actor, mine:Boolean, replicateOnce:Boolean):void {
         // add to all actors list
         toBeAdded.push(actor);
 
@@ -88,6 +88,10 @@ public class GameActors {
         } else {
             actorsByOwner[owner].push(actor);
         }
+    }
+
+    public function add(actor:Actor, replicatable:Boolean = true):void {
+        _add(actor, true, false);
     }
 
     /**
@@ -231,8 +235,6 @@ public class GameActors {
      * Handles incoming snapshots
      */
     public function handleSnapshot(snapshotEvent:SnapshotEvent):void {
-        const mineActor:Boolean = false;
-        const replicatedOnce:Boolean = false;
 
         var owner:int = snapshotEvent.sender;
         var existingActors:Array = actorsByOwner[owner];
@@ -252,10 +254,10 @@ public class GameActors {
                     }
                 }
                 if (!knownActor) {
-                    add(actorSnapshot.resurrect(_game, owner), mineActor, replicatedOnce);
+                    _add(actorSnapshot.resurrect(_game, owner), false, false);
                 }
             } else {
-                add(actorSnapshot.resurrect(_game, owner), mineActor, replicatedOnce);
+                _add(actorSnapshot.resurrect(_game, owner), false, false);
             }
         }
     }

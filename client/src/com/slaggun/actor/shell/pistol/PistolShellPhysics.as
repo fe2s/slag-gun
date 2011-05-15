@@ -40,7 +40,10 @@ public class PistolShellPhysics extends BaseActorPhysics {
 
     private function hit(shell:PistolShell, world:Game):void{
         var hitAction:PistolShellHitAction = new PistolShellHitAction(shell, world);
-        for each (var actor:Actor in world.gameActors.actors){
+        var len:int = world.gameActors.actors.length;
+        var actors:Array = world.gameActors.actors;
+        for(var i:int = 0; i < len; i++){
+            var actor:Actor = actors[i]
             actor.apply(hitAction);
         }
     }

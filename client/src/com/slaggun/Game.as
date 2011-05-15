@@ -136,11 +136,18 @@ public class Game extends EventDispatcher {
         return _gameRenderer.bitmap.height;
     }
 
+    public static const simpleArray : TimeMonitor = new TimeMonitor({name: "Actor count"});
+    public static const bufferedArray : TimeMonitor = new TimeMonitor({name: "Actor count"});
+    public static const linkedList : TimeMonitor = new TimeMonitor({name: "Actor count"});
+
     /**
      * Process world live iteration
      * @param deltaTime - time pass
      */
     public function live(deltaTime:Number):void {
+
+
+
       Monitors.physicsTime. startMeasure();
         _gameActors.prepareActors();
         _gameActors.live(deltaTime);

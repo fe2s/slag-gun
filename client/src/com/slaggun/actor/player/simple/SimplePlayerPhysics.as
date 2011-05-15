@@ -43,19 +43,19 @@ public class SimplePlayerPhysics implements ActorPhysics{
         var inputState:InputState = world.inputStates;
 
         // procces key events
-        if (inputState.isPressed(Keyboard.LEFT)) {
+        if (inputState.isPressed(Keyboard.LEFT) || inputState.isPressedChar('A')) {
             vx -= 1;
         }
 
-        if (inputState.isPressed(Keyboard.RIGHT)) {
+        if (inputState.isPressed(Keyboard.RIGHT) || inputState.isPressedChar('D')) {
             vx += 1;
         }
 
-        if (inputState.isPressed(Keyboard.UP)) {
+        if (inputState.isPressed(Keyboard.UP) || inputState.isPressedChar('W')) {
             vy -= 1;
         }
 
-        if (inputState.isPressed(Keyboard.DOWN)) {
+        if (inputState.isPressed(Keyboard.DOWN) || inputState.isPressedChar('D')) {
             vy += 1;
         }
 
@@ -186,7 +186,7 @@ public class SimplePlayerPhysics implements ActorPhysics{
         var shellFactory:PistolShellFactory = new PistolShellFactory();
         var shell:Actor = shellFactory.create(shellPosition, shellDirection);
 
-        world.gameActors.add(shell, mineActor, replicatedOnce);
+        world.gameActors.add(shell);
     }
 }
 }
