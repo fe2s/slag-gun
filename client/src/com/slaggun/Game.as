@@ -12,9 +12,16 @@
 package com.slaggun {
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorSnapshot;
+import com.slaggun.actor.player.simple.SimplePlayerModel;
+import com.slaggun.actor.player.simple.SimplePlayerPhysics;
 import com.slaggun.events.RequestSnapshotEvent;
 import com.slaggun.events.SnapshotEvent;
 import com.slaggun.GameNetworking;
+import com.slaggun.log.Category;
+import com.slaggun.log.LoggerConfig;
+import com.slaggun.log.Priority;
+import com.slaggun.monitor.TimeMonitor;
+
 import flash.display.DisplayObject;
 import flash.geom.Matrix;
 import flash.geom.Rectangle;
@@ -44,6 +51,7 @@ public class Game extends EventDispatcher {
 
 
     public function Game() {
+        initLogger();
         create();
         initialize();
     }
@@ -58,6 +66,16 @@ public class Game extends EventDispatcher {
     protected function initialize():void {
         _gameNetworking.addEventListener(SnapshotEvent.INCOMING,                 _gameActors.handleSnapshot);
         _gameNetworking.addEventListener(RequestSnapshotEvent.REQUEST_SNAPSHOT,  _gameActors.handleRequestSnapshot);
+    }
+
+    protected function initLogger():void{
+        LoggerConfig.instance.categories =[
+            new Category(LauncherClass, Priority.ERROR,       [LoggerConfig.instance.consoleAppender,  LoggerConfig.instance.textAreaAppender]),
+            new Category(SimplePlayerPhysics, Priority.DEBUG, [LoggerConfig.instance.textAreaAppender]),
+            new Category(SimplePlayerModel, Priority.INFO,    [LoggerConfig.instance.textAreaAppender]),
+            new Category(GameNetworking, Priority.DEBUG,      [LoggerConfig.instance.consoleAppender]),
+            new Category(Game, Priority.DEBUG,                [LoggerConfig.instance.consoleAppender])
+        ];
     }
 
     protected function createGameRenderer():GameRenderer {

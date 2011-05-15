@@ -30,30 +30,16 @@ public class LoggerConfig {
     private static const _instance:LoggerConfig = new LoggerConfig();
 
     // appenders
-    private var consoleAppender:ConsoleAppender = new ConsoleAppender();
-    private var textAreaAppender:TextAreaAppender = new TextAreaAppender(null);
-
-
-    // modify this to configure logging
-    private var _categories:Array = [
-        new Category(LauncherClass, Priority.ERROR, [consoleAppender, textAreaAppender]),
-        new Category(SimplePlayerPhysics, Priority.DEBUG, [textAreaAppender]),
-        new Category(SimplePlayerModel, Priority.INFO, [textAreaAppender]),
-        new Category(GameNetworking, Priority.DEBUG, [consoleAppender]),
-        new Category(Game, Priority.DEBUG, [consoleAppender]),
-    ];
+    public const consoleAppender:ConsoleAppender = new ConsoleAppender();
+    public const textAreaAppender:TextAreaAppender = new TextAreaAppender(null);
+    public var categories:Array;
 
     public static function get instance():LoggerConfig {
         return _instance;
     }
 
     public function setTextArea(textArea:TextArea):void {
-        _instance.textAreaAppender.textArea = textArea;
+        textAreaAppender.textArea = textArea;
     }
-
-    public function get categories():Array {
-        return _categories;
-    }
-
 }
 }
