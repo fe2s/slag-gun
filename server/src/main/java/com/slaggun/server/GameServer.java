@@ -11,6 +11,8 @@
 
 package com.slaggun.server;
 
+import com.slaggun.server.services.GameSessionClient;
+import com.slaggun.server.services.ServerSide;
 import org.apache.log4j.Logger;
 
 import java.nio.ByteBuffer;
@@ -23,22 +25,24 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
 
-    private static final int SKIP_BIT = 0x1;
-	private static final int INT_SIZE = Integer.SIZE/8;
+    public static final int SKIP_BIT = 0x1;
+	public static final int INT_SIZE = Integer.SIZE/8;
 
 	private final Logger log = Logger.getLogger(GameServer.class);
 
-    public abstract class GameClient{
+    public static abstract class GameClient{
+        protected final GameServer gameServer;
 		private final int sessionId;
 		private final Map<GameClient, Object> dataRetrieved = new ConcurrentHashMap<GameClient, Object>();
 
-		protected GameClient() {
-			this(freeSessionId.getAndIncrement());
+		protected GameClient(GameServer gameServer) {
+			this(gameServer, gameServer.freeSessionId.getAndIncrement());
 		}
 
-		public GameClient(int id) {
+		public GameClient(GameServer gameServer, int id) {
+            this.gameServer = gameServer;
 			sessionId = id;
-			clients.put(sessionId, this);
+			gameServer.clients.put(sessionId, this);
 		}
 
 		public int getSessionId() {
@@ -65,7 +69,7 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
 		}
 
 		public void unregister() {
-			clients.remove(getSessionId());
+			gameServer.clients.remove(getSessionId());
 		}
 
 		@Override
@@ -89,69 +93,26 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
 		}
 	}
 
-	public class GameSessionClient extends GameClient{
-		private GameSession session;
-
-		public void requestSnapshot(){
-			ByteBuffer requestSnapshotEvent = ByteBuffer.allocate(INT_SIZE);
-			requestSnapshotEvent.putInt(0);
-			requestSnapshotEvent.clear();
-
-			sendDate(serverSide, this, requestSnapshotEvent);
-
-			super.requestSnapshot();
-		}
-
-		@Override
-		protected void dataReceived(GameClient from, ByteBuffer byteBuffer, boolean skipable) {
-			getSession().postBuffer(byteBuffer);
-		}
-
-		public GameSession getSession() {
-			return session;
-		}
-
-		public void setSession(GameSession session) {
-			this.session = session;
-		}
-	}
-
-	public class ServerSide extends GameClient{
-
-		public ServerSide(int id) {
-			super(id);
-		}
-
-		@Override
-		protected void dataReceived(GameClient from, ByteBuffer byteBuffer, boolean skipable) {
-	        for (GameClient receiver : clients.values()) {
-			    // otherSession can be null if it deatached due to concurrecny
-			    if(receiver != null
-			    && receiver != from
-			    && receiver != this){
-				    receiver.postData(from, byteBuffer.slice(), skipable);
-				}
-	        }
-		}
-
-		@Override
-		public void postData(GameClient from, ByteBuffer byteBuffer, boolean skip) {
-			dataReceived(from, byteBuffer, skip);
-		}
-	}
-
-	private final AtomicInteger freeSessionId;
+    private final AtomicInteger freeSessionId;
 	private final Map<Integer, GameClient> clients = new ConcurrentHashMap<Integer, GameClient>();
 	private final ServerSide serverSide;
 	
 	public GameServer(ServerProperties serverProperties) {
 		super(serverProperties);
 		int id = 0;
-		serverSide = new ServerSide(id++);
+		serverSide = new ServerSide(this, id++);
 		freeSessionId = new AtomicInteger(id);
 	}
 
-	public void sendData(GameClient from, GameClient to, ByteBuffer data, boolean skip){
+    public ServerSide getServerSide() {
+        return serverSide;
+    }
+
+    public Map<Integer, GameClient> getClients() {
+        return clients;
+    }
+
+    public void sendData(GameClient from, GameClient to, ByteBuffer data, boolean skip){
 
 		int packetSize = INT_SIZE  + data.remaining();
 		ByteBuffer sendBuffer = ByteBuffer.allocate(INT_SIZE + packetSize);
@@ -170,7 +131,7 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
 	@Override
 	protected GameSession createSession() {
 		log.debug("New client accepting: ");
-		return new GameSession(new GameSessionClient());
+		return new GameSession(new GameSessionClient(this));
 	}
 
 	@Override
