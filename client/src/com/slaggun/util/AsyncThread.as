@@ -27,6 +27,8 @@ public class AsyncThread {
     private var timeQuote:Number;
     private var timeQuoteSpent:Number = 0;
 
+    private var MIN_THREAD_DELAY:Number = 3000;
+
     public function AsyncThread(desirableTimePerEvent:Number) {
         timeQuote = desirableTimePerEvent;
         this.desirableTimePerEvent = desirableTimePerEvent;
@@ -72,6 +74,9 @@ public class AsyncThread {
             timeQuoteSpent += enterFrameTime;
             eventsCount++;
         }
+
+
+        if(timeQuote < -MIN_THREAD_DELAY) timeQuote = 0;
 
         return timeQuoteSpent;
     }
