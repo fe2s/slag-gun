@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 SlagGunTeam
+ * Copyright 2011 SlagGunTeam
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,13 +10,17 @@
  */
 
 package com.slaggun.events {
+import mx.collections.ArrayCollection;
 
 /**
- * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ * @author: Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-[RemoteClass(alias="com.slaggun.events.GameEvent")]
-public interface GameEvent {
-    function get sender():int;
-    function set sender(value:int):void;
+[RemoteClass(alias="com.slaggun.events.PackedEvents")]
+public class PackedEvents implements NetworkEvent{
+    public var events:Array;
+
+    public function PackedEvents(events:Array = null) {
+        this.events = events;
+    }
 }
 }

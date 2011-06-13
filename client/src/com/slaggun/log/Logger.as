@@ -51,6 +51,10 @@ public class Logger {
         log(msg, Priority.INFO);
     }
 
+    public function warn(msg:String):void {
+        log(msg, Priority.WARN);
+    }
+
     public function error(msg:String):void {
         log(msg, Priority.ERROR);
     }

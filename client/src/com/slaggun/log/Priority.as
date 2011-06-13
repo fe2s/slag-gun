@@ -18,6 +18,7 @@ public class Priority {
 
     public static const DEBUG:Priority = new Priority(0);
     public static const INFO:Priority = new Priority(1);
+    public static const WARN:Priority = new Priority(1);
     public static const ERROR:Priority = new Priority(2);
 
     private var level:int;

@@ -10,11 +10,8 @@
  */
 
 package com.slaggun {
-import com.slaggun.net.*;
-import com.slaggun.amf.AmfSerializer;
-import com.slaggun.events.BaseGameEvent;
-import com.slaggun.events.GameEvent;
-import com.slaggun.events.RequestSnapshotEvent;
+import com.slaggun.events.DataRecievedEvent;
+import com.slaggun.events.NetworkEvent;
 import com.slaggun.log.Logger;
 
 import flash.events.ErrorEvent;
@@ -27,9 +24,9 @@ import flash.net.Socket;
 import flash.system.Security;
 import flash.utils.ByteArray;
 
-import mx.controls.Alert;
-
 public class GameNetworking extends EventDispatcher {
+
+    public static const SKIP_BIT:int = 0x1;
 
     public static const BROADCAST_ADDRESS:int = 0;
 
@@ -41,8 +38,10 @@ public class GameNetworking extends EventDispatcher {
 
 
     private var socket:Socket;
+    private var bodySize:int = -1;
+    private const BODY_SIZE_WARN_LIMIT:int = 1024*1024;
 
-    private var serializer:AmfSerializer = AmfSerializer.instance();
+    private var _gameID:int = Math.random() * 0xFFFF;
 
     /**
      * Connect to the game server
@@ -73,15 +72,20 @@ public class GameNetworking extends EventDispatcher {
         }
     }
 
+    public function broadcast(event:NetworkEvent, important:Boolean = true):void {
+        sendEvent(event, BROADCAST_ADDRESS, important);
+    }
+
     /**
      * Sends givent event to the server
      * @param event game event
      */
-    public function sendEvent(event:GameEvent, recipient:int):void {
+    public function sendEvent(event:NetworkEvent, recipient:int, important:Boolean = true):void {
         trace("send = " + event);
         if (socket != null && socket.connected) {
             var bytes:ByteArray = new ByteArray();
             bytes.writeInt(recipient);
+            bytes.writeInt(important ? 0 : SKIP_BIT);
             bytes.writeObject(event);
             socket.writeInt(bytes.length);
             socket.writeBytes(bytes);
@@ -95,50 +99,51 @@ public class GameNetworking extends EventDispatcher {
      * Handles incoming binary data
      */
     public function dataHandler(progressEvent:ProgressEvent):Boolean {
-//        trace("dataHandler: " + progressEvent);
-        // TODO: need to consider case when header has been read,
-        // TODO: but body is not available yet
-        if(socket == null){
+        const BINARY_SIZE:int = 4;
+
+        if(socket == null || !socket.connected){
             return false;
         }
-        
-        if (socket.bytesAvailable > EventHeader.BINARY_SIZE) {
-            // read header
 
-            log.info("Message income, size: " + socket.bytesAvailable);
+        if(bodySize == -1 && socket.bytesAvailable >= BINARY_SIZE){
+            bodySize = socket.readInt();
+        }
 
-            var bodySize:int = socket.readInt();
-
-            log.info("Message body size: " + bodySize);
-            log.info("Buffer size: " + socket.bytesAvailable);
-
-            if (socket.bytesAvailable >= bodySize) {
-                var eventBody:ByteArray = new ByteArray();
-                socket.readBytes(eventBody, 0, bodySize);
+        if (bodySize != -1 && socket.bytesAvailable >= bodySize) {
+            var eventBody:ByteArray = new ByteArray();
+            socket.readBytes(eventBody, 0, bodySize);
+            bodySize = -1;
 
 
-                var event:BaseGameEvent;
+            var event:DataRecievedEvent;
 
-                var sender:int = eventBody.readInt();
-                if(sender == 0){
-                    event = new RequestSnapshotEvent();
-                }else{
-                    event = BaseGameEvent(eventBody.readObject());
-                }
-
-                event.sender = sender;
-                trace("Incoming event:" + event);
-                dispatchEvent(event);
+            var sender:int = eventBody.readInt();
+            if(sender == 0){
+                event =  DataRecievedEvent.createRequestSnapshot();
             }else{
-                Alert.show("Can't successfuly read");
+                event  = DataRecievedEvent.createIncoming(sender, eventBody.readObject());
             }
+
+            dispatchEvent(event);
 
             return true;
         }else{
+            if(bodySize > BODY_SIZE_WARN_LIMIT){
+                log.warn("Network packet is too big,  bodySize: " + bodySize);
+            }else{
+                log.warn("Waiting for next data, to build packet: " + bodySize);
+            }
             return false;
         }
     }
 
+    public function get gameID():int {
+        return _gameID;
+    }
+
+    public function get connected():Boolean{
+        return socket != null && socket.connected;
+    }
 
     /**
      * Handles connection events
@@ -146,9 +151,10 @@ public class GameNetworking extends EventDispatcher {
     private function connectHandler(event:Event):void {
         trace("connectHandler: " + event);
         if (socket.connected) {
-            trace("connected...\n");
+            log.info("connected...");
+            dispatchEvent(DataRecievedEvent.createConnectedSnapshot());
         } else {
-            trace("unable to connect\n");
+            log.info("unable to connect");
         }
     }
 
@@ -163,23 +169,23 @@ public class GameNetworking extends EventDispatcher {
 
     private function closeHandler(event:Event):void {
         socket = null;
-        trace("closeHandler: " + event);
+        log.info("closeHandler: " + event);
     }
 
     private function errorHandler(event:IOErrorEvent):void {
-        trace("errorHandler: " + event);
+        log.info("errorHandler: " + event);
     }
 
     private function securityErrorHandler(event:SecurityErrorEvent):void {
-        trace("securityErrorHandler: " + event);
+        log.info("securityErrorHandler: " + event);
     }
 
     private function progressHandler(event:ProgressEvent):void {
-        trace("progressHandler: " + event);
+        log.info("progressHandler: " + event);
     }
 
     private function ioErrorHandler(event:IOErrorEvent):void {
-        trace("ioErrorHandler: " + event);
+        log.info("ioErrorHandler: " + event);
     }
 }
 }

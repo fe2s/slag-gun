@@ -23,14 +23,14 @@ import org.apache.log4j.Logger;
  */
 public class Main {
 
-    private static Logger log = Logger.getLogger(Main.class);
+    private static final Logger log = Logger.getLogger(Main.class);
 
     public static void main(String[] args)  {
         Main main = new Main();
         try {
             main.start();
         } catch (Throwable e) {
-            log.error("Error occured", e);
+            log.error("Error occurred", e);
         }
     }
 

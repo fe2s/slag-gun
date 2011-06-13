@@ -27,7 +27,7 @@ import java.text.MessageFormat;
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
 public class FlexPolicy {
-	private static Logger LOGGER = Logger.getLogger(FlexPolicy.class);
+	private static final Logger LOGGER = Logger.getLogger(FlexPolicy.class);
 	private static final String POLICY_FILE = "/config/policy.xml";
 
 	private static final String REQUEST_POLICY_COMMAND = "<policy-file-request/>\0";
@@ -95,7 +95,7 @@ public class FlexPolicy {
 					handle(socket.accept());
 				} catch (IOException e) {
 					if (!socket.isClosed())
-						LOGGER.error("Error while proccessing policy request", e);
+						LOGGER.error("Error while processing policy request", e);
 				} catch (RuntimeException e) {
 					LOGGER.error(e.getMessage(), e);
 				}

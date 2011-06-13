@@ -14,7 +14,7 @@ import com.slaggun.Game;
 import com.slaggun.actor.base.AbstractActorSnapshot;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorModel;
-import com.slaggun.actor.base.ActorSnapshot;
+import com.slaggun.events.ActorSnapshot;
 
 /**
  *

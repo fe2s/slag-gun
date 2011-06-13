@@ -55,7 +55,7 @@ public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Sessio
 		}
 
 		/**
-		 * Post buffer in queuue to send.
+		 * Post buffer in queue to send.
 		 * It means that if buffer is changed after the post operation, new data may be send to the client
 		 * @param lockedBuffer - buffer to be posted on write queue
 		 */
@@ -67,7 +67,7 @@ public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Sessio
 
 
 		/**
-		 * Post byte array in queuue to send.
+		 * Post byte array in queue to send.
 		 * It means that if byte lockedArray is changed after the post operation, new data may be send to the client
 		 * @param lockedArray - array to be postend in write queue
 		 */
@@ -77,7 +77,7 @@ public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Sessio
 		}
 
 		/**
-		 * Post byte array in queuue to send.
+		 * Post byte array in queue to send.
 		 * It means that if byte lockedArray is changed after the post operation, new data may be send to the client
 		 * @param lockedArray - array to be postend in write queue
 		 * @param offset - first byte to be written
@@ -252,7 +252,8 @@ public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Sessio
 						}
 
 	                }catch(CancelledKeyException e){
-		                log.info("Connection have been closed", e);
+                        log.info("Connection have been closed");
+		                log.info(e, e);
 		                close(key);
 		            }catch (Exception e){
 		                log.error("Error in the loop", e);
@@ -329,7 +330,7 @@ public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Sessio
      * @param key represents channel of the connection
      * @throws IOException -
      */
-    private void read(SelectionKey key) throws IOException {
+    private void read(SelectionKey key){
         log.debug("reading from channel ...");
         S session = (S) key.attachment();
 
@@ -360,7 +361,7 @@ public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Sessio
      * @param key represents channel of the connection
      * @throws IOException -
      */
-    private void write(SelectionKey key) throws IOException {        
+    private void write(SelectionKey key){
         Session session = (Session) key.attachment();
 
         session.write();

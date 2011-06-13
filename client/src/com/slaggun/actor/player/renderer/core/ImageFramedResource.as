@@ -217,7 +217,7 @@ public class ImageFramedResource {
         var workMatrix:Matrix = new Matrix();
         workMatrix.translate(- srcX, - srcY);
         workMatrix.translate(-srcWidth/2, -srcHeight/2);
-        workMatrix.concat(matrix)//.concat(matrix);
+        workMatrix.concat(matrix);//.concat(matrix);
         workMatrix.translate(srcWidth/2, srcHeight/2);
         workMatrix.translate(dstX,
                              dstY);

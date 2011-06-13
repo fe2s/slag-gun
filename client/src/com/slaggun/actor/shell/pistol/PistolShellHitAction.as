@@ -50,7 +50,7 @@ public class PistolShellHitAction implements Action{
 
         if (hit) {
             // updating only mine models
-            if (world.gameActors.isMineActor(player)){
+            if (player.mine){
                 var isLive:Boolean = player.hit(PistolShellConstants.DAMAGE);
                 if (!isLive) {
                     player.respawn();

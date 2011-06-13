@@ -10,30 +10,15 @@
  */
 
 package com.slaggun {
-import com.slaggun.actor.base.Actor;
-import com.slaggun.actor.base.ActorSnapshot;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
 import com.slaggun.actor.player.simple.SimplePlayerPhysics;
-import com.slaggun.events.RequestSnapshotEvent;
-import com.slaggun.events.SnapshotEvent;
-import com.slaggun.GameNetworking;
+import com.slaggun.events.DataRecievedEvent;
 import com.slaggun.log.Category;
 import com.slaggun.log.LoggerConfig;
 import com.slaggun.log.Priority;
-import com.slaggun.monitor.TimeMonitor;
-
-import flash.display.DisplayObject;
-import flash.geom.Matrix;
-import flash.geom.Rectangle;
 
 import com.slaggun.log.Logger;
-
-import flash.display.BitmapData;
-import flash.display.Shape;
 import flash.events.EventDispatcher;
-import flash.utils.Dictionary;
-
-import mx.collections.ArrayCollection;
 
 /**
  * This is core game engine class
@@ -64,8 +49,8 @@ public class Game extends EventDispatcher {
     }
 
     protected function initialize():void {
-        _gameNetworking.addEventListener(SnapshotEvent.INCOMING,                 _gameActors.handleSnapshot);
-        _gameNetworking.addEventListener(RequestSnapshotEvent.REQUEST_SNAPSHOT,  _gameActors.handleRequestSnapshot);
+        _gameNetworking.addEventListener(DataRecievedEvent.INCOMING,          _gameActors.onReceive);
+        _gameNetworking.addEventListener(DataRecievedEvent.REQUEST_SNAPSHOT,  _gameActors.handleRequestSnapshot);
     }
 
     protected function initLogger():void{
@@ -136,19 +121,13 @@ public class Game extends EventDispatcher {
         return _gameRenderer.bitmap.height;
     }
 
-    public static const simpleArray : TimeMonitor = new TimeMonitor({name: "Actor count"});
-    public static const bufferedArray : TimeMonitor = new TimeMonitor({name: "Actor count"});
-    public static const linkedList : TimeMonitor = new TimeMonitor({name: "Actor count"});
-
     /**
      * Process world live iteration
      * @param deltaTime - time pass
      */
     public function live(deltaTime:Number):void {
 
-
-
-      Monitors.physicsTime. startMeasure();
+      Monitors.physicsTime.startMeasure();
         _gameActors.prepareActors();
         _gameActors.live(deltaTime);
       Monitors.physicsTime.stopMeasure();
@@ -157,7 +136,7 @@ public class Game extends EventDispatcher {
         _gameRenderer.drawDebugLines();
         _gameActors.render(deltaTime);
       Monitors.renderTime.stopMeasure();
-        _gameActors.replicate();
+        _gameActors.replicateActors();
     }
 
     public function get latency():Number {

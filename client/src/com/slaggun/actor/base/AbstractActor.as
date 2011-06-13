@@ -12,7 +12,13 @@
 package com.slaggun.actor.base {
 import com.slaggun.Game;
 import com.slaggun.actor.base.Action;
+import com.slaggun.events.ActorSnapshot;
+import com.slaggun.events.NewActorSnapshot;
+import com.slaggun.events.SimpleActorSnapshot;
+import com.slaggun.events.UpdateActorSnapshot;
 import com.slaggun.util.NotImplementedException;
+
+import flash.utils.getQualifiedClassName;
 
 /**
  *
@@ -30,9 +36,44 @@ public class AbstractActor implements Actor {
     protected var _id:int = NOT_SET_ID;
     protected var _owner:int = NOT_SET_OWNER_ID;
 
-    public function makeSnapshot(game:Game):ActorSnapshot {
-        throw new NotImplementedException("AbstractActor.makeSnapshot() method not implemented. " +
-                                          "Probably is not overridden in child");
+    private var _replicable:Boolean;
+    private var _mine:Boolean;
+    private var __online:Boolean;
+
+    public function set mine(value:Boolean):void {
+        this._mine = value;
+    }
+
+    public function get mine():Boolean {
+        return _mine;
+    }
+
+    public function set replicable(value:Boolean):void {
+        this._replicable = value;
+    }
+
+    public function get replicable():Boolean {
+        return _replicable;
+    }
+
+    public function get online():Boolean {
+        return __online;
+    }
+
+    public function set _online(value:Boolean):void {
+        this.__online = value;
+    }
+
+    public function createNewSnapshot(game:Game):NewActorSnapshot {
+        return new SimpleActorSnapshot(getQualifiedClassName(this), model);
+    }
+
+    public function createUpdateSnapshot(game:Game):UpdateActorSnapshot {
+        return new SimpleActorSnapshot(getQualifiedClassName(this), model);
+    }
+
+    public function retrieveUpdateSnapshot(game:Game, snapshot:UpdateActorSnapshot):void {
+        this.model = SimpleActorSnapshot(snapshot).model;
     }
 
     public function apply(interactAction:Action):void {
@@ -79,7 +120,6 @@ public class AbstractActor implements Actor {
     public function set owner(value:int):void {
         _owner = value;
     }
-
 
 }
 }

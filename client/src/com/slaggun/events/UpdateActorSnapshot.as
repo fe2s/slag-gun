@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 SlagGunTeam
+ * Copyright 2011 SlagGunTeam
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,25 +10,11 @@
  */
 
 package com.slaggun.events {
-import flash.events.Event;
+import com.slaggun.actor.base.*;
 
 /**
- * @author Dmitry Brazhnik (amid.ukr@gmail.com)
+ * @author: Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-public class BaseGameEvent extends Event implements GameEvent{
-
-    private var _sender:int;
-
-    public function BaseGameEvent(type:String, bubbles:Boolean = false, cancelable:Boolean = false) {
-        super(type, bubbles, cancelable);
-    }
-
-    public function get sender():int {
-        return _sender;
-    }
-
-    public function set sender(value:int):void {
-        _sender = value;
-    }
+public interface UpdateActorSnapshot extends ActorSnapshot{
 }
 }

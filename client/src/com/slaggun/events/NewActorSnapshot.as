@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 SlagGunTeam
+ * Copyright 2011 SlagGunTeam
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,30 +9,15 @@
  * and limitations under the License.
  */
 
-package com.slaggun.net {
-import flash.utils.ByteArray;
+package com.slaggun.events {
+import com.slaggun.Game;
+import com.slaggun.actor.base.*;
+import com.slaggun.util.NotImplementedException;
 
 /**
- * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ * @author: Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-public class EventBody {
-
-    private var _content:ByteArray;
-
-    public function EventBody(content:ByteArray) {
-        _content = content;
-    }
-
-    public function get size():int {
-        return _content.length;
-    }
-
-    public function get content():ByteArray {
-        return _content;
-    }
-
-    public function set content(value:ByteArray):void {
-        _content = value;
-    }
+public interface NewActorSnapshot extends ActorSnapshot{
+    function newActor(game:Game):Actor;
 }
 }

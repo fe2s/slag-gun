@@ -65,14 +65,15 @@ public class TransportTest extends TestCase{
 
         for (int i = 0; i < byteBuffers.length; i++) {
             byteBuffers[i] = ByteBuffer.wrap(data[i].getBytes());
-            messageSize += byteBuffers[i].remaining() + INT_SIZE*2;
+            messageSize += byteBuffers[i].remaining() + INT_SIZE*3;
         }
 
 		ByteBuffer sendPackage = ByteBuffer.allocate(messageSize);
 
         for (ByteBuffer byteBuffer : byteBuffers) {
-            sendPackage.putInt(byteBuffer.remaining() + INT_SIZE);
+            sendPackage.putInt(byteBuffer.remaining() + 2*INT_SIZE);
 		    sendPackage.putInt(recipient);
+            sendPackage.putInt(0);
 		    sendPackage.put(byteBuffer);
         }
 

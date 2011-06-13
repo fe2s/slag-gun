@@ -11,15 +11,17 @@
 
 package com.slaggun {
 import com.slaggun.actor.base.Actor;
-import com.slaggun.actor.base.ActorSnapshot;
-import com.slaggun.events.RequestSnapshotEvent;
-import com.slaggun.events.SnapshotEvent;
+import com.slaggun.events.DataRecievedEvent;
+import com.slaggun.events.NetworkEvent;
+import com.slaggun.events.NewActorSnapshot;
+import com.slaggun.events.PackedEvents;
+import com.slaggun.events.UpdateActorSnapshot;
 import com.slaggun.log.Logger;
 
 import flash.display.BitmapData;
 import flash.utils.Dictionary;
 
-import mx.collections.ArrayCollection;
+import flash.utils.getQualifiedClassName;
 
 /**
  * User: Dmitry Brazhnik
@@ -30,15 +32,26 @@ public class GameActors {
 
     // all actors in the world
     private var _actors:Array = [];
+    private var _actorsByID:Object = {};
+
+    private var nextID:int = 0;
+
+    private function __add(actor:Actor):void {
+        _actors.push(actor);
+        _actorsByID[actor.id] = actor;
+    }
+
+    private function __remove(actor:Actor):void {
+        var index:int = _actors.indexOf(actor);
+        _actors.splice(index, 1);
+        delete _actorsByID[actor.id];
+    }
 
     // actors grouped by owner, key - owner id, value - Array<Actor>
     private var actorsByOwner:Dictionary = new Dictionary();
 
-    // actors belong to myself, we replicate these actors continuously
-    private var _mineActors:Array = [];
-
     // actors which should be replicated only once
-    private var toBeReplicatedOnce:Array = [];
+    private var toBeReplicated:Array = [];
 
     private var toBeAdded:Array = [];
     private var toBeRemoved:Array = [];
@@ -54,44 +67,20 @@ public class GameActors {
         this._game = game;
     }
 
-    /**
-     * Add actor to the world.
-     * If actor is adding during loop it will be active in the next loop
-     * @param actor
-     * @param mine belongs to myself
-     * @param replicateOnce whether to replicate this actor only one time
-     * @return
-     */
-    private function _add(actor:Actor, mine:Boolean, replicateOnce:Boolean):void {
-        // add to all actors list
+    public function add(actor:Actor, replicatable:Boolean = true):void {
+        actor.id = _game.gameNetworking.gameID * 0x10000 + nextID++;
+        actor.mine = true;
+        //_add(actor, true, false);
         toBeAdded.push(actor);
 
-        if (mine && replicateOnce){
-            // most likely logical error as mine actors are replicated continuously
-            throw new Error("Illegal arguments. Both mine and replicateOnce params are true");
-        }
+       if(replicatable){
+           var event:NewActorSnapshot = actor.createNewSnapshot(_game);
+           event.id = actor.id;
+           _game.gameNetworking.broadcast(event);
+       }
 
-        // add to mine actors list
-        if (mine) {
-            _mineActors.push(actor);
-        }
-
-        if (replicateOnce) {
-            toBeReplicatedOnce.push(actor);
-        }
-
-        // add to 'grouped by owner' dictionary
-        var owner:int = actor.owner;
-        var existingActorsForThisOwner:Array = actorsByOwner[owner];
-        if (existingActorsForThisOwner == null) {
-            actorsByOwner[owner] = [actor];
-        } else {
-            actorsByOwner[owner].push(actor);
-        }
-    }
-
-    public function add(actor:Actor, replicatable:Boolean = true):void {
-        _add(actor, true, false);
+        actor.replicable = replicatable;
+        actor._online = replicatable;
     }
 
     /**
@@ -104,25 +93,6 @@ public class GameActors {
         toBeRemoved.push(actor);
     }
 
-    /**
-     *  Determines whether given actor is mine
-     *
-     * @param actor
-     * @return true if mine, false otherwise
-     */
-    public function isMineActor(actor:Actor):Boolean {
-        for each (var mineActor:Actor in _mineActors) {
-            if (mineActor.owner == actor.owner && mineActor.id == actor.id) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public function get mineActors():Array{
-        return _mineActors;
-    }
-
     public function get actors():Array {
         return _actors;
     }
@@ -132,14 +102,12 @@ public class GameActors {
      */
     public function prepareActors():void {
 
-        var actorName:String;
-
         var len:int = toBeAdded.length;
         var i:int;
 
         for (i = 0; i < len; i++)
         {
-            _actors.push(toBeAdded[i]);
+            __add(toBeAdded[i]);
         }
 
         toBeAdded = [];
@@ -147,9 +115,7 @@ public class GameActors {
         len = toBeRemoved.length;
         for (i = 0; i < len; i++)
         {
-            var actor:Actor = toBeRemoved[i];
-            var actorIndex:Number = _actors.indexOf(actor);
-            _actors.splice(actorIndex, 1);
+            __remove(toBeRemoved[i])
         }
 
         toBeRemoved = [];
@@ -160,7 +126,7 @@ public class GameActors {
         Monitors.actorsCounter.value = len;
         for (var i:int = 0; i < len; i++) {
             var actor:Actor = _actors[i];
-            if(isMineActor(actor)){
+            if(actor.mine){
                 actor.physics.liveServer(deltaTime, actor, _game);
             }else{
                 actor.physics.liveClient(deltaTime, actor, _game);
@@ -178,27 +144,42 @@ public class GameActors {
         }
     }
 
-/**
+    public function replicate(actor:Actor):void{
+        if(!actor.replicable){
+            LOG.warn(getQualifiedClassName(actor) + ": replicate msg called for non replicable actor" );
+            return;
+        }
+
+        if(_game.gameNetworking.connected){
+            toBeReplicated.push(actor);
+        }
+    }
+
+    /**
      * Snapshot of 'my' world
      *
      * @return snapshot event
      */
-    public function buildSnapshot(): SnapshotEvent {
-        var actorSnapsots:ArrayCollection = new ArrayCollection();
+    public function buildSnapshot(): PackedEvents {
+        var actorSnapshots:Array = [];
 
-        for each (var actor:Actor in _mineActors) {
-            actorSnapsots.addItem(actor.makeSnapshot(_game));
+        for each (var actor:Actor in actors) {
+            if(actor.replicable){
+                var snapshot:UpdateActorSnapshot = actor.createUpdateSnapshot(_game);
+                snapshot.id = actor.id;
+                actorSnapshots.push(snapshot);
+            }
         }
-        for each (var publishOnce:Actor in toBeReplicatedOnce) {
-            actorSnapsots.addItem(publishOnce.makeSnapshot(_game));
+
+        for each (var publishOnce:Actor in toBeReplicated) {
+            var snapshot:UpdateActorSnapshot = publishOnce.createUpdateSnapshot(_game);
+            snapshot.id = publishOnce.id;
+            actorSnapshots.push(snapshot);
         }
 
-        toBeReplicatedOnce = [];
+        toBeReplicated = [];
 
-        var snapshot:SnapshotEvent = new SnapshotEvent(SnapshotEvent.OUTGOING);
-        snapshot.actorSnapshots = actorSnapsots;
-
-        return snapshot;
+        return new PackedEvents(actorSnapshots);
     }
 
     public function latency():Number{
@@ -208,13 +189,13 @@ public class GameActors {
     /**
      * Notifies net game client to fire event
      */
-    public function replicate():void {
+    public function replicateActors():void {
 
         if(!mustBeReplicated)
             return;
 
         LOG.debug("Replicates count" + repl++);
-        _game.gameNetworking.sendEvent(buildSnapshot(), GameNetworking.BROADCAST_ADDRESS);
+        _game.gameNetworking.broadcast(buildSnapshot(), false);
         mustBeReplicated = false;
         var lastMilsTime:Number = lastReplicateTime.getTime();
         lastReplicateTime = new Date();
@@ -225,42 +206,61 @@ public class GameActors {
 
     private var replReq:int = 0;
 
-    public function handleRequestSnapshot(event:RequestSnapshotEvent):void{
+    public function handleRequestSnapshot(event:DataRecievedEvent):void{
         LOG.debug("Replicate requests count" + replReq++);
         // synchronize with enterFrame loop
         mustBeReplicated = true;
     }
 
-    /**
-     * Handles incoming snapshots
-     */
-    public function handleSnapshot(snapshotEvent:SnapshotEvent):void {
+    public function handleEvent(sender:int, event:NetworkEvent):void{
 
-        var owner:int = snapshotEvent.sender;
-        var existingActors:Array = actorsByOwner[owner];
-        trace("handle owner = " + owner);
+        var existingActors:Array = actorsByOwner[sender];
 
-        for each (var actorSnapshot:ActorSnapshot in snapshotEvent.actorSnapshots) {
+        if (event is NewActorSnapshot){
+            var newEvent:NewActorSnapshot = NewActorSnapshot(event);
 
-            if (existingActors != null) {
-                // known owner, try to find given actor
-                var knownActor:Boolean = false;
-                for each (var existingActor:Actor in existingActors) {
-                    if (existingActor.id == actorSnapshot.id) {
-                        // found actor, update it
-                        existingActor.physics.receiveSnapshot(actorSnapshot.model, existingActor, _game);
-                        knownActor = true;
-                        break;
-                    }
-                }
-                if (!knownActor) {
-                    _add(actorSnapshot.resurrect(_game, owner), false, false);
-                }
-            } else {
-                _add(actorSnapshot.resurrect(_game, owner), false, false);
+            if(_actorsByID[newEvent.id] == null){
+                var clientActor:Actor = newEvent.newActor(_game);
+                clientActor.id = newEvent.id;
+
+                clientActor.mine = false;
+                clientActor._online = true;
+                clientActor.replicable = false;
+
+                __add(clientActor);
             }
+        }
+
+        if(event is UpdateActorSnapshot){
+            var updated:UpdateActorSnapshot = UpdateActorSnapshot(event);
+            var existingActor:Actor = _actorsByID[updated.id];
+
+            if(existingActor.owner == sender){
+                existingActor.retrieveUpdateSnapshot(_game, updated);
+            }
+        }else{
+            LOG.error('Unknown event retrieved = ' + event);
         }
     }
 
+    /**
+     * Handles incoming snapshots
+     */
+    public function onReceive(snapshotEvent:DataRecievedEvent):void {
+
+        var sender:int = snapshotEvent.sender;
+
+        var networkEvent:NetworkEvent = snapshotEvent.data;
+        var packedEvents:PackedEvents = networkEvent as PackedEvents;
+
+        if(packedEvents != null){
+            var events:Array = packedEvents.events;
+            for each (var event:NetworkEvent in events) {
+                handleEvent(sender, event);
+            }
+        }else{
+            handleEvent(sender, networkEvent);
+        }
+    }
 }
 }

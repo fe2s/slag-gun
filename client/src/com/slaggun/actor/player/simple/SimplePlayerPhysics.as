@@ -34,6 +34,7 @@ public class SimplePlayerPhysics implements ActorPhysics{
     private var serverModel:SimplePlayerModel;
 
     public function liveServer(timePass:Number, actor:Actor, world:Game):void {
+        world.gameActors.replicate(actor);
         
         var actorModel:SimplePlayerModel = SimplePlayerModel(actor.model);
 

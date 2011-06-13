@@ -13,7 +13,7 @@ package com.slaggun.actor.player.simple {
 import com.slaggun.Game;
 import com.slaggun.actor.base.AbstractActor;
 import com.slaggun.actor.base.Actor;
-import com.slaggun.actor.base.ActorSnapshot;
+import com.slaggun.events.ActorSnapshot;
 import com.slaggun.actor.base.Action;
 import com.slaggun.actor.player.renderer.StalkerPlayerResource;
 
@@ -31,14 +31,6 @@ public class SimplePlayer extends AbstractActor implements Actor {
         _physics = new SimplePlayerPhysics();
         _renderer = StalkerPlayerResource.createRenderer();
         _model = new SimplePlayerModel();
-    }
-
-
-    override public function makeSnapshot(game:Game):ActorSnapshot {
-        var snapshot:SimplePlayerSnapshot = new SimplePlayerSnapshot();
-        snapshot.id = _id;
-        snapshot.model = _physics.createSnapshot(this, game);
-        return snapshot;
     }
 
     override public function apply(action:Action):void {

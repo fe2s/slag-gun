@@ -14,7 +14,7 @@ import com.slaggun.Game;
 import com.slaggun.actor.base.AbstractActor;
 import com.slaggun.actor.base.Action;
 import com.slaggun.actor.base.Actor;
-import com.slaggun.actor.base.ActorSnapshot;
+import com.slaggun.events.ActorSnapshot;
 
 /**
  *
@@ -26,14 +26,6 @@ public class PistolShell extends AbstractActor implements Actor{
         _model = new PistolShellModel();
         _physics = new PistolShellPhysics();
         _renderer = new PistolShellRenderer();
-    }
-
-
-    override public function makeSnapshot(game:Game):ActorSnapshot {
-        var snapshot:PistolShellSnapshot = new PistolShellSnapshot();
-        snapshot.id = _id;
-        snapshot.model = _physics.createSnapshot(this, game);
-        return snapshot;
     }
 
     override public function apply(action:Action):void {

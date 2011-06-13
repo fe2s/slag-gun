@@ -23,13 +23,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
 
-	private final int INT_SIZE = Integer.SIZE/8;
+    private static final int SKIP_BIT = 0x1;
+	private static final int INT_SIZE = Integer.SIZE/8;
 
-	private Logger log = Logger.getLogger(GameServer.class);
+	private final Logger log = Logger.getLogger(GameServer.class);
 
     public abstract class GameClient{
 		private final int sessionId;
-		private Map<GameClient, Object> dataRetrieved = new ConcurrentHashMap<GameClient, Object>();
+		private final Map<GameClient, Object> dataRetrieved = new ConcurrentHashMap<GameClient, Object>();
 
 		protected GameClient() {
 			this(freeSessionId.getAndIncrement());
@@ -199,8 +200,9 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
                 packetBuffer.limit(inputBuffer.position());
 
 	            int receiverID = packetBuffer.getInt();
+                int flag       = packetBuffer.getInt();
 	            GameServer.GameClient receiver = clients.get(receiverID);
-	            sendData(from, receiver, packetBuffer, true);
+	            sendData(from, receiver, packetBuffer, (flag & SKIP_BIT) != 0);
             }else{
 	            inputBuffer.position(oldPosition);
                 return;

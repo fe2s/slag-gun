@@ -19,18 +19,38 @@
  */
 package com.slaggun.actor.base {
 import com.slaggun.Game;
+import com.slaggun.events.NewActorSnapshot;
+import com.slaggun.events.UpdateActorSnapshot;
 
 public interface Actor {
 
 
     /**
      * Make a snapshot of the actor, i.e. compact to transportable form.
-     * This method is used to compress actor for further transfer over the network 
-     * 
+     * This method is used to compress actor for further transfer over the network
+     *
      * @return snapshot of the actor
      */
-    function makeSnapshot(game:Game):ActorSnapshot;
+    function createNewSnapshot(game:Game):NewActorSnapshot;
+    function createUpdateSnapshot(game:Game):UpdateActorSnapshot;
+    function retrieveUpdateSnapshot(game:Game, snapshot:UpdateActorSnapshot):void;
 
+    function set replicable(value:Boolean):void;
+    function get replicable():Boolean;
+
+    function set mine(value:Boolean):void;
+    function get mine():Boolean;
+
+    /**
+     * Returns true if NewActorSnapshot have been already broadcasted via clients.
+     */
+    function get online():Boolean;
+
+    /**
+     * Updates online property.
+     * <b>*Must not be called directly*</b>
+     */
+    function set _online(value:Boolean):void;
 
     /**
      * Apply the given action on the actor

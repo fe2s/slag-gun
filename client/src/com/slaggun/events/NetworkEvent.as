@@ -10,16 +10,11 @@
  */
 
 package com.slaggun.events {
+
 /**
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
+ * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-[RemoteClass(alias="com.slaggun.events.RequestSnapshotEvent")]
-public class RequestSnapshotEvent extends BaseGameEvent {
-
-    public static const REQUEST_SNAPSHOT:String = "RequestSnapshot";
-
-    public function RequestSnapshotEvent(type:String = REQUEST_SNAPSHOT, bubbles:Boolean = false, cancelable:Boolean = false) {
-        super(type, bubbles, cancelable);
-    }
+public interface NetworkEvent{
 }
 }

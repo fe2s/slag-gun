@@ -9,37 +9,22 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.base {
+package com.slaggun.events {
+import com.slaggun.actor.base.*;
 import com.slaggun.Game;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorModel;
+import com.slaggun.events.NetworkEvent;
 
 /**
  * Transportable (fly weight) representation of actor
  * Used for actors transferring over the network
  *
+ * @author Brazhnik Dmitry (amid.ukr@gmail.com)
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-[RemoteClass(alias="com.slaggun.actor.base.ActorSnapshot")]
-public interface ActorSnapshot {
-
-    /**
-     * Resurrect actor.
-     * All actor properties which are not present on
-     * the snapshot will be reset to default values.
-     *
-     * @see Actor.makeSnapshot()
-     * @return actor
-     */
-    function resurrect(game:Game, owner:int):Actor;
-
-    function get model():Object;
-
-    function set model(model:Object):void;
-
-    function set id(id:int):void;
-
+public interface ActorSnapshot extends NetworkEvent{
     function get id():int;
-
+    function set id(value:int):void;
 }
 }

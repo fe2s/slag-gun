@@ -74,7 +74,7 @@ public class CollectionTest {
 			}
 
 			System.out.println("-----------------------");
-			System.out.println("fourht cycle");
+			System.out.println("fourth cycle");
 			for (String key : obj.keySet()) {
 				System.out.println(key + " -> " + obj.get(key));
 			}

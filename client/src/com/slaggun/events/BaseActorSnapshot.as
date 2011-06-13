@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 SlagGunTeam
+ * Copyright 2011 SlagGunTeam
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,22 +9,27 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.base {
+package com.slaggun.events {
 import com.slaggun.Game;
-import com.slaggun.events.ActorSnapshot;
+import com.slaggun.actor.base.*;
 import com.slaggun.util.NotImplementedException;
 
+import flash.utils.getQualifiedClassName;
+
 /**
- *
- * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ * @author: Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-public class AbstractActorSnapshot implements ActorSnapshot{
+public class BaseActorSnapshot implements NewActorSnapshot, UpdateActorSnapshot{
+    public var _id:int;
 
-    protected var _id:int;    
-    protected var _model:Object;
+    protected function createActor(game:Game):Actor{
+        throw new NotImplementedException(getQualifiedClassName(this) + "::createActor");
+    }
 
-    public function resurrect(game:Game, owner:int):Actor {
-        throw new NotImplementedException("Should be implemented in child");
+    public function newActor(game:Game):Actor {
+        var actor:Actor = createActor(game);
+        actor.retrieveUpdateSnapshot(game, this);
+        return actor;
     }
 
     public function get id():int {
@@ -32,20 +37,7 @@ public class AbstractActorSnapshot implements ActorSnapshot{
     }
 
     public function set id(value:int):void {
-        _id = value;
-    }
-
-    public function get model():Object {
-        return _model;
-    }
-
-    public function set model(value:Object):void {
-        _model = value;
-    }
-
-
-    public function toString():String {
-        return "AbstractActorSnapshot{_id=" + String(_id) + ",_model=" + String(_model) + "}";
+        this._id = value;
     }
 }
 }
