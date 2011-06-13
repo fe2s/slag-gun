@@ -10,21 +10,27 @@
  */
 
 package com.slaggun.log {
+import flash.utils.getQualifiedClassName;
+import flash.utils.getQualifiedSuperclassName;
+
 /**
  *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
 public class Priority {
 
-    public static const DEBUG:Priority = new Priority(0);
-    public static const INFO:Priority = new Priority(1);
-    public static const WARN:Priority = new Priority(1);
-    public static const ERROR:Priority = new Priority(2);
+    public static const DEBUG:Priority = new Priority(0, "DEBUG");
+    public static const INFO:Priority =  new Priority(1, "INFO");
+    public static const WARN:Priority =  new Priority(1, "WARN");
+    public static const ERROR:Priority = new Priority(2, "ERROR");
 
     private var level:int;
+    public var name:String;
 
-    public function Priority(level:int) {
+
+    public function Priority(level:int, name:String) {
         this.level = level;
+        this.name = name;
     }
 
     public function greaterOrEqualThan(another:Priority):Boolean {

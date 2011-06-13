@@ -32,7 +32,7 @@ public class LoggerConfig {
     // appenders
     public const consoleAppender:ConsoleAppender = new ConsoleAppender();
     public const textAreaAppender:TextAreaAppender = new TextAreaAppender(null);
-    public var categories:Array;
+    public var categories:Array = [];
 
     public static function get instance():LoggerConfig {
         return _instance;

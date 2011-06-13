@@ -30,6 +30,8 @@ public class Logger {
     private static const STACKTRACE_PREFIX_LENGTH:int = STACKTRACE_PREFIX.length;
     private static const STACKTRACE_CLASS_SPLITTER_LENGHT:int = STACKTRACE_CLASS_SPLITTER.length;
 
+    private var configCategories:Array;
+
     private var callerClass:Class;
 
     // full class name with package (e.g. com.slaggun::Main)
@@ -60,10 +62,12 @@ public class Logger {
     }
 
     private function log(msg:String, priority:Priority):void {
+        setupCategories();
+
         for each (var category:Category in categories) {
             if (priority.greaterOrEqualThan(category.priority)) {
                 for each (var appender:Appender in category.appenders) {
-                    appender.append(callerClass + ": " + msg + "\n");
+                    appender.append(priority.name + ":" + callerClass + ": " + msg + "\n");
                 }
             }
         }
@@ -71,14 +75,31 @@ public class Logger {
 
     private function init(clazz:Class):void {
         this.callerClass = clazz;
-        setupCategories();
+    }
+
+    private static function findByClassName(clazz:Class):Array{
+        var result:Array = [];
+        for each (var category:Category in config.categories) {
+            if (category.clazz == clazz) {
+                result.push(category);
+            }
+        }
+
+        return result;
     }
 
     private function setupCategories():void {
-        for each (var category:Category in config.categories) {
-            if (category.clazz == callerClass) {
-                categories.push(category);
+
+        if(configCategories != config.categories){
+            configCategories = config.categories;
+
+            categories = findByClassName(callerClass);
+
+            if(categories.length == 0){
+                categories = findByClassName(RootCategory);
             }
+
+            categories = categories.concat(findByClassName(CommonCategory));
         }
     }
 }
