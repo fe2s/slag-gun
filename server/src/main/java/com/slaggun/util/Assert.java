@@ -14,7 +14,7 @@ package com.slaggun.util;
 import org.apache.log4j.Logger;
 
 /**
- * Convinience methods to perform validation
+ * Convenience methods to perform validation
  *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
