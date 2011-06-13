@@ -74,6 +74,9 @@ public class AbstractActor implements Actor {
 
     public function retrieveUpdateSnapshot(game:Game, snapshot:UpdateActorSnapshot):void {
         this.model = SimpleActorSnapshot(snapshot).model;
+
+        //TODO remove extract physics logic to actor
+        physics.receiveSnapshot(model, this, game);
     }
 
     public function apply(interactAction:Action):void {
