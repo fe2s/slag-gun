@@ -14,6 +14,7 @@ package com.slaggun.server;
 import com.slaggun.server.services.BroadcastService;
 import com.slaggun.server.services.ServerService;
 import com.slaggun.server.services.GameSessionClient;
+import com.slaggun.util.Utils;
 import org.apache.log4j.Logger;
 
 import java.nio.ByteBuffer;
@@ -30,6 +31,7 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
     public static final int MESSAGE_TYPE_ECHO_ANSWER = 0x1;
     public static final int MESSAGE_TYPE_REQUEST_SNAPSHOT = 0x2;
     public static final int MESSAGE_TYPE_AMF_MESSAGE = 0x3; // Reserved for client interactions
+    public static final int MESSAGE_TYPE_CLIENT_DISCONNECTED = 0x4;
 
 
     public static final int SKIP_BIT = 0x1;
@@ -114,7 +116,7 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
 		public GameSessionClient getGameClient() {
 			return sessionClient;
 		}
-	}
+    }
 
     private final AtomicInteger freeSessionId;
 	private final Map<Integer, GameClient> clients = new ConcurrentHashMap<Integer, GameClient>();
@@ -180,6 +182,9 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
                 receiver.dataReceived(from, packetBuffer, (flag & SKIP_BIT) != 0);
             }else{
 	            inputBuffer.position(oldPosition);
+                if(inputBuffer.limit() == inputBuffer.capacity()){
+                    session.increaseBuffer();
+                }
                 return;
             }
         }
@@ -189,6 +194,8 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
 
 	@Override
 	protected void onClose(GameSession session) {
-		session.getGameClient().unregister();
+        GameSessionClient gameClient = session.getGameClient();
+        gameClient.unregister();
+        getBroadcastService().sendMessage(getServerService(), MESSAGE_TYPE_CLIENT_DISCONNECTED, ByteBuffer.wrap(Utils.toBytes(gameClient.getSessionId())));
 	}
 }

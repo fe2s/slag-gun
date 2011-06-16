@@ -56,7 +56,7 @@ public class SimplePlayerPhysics implements ActorPhysics{
             vy -= 1;
         }
 
-        if (inputState.isPressed(Keyboard.DOWN) || inputState.isPressedChar('D')) {
+        if (inputState.isPressed(Keyboard.DOWN) || inputState.isPressedChar('S')) {
             vy += 1;
         }
 

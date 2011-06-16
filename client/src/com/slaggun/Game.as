@@ -54,6 +54,7 @@ public class Game extends EventDispatcher {
     protected function initialize():void {
         _gameNetworking.addEventListener(DataRecievedEvent.INCOMING,          _gameActors.onReceive);
         _gameNetworking.addEventListener(DataRecievedEvent.REQUEST_SNAPSHOT,  _gameActors.handleRequestSnapshot);
+        _gameNetworking.addEventListener(DataRecievedEvent.DISCONNECTED,      _gameActors.onClientDisconnected);
     }
 
     protected function initLogger():void{

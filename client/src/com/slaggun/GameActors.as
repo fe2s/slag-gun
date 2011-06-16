@@ -11,6 +11,8 @@
 
 package com.slaggun {
 import com.slaggun.actor.base.Actor;
+import com.slaggun.events.AMFRecievedEvent;
+import com.slaggun.events.ClientDisconnectedEvent;
 import com.slaggun.events.DataRecievedEvent;
 import com.slaggun.events.NetworkEvent;
 import com.slaggun.events.NewActorSnapshot;
@@ -32,19 +34,54 @@ public class GameActors {
 
     // all actors in the world
     private var _actors:Array = [];
-    private var _actorsByID:Object = {};
+    private var _actorsByOwner:Object = {};
 
     private var nextID:int = 0;
 
     private function __add(actor:Actor):void {
         _actors.push(actor);
-        _actorsByID[actor.id] = actor;
+
+        var ownerActors:Object = _actorsByOwner[actor.owner];
+
+        if(ownerActors == null){
+            ownerActors = {};
+            ownerActors.actors = [];
+            _actorsByOwner[actor.owner] = ownerActors;
+        }
+
+        ownerActors[actor.id] = actor;
+        ownerActors.actors.push(actor);
     }
 
     private function __remove(actor:Actor):void {
-        var index:int = _actors.indexOf(actor);
-        _actors.splice(index, 1);
-        delete _actorsByID[actor.id];
+        _actors.splice(_actors.indexOf(actor), 1);
+
+        var ownerActors:Object = _actorsByOwner[actor.owner];
+
+        delete ownerActors[actor.id];
+        ownerActors.actors.splice(ownerActors.actors.indexOf(actor), 1);
+
+        if(ownerActors.actors.length == 0){
+            delete _actorsByOwner[actor.owner];
+        }
+    }
+
+    private function __removeOwner(ownerID:int):void {
+        var ownerActors:Object = _actorsByOwner[ownerID];
+        var len:int = ownerActors.actors.length;
+        while(ownerActors.actors.length > 0){
+            __remove(ownerActors.actors[0]);
+            len--;
+            if(len != ownerActors.actors.length){
+                LOG.warn("Unexpected actor length, while removing owner actors. Breaking loop....");
+                break;
+            }
+        }
+    }
+
+    private function findActorByID(ownerID:int, actorID:int):Actor{
+        var actors:Object = _actorsByOwner[ownerID];
+        return actors == null? null : actors[actorID];
     }
 
     // actors grouped by owner, key - owner id, value - Array<Actor>
@@ -68,8 +105,9 @@ public class GameActors {
     }
 
     public function add(actor:Actor, replicatable:Boolean = true):void {
-        actor.id = _game.gameNetworking.gameID * 0x10000 + nextID++;
+        actor.id = nextID++;
         actor.mine = true;
+        actor.owner = -1;
         //_add(actor, true, false);
         toBeAdded.push(actor);
 
@@ -163,16 +201,18 @@ public class GameActors {
     public function buildSnapshot(): PackedEvents {
         var actorSnapshots:Array = [];
 
+        var snapshot:UpdateActorSnapshot;
+
         for each (var actor:Actor in actors) {
             if(actor.replicable){
-                var snapshot:UpdateActorSnapshot = actor.createUpdateSnapshot(_game);
+                snapshot = actor.createUpdateSnapshot(_game);
                 snapshot.id = actor.id;
                 actorSnapshots.push(snapshot);
             }
         }
 
         for each (var publishOnce:Actor in toBeReplicated) {
-            var snapshot:UpdateActorSnapshot = publishOnce.createUpdateSnapshot(_game);
+            snapshot = publishOnce.createUpdateSnapshot(_game);
             snapshot.id = publishOnce.id;
             actorSnapshots.push(snapshot);
         }
@@ -219,9 +259,10 @@ public class GameActors {
         if (event is NewActorSnapshot){
             var newEvent:NewActorSnapshot = NewActorSnapshot(event);
 
-            if(_actorsByID[newEvent.id] == null){
+            if(findActorByID(sender, newEvent.id) == null){
                 var clientActor:Actor = newEvent.newActor(_game);
-                clientActor.id = newEvent.id;
+                clientActor.id    = newEvent.id;
+                clientActor.owner = sender;
 
                 clientActor.mine = false;
                 clientActor._online = true;
@@ -233,9 +274,9 @@ public class GameActors {
 
         if(event is UpdateActorSnapshot){
             var updated:UpdateActorSnapshot = UpdateActorSnapshot(event);
-            var existingActor:Actor = _actorsByID[updated.id];
+            var existingActor:Actor = findActorByID(sender, updated.id);
 
-            if(existingActor.owner == sender){
+            if(existingActor != null){
                 existingActor.retrieveUpdateSnapshot(_game, updated);
             }
         }else{
@@ -246,7 +287,7 @@ public class GameActors {
     /**
      * Handles incoming snapshots
      */
-    public function onReceive(snapshotEvent:DataRecievedEvent):void {
+    public function onReceive(snapshotEvent:AMFRecievedEvent):void {
 
         var sender:int = snapshotEvent.sender;
 
@@ -261,6 +302,10 @@ public class GameActors {
         }else{
             handleEvent(sender, networkEvent);
         }
+    }
+
+    public function onClientDisconnected(event:ClientDisconnectedEvent):void {
+        __removeOwner(event.disconnectedClientID);
     }
 }
 }

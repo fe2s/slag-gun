@@ -43,6 +43,16 @@ public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Sessio
 			return inputBuffer;
 		}
 
+        public void increaseBuffer() {
+            if(inputBuffer.capacity() <  serverProperties.getMaxBufferSize()){
+                ByteBuffer newBuff = ByteBuffer.allocate(inputBuffer.capacity() * 2);
+                newBuff.put(inputBuffer);
+                inputBuffer = newBuff;
+            }else{
+                log.error("Buffer already out of limits, can't increase buffer");
+            }
+        }
+
 		public void closeSession(){
 			try {
 				SocketChannel socketChannel = (SocketChannel) clientKey.channel();
@@ -107,6 +117,7 @@ public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Sessio
 				numRead = socketChannel.read(inputBuffer);
 			} catch (IOException e) {
 				numRead = -1;
+                log.error("Can't read socket", e);
 			}
 
 			if (numRead == -1) {
@@ -123,7 +134,7 @@ public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Sessio
 				try {
 					socketChannel.write(outputBuffer);
 				} catch (IOException e) {
-					log.error("Can't write output buffer");
+					log.error("Can't write output buffer", e);
 				}
 			}
 
@@ -252,8 +263,8 @@ public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Sessio
 						}
 
 	                }catch(CancelledKeyException e){
-                        log.info("Connection have been closed");
-		                log.info(e, e);
+                        log.debug("Connection have been closed");
+		                log.debug(e, e);
 		                close(key);
 		            }catch (Exception e){
 		                log.error("Error in the loop", e);
@@ -342,8 +353,8 @@ public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Sessio
 	    try{
 		    onDataReceived(session);
 	    }catch(CancelledKeyException e){
-		    log.warn("onDataReceived: CancelledKeyException have been retrieved while read(see debug log for details).");
-		    log.error("onDataReceived CancelledKeyException exception", e);
+		    log.debug("onDataReceived: CancelledKeyException have been retrieved while read(see debug log for details).");
+		    log.debug("onDataReceived CancelledKeyException exception", e);
 			throw e;	    
 	    }finally {
 		    buffer.compact();

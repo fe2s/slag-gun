@@ -29,14 +29,16 @@ import mx.utils.object_proxy;
 
 public class GameNetworking extends EventDispatcher {
 
-    public static const MESSAGE_TYPE_ECHO_SERVICE:int     = 0x0;
-    public static const MESSAGE_TYPE_ECHO_ANSWER:int      = 0x1;
-    public static const MESSAGE_TYPE_REQUEST_SNAPSHOT:int = 0x2;
-    public static const MESSAGE_TYPE_AMF_MESSAGE:int      = 0x3;
+    public static const MESSAGE_TYPE_ECHO_SERVICE:int        = 0x0;
+    public static const MESSAGE_TYPE_ECHO_ANSWER:int         = 0x1;
+    public static const MESSAGE_TYPE_REQUEST_SNAPSHOT:int    = 0x2;
+    public static const MESSAGE_TYPE_AMF_MESSAGE:int         = 0x3;
+    public static const MESSAGE_TYPE_CLIENT_DISCONNECTED:int = 0x4;
 
     public static const SKIP_BIT:int = 0x1;
 
     public static const BROADCAST_ADDRESS:int = 0;
+    public static const SERVER_ADDRESS:int = 1;
 
     private var log:Logger = Logger.getLogger(GameNetworking);
 
@@ -152,8 +154,8 @@ public class GameNetworking extends EventDispatcher {
             var sender:int      = eventBody.readInt();
             var messageType:int = eventBody.readInt();
 
-            if(sender == 1 && messageType == MESSAGE_TYPE_REQUEST_SNAPSHOT){
-                event =  DataRecievedEvent.createRequestSnapshot();
+            if(sender == SERVER_ADDRESS && messageType == MESSAGE_TYPE_REQUEST_SNAPSHOT){
+                event =  DataRecievedEvent.createRequestSnapshot(sender);
             }else if(messageType == MESSAGE_TYPE_ECHO_SERVICE || messageType == MESSAGE_TYPE_ECHO_ANSWER){
                 var message:String =  eventBody.readUTFBytes(eventBody.bytesAvailable);
                 var status:String  = messageType == MESSAGE_TYPE_ECHO_SERVICE ? 'request':'response'
@@ -161,8 +163,12 @@ public class GameNetworking extends EventDispatcher {
                 if(messageType == MESSAGE_TYPE_ECHO_SERVICE){
                     sendEvent(MESSAGE_TYPE_ECHO_ANSWER, message, sender, true);
                 }
+            }else if(sender == SERVER_ADDRESS && messageType == MESSAGE_TYPE_CLIENT_DISCONNECTED){
+                event  = DataRecievedEvent.createDisconnected(sender, eventBody.readInt());
             }else if(messageType == MESSAGE_TYPE_AMF_MESSAGE){
                 event  = DataRecievedEvent.createIncoming(sender, eventBody.readObject());
+            }else{
+                log.warn("Skipping event from client" + sender + " with message type " + messageType)
             }
 
             if(event != null){

@@ -32,6 +32,7 @@ public class ServerProperties {
     private static final String SERVER_PROPERTIES_FILE_NAME = "config/server.properties";
     private static final String SERVER_PORT_KEY = "server.port";
 	private static final String FLEX_POLICY_PORT_KEY = "flex.policy.port";
+    private static final String MAX_BUFFER_SIZE_KEY = "max.buffer.size";
     private static final String READ_BUFFER_SIZE_KEY = "read.buffer.size";
     private static final String PACKET_HANDLERS_QUEUE_SIZE_KEY = "packet.handlers.queue.size";
 
@@ -39,6 +40,7 @@ public class ServerProperties {
 	private int flexPolicyPort;
     private int availableProcessors;
     private int readBufferSize;
+    private int maxBufferSize;
     private int packetHandlersQueueSize;
 
 
@@ -86,6 +88,10 @@ public class ServerProperties {
         readBufferSize = Integer.parseInt(findProperty(READ_BUFFER_SIZE_KEY));
         log.info(" read buffer size: " + readBufferSize);
 
+        // get read buffer size
+        maxBufferSize = Integer.parseInt(findProperty(MAX_BUFFER_SIZE_KEY));
+        log.info(" read buffer size: " + maxBufferSize);
+
         // get events handlers queue size
         packetHandlersQueueSize = Integer.parseInt(findProperty(PACKET_HANDLERS_QUEUE_SIZE_KEY));
         log.info(" packet handlers queue size: " + packetHandlersQueueSize);
@@ -130,6 +136,14 @@ public class ServerProperties {
 
     public void setReadBufferSize(int readBufferSize) {
         this.readBufferSize = readBufferSize;
+    }
+
+    public int getMaxBufferSize() {
+        return maxBufferSize;
+    }
+
+    public void setMaxBufferSize(int maxBufferSize) {
+        this.maxBufferSize = maxBufferSize;
     }
 
     public int getPacketHandlersQueueSize() {

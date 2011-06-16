@@ -10,8 +10,8 @@
  */
 
 package com.slaggun {
-import com.slaggun.actor.player.simple.SimplePlayerFactory;
-import com.slaggun.actor.player.simple.bot.BotFactory;
+import com.slaggun.actor.player.simple.SimplePlayer;
+import com.slaggun.actor.player.simple.bot.BotPhysics;
 import com.slaggun.util.AsyncThread;
 import com.slaggun.log.Logger;
 
@@ -46,30 +46,29 @@ public class LauncherClass {
      */
     public function inititalize():void {
 
-        registerClassAlias("com.slaggun.geom.Point2D", Point);        
-
-        var playerFactory:SimplePlayerFactory = new SimplePlayerFactory();
-        var botFactory:BotFactory = new BotFactory();
+        registerClassAlias("com.slaggun.geom.Point2D", Point);
 
         const mineActor:Boolean = true;
         const replicatedOnce:Boolean = false;
 
-        world.gameActors.add(playerFactory.create(mineActor));
+        world.gameActors.add(new SimplePlayer());
 
         //world.gameRenderer.drawAnimationCalibrateGrid = true;
         //addBots(350, new BotFactory());
-        addBots(2, new BotFactory());
+        //addBots(2);
     }
 
     /**
      * add a number of bots
      */
-    private function addBots(number:int, botFactory:BotFactory): void {
+    private function addBots(number:int): void {
         const mineActor:Boolean = true;
         const replicatedOnce:Boolean = false;
         var i: int;
         for (i = 0; i < number; i++) {
-            world.gameActors.add(botFactory.create());
+            var bot:SimplePlayer = new SimplePlayer();
+            bot.physics = new BotPhysics();
+            world.gameActors.add(bot);
         }
     }
 

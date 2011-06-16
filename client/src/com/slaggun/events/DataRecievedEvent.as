@@ -19,38 +19,33 @@ public class DataRecievedEvent extends Event{
     public static const INCOMING:String = "IncomingSnapshot";
     public static const CONNECTED:String = "ConnectedSnapshot";
     public static const REQUEST_SNAPSHOT:String = "RequestSnapshot";
+    public static const DISCONNECTED:String = "ClientDisconnected";
 
-    private var _data:NetworkEvent;
     private var _sender:int;
 
-    public function DataRecievedEvent(sender:int, data:NetworkEvent,type:String, bubbles:Boolean = false, cancelable:Boolean = false) {
+    public function DataRecievedEvent(sender:int, type:String, bubbles:Boolean = false, cancelable:Boolean = false) {
         super(type, bubbles, cancelable);
         this._sender = sender;
-        this._data = data;
-    }
-
-    public function get data():NetworkEvent{
-        return _data;
     }
 
     public function get sender():int {
         return _sender;
     }
 
-    public override function toString():String {
-        return super.toString() + "{_actorSnapshots=" + String(_data) + "}";
+    public static function createIncoming(sender:int, data:NetworkEvent):AMFRecievedEvent{
+        return new AMFRecievedEvent(sender, data, INCOMING);
     }
 
-    public static function createIncoming(sender:int, data:NetworkEvent):DataRecievedEvent{
-        return new DataRecievedEvent(sender, data, INCOMING);
-    }
-
-    public static function createRequestSnapshot():DataRecievedEvent{
-        return new DataRecievedEvent(0, null, REQUEST_SNAPSHOT);
+    public static function createRequestSnapshot(sender:int):DataRecievedEvent{
+        return new DataRecievedEvent(sender, REQUEST_SNAPSHOT);
     }
 
     public static function createConnectedSnapshot():DataRecievedEvent{
-        return new DataRecievedEvent(0, null, CONNECTED);
+        return new DataRecievedEvent(0, CONNECTED);
+    }
+
+    public static function createDisconnected(sender:int, disconnectedClientID:int):ClientDisconnectedEvent{
+        return new ClientDisconnectedEvent(sender, disconnectedClientID, DISCONNECTED);
     }
 }
 }

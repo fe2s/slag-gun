@@ -21,11 +21,7 @@ import flash.geom.Point;
 public class PistolShellFactory  {
 
     public function createNew():PistolShell {
-        var pistolShell:PistolShell = new PistolShell();
-
-        pistolShell.id = ActorIdGenerator.nextId();
-
-        return pistolShell;
+        return new PistolShell();
     }
     
     public function create(startPosition:Point, direction:Point):PistolShell {
