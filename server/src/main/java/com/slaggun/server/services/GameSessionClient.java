@@ -18,6 +18,22 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ *
+ * <dl>
+ *  <dt>Incomming packet:</dt>
+ * <dd>size:int</dd>
+ * <dd>to:int</dd>
+ * <dd>flag:int</dd>
+ * <dd>mt:int</dd>
+ * <dd>body:byte[size - 3 * int]</dd>
+ * <dd/>
+ * <dt>Outcomming packet:</dt>
+ * <dd>size:int</dd>
+ * <dd>from:int</dd>
+ * <dd>mt:int</dd>
+ * <dd>body:byte[size - 2 * int]</dd>
+ * </dl>
+ *
 * @author Dmitry Brazhnik (amid.ukr@gmail.com)
 */
 public class GameSessionClient extends GameServer.GameClient {
