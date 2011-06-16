@@ -34,7 +34,7 @@ public class TransportTest extends TestCase{
 	}
 
 	private Timeout timeout(String message){
-		return new Timeout(message, 30000);
+		return new Timeout(message, 5000);
 	}
 
 	private class Package{
@@ -145,7 +145,7 @@ public class TransportTest extends TestCase{
 		receiveData(recipient2, timeout("Recipient 2 snapshot request"));
 
 		final String sendDate = "assert me";
-		sendData(sender, 3, sendDate);
+		sendData(sender, 4, sendDate);
 
 
 		TransportTest.Package package2 = receiveData(recipient2, timeout("Read second client"));

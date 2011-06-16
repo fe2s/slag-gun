@@ -11,7 +11,10 @@
 
 package com.slaggun.util;
 
+import org.apache.log4j.Logger;
+
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Arrays;
@@ -20,6 +23,7 @@ import java.util.Arrays;
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
 public class Utils {
+    public static Logger LOG = Logger.getLogger(Utils.class);
 
     private Utils() {
     }
@@ -71,5 +75,23 @@ public class Utils {
         Set<T> set = new HashSet<T>(elements.length);
         set.addAll(Arrays.asList(elements));
         return set;
+    }
+
+    public static String fromUTF8(byte[] bytes){
+        try {
+            return new String(bytes, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            LOG.warn("Can't decode string with UTF-8, using default: '" + Charset.defaultCharset().name() + "' instead", e);
+            return new String(bytes);
+        }
+    }
+
+    public static byte[] toUTF8(String string){
+        try {
+            return string.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            LOG.warn("Can't encode string with UTF-8, using default: '" + Charset.defaultCharset().name() + "' instead", e);
+            return string.getBytes();
+        }
     }
 }

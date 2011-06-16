@@ -36,13 +36,17 @@ public class Main {
 
     public void start() throws Exception {
 
-        BaseUnblockingServer server;
+        GameServer server;
 	    FlexPolicy flexPolicy = null;
         try {
             ServerProperties serverProperties = new ServerProperties().initialize();
 	        flexPolicy = new FlexPolicy(serverProperties);
 	        flexPolicy.start();
+
             server = new GameServer(serverProperties);
+
+            PingClients pingClients = new PingClients(server);
+            pingClients.start();
 
 	        server.start();
         } catch (Exception e) {

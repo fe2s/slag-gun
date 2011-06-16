@@ -11,8 +11,9 @@
 
 package com.slaggun.server;
 
+import com.slaggun.server.services.BroadcastService;
+import com.slaggun.server.services.ServerService;
 import com.slaggun.server.services.GameSessionClient;
-import com.slaggun.server.services.ServerSide;
 import org.apache.log4j.Logger;
 
 import java.nio.ByteBuffer;
@@ -25,6 +26,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
 
+    public static final int MESSAGE_TYPE_ECHO_SERVICE = 0x0;
+    public static final int MESSAGE_TYPE_ECHO_ANSWER = 0x1;
+    public static final int MESSAGE_TYPE_REQUEST_SNAPSHOT = 0x2;
+    public static final int MESSAGE_TYPE_AMF_MESSAGE = 0x3; // Reserved for client interactions
+
+
     public static final int SKIP_BIT = 0x1;
 	public static final int INT_SIZE = Integer.SIZE/8;
 
@@ -33,7 +40,6 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
     public static abstract class GameClient{
         protected final GameServer gameServer;
 		private final int sessionId;
-		private final Map<GameClient, Object> dataRetrieved = new ConcurrentHashMap<GameClient, Object>();
 
 		protected GameClient(GameServer gameServer) {
 			this(gameServer, gameServer.freeSessionId.getAndIncrement());
@@ -49,24 +55,41 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
 			return sessionId;
 		}
 
-		protected abstract void dataReceived(GameClient from, ByteBuffer byteBuffer, boolean skipable);
+        /**
+         * * <dl>
+         *  <dt>Argument mtByteBuffer:</dt>
+         * <dd>mt:int</dd>
+         * <dd>body:byte[]</dd>
+         * </dl>
+         *
+         * @param from
+         * @param mtByteBuffer
+         * @param skipable
+         */
+		protected abstract void dataReceived(GameClient from, ByteBuffer mtByteBuffer, boolean skipable);
 
-		public void postData(GameClient from, ByteBuffer byteBuffer){
-			postData(from, byteBuffer, false);
-		}
+        public void sendMessage(GameClient from, int messageType, boolean skip){
+            sendMessage(from, messageType, null, skip);
+        }
 
-		public void postData(GameClient from, ByteBuffer byteBuffer, boolean skip){
-			if(!skip){
-				dataReceived(from, byteBuffer, skip);
-			}else if(!dataRetrieved.containsKey(from)){
-				dataReceived(from, byteBuffer, skip);
-				dataRetrieved.put(from, new Object());
-			}
-		}
+        public void sendMessage(GameClient from, int messageType, ByteBuffer byteBuffer){
+            sendMessage(from, messageType, byteBuffer, false);
+        }
 
-		public void requestSnapshot(){
-			dataRetrieved.clear();
-		}
+        public void sendMessage(GameClient from, int messageType){
+            sendMessage(from, messageType, null, false);
+        }
+
+        public void sendMessage(GameClient from, int messageType, ByteBuffer byteBuffer, boolean skip){
+            int buffSize = byteBuffer != null ? byteBuffer.remaining() : 0;
+            ByteBuffer buffer = ByteBuffer.allocate(buffSize + INT_SIZE);
+            buffer.putInt(messageType);
+            if(byteBuffer != null) buffer.put(byteBuffer);
+
+            buffer.clear();
+
+            dataReceived(from, buffer, skip);
+        }
 
 		public void unregister() {
 			gameServer.clients.remove(getSessionId());
@@ -88,45 +111,35 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
 			this.sessionClient.setSession(this);
 		}
 
-		public GameClient getGameClient() {
+		public GameSessionClient getGameClient() {
 			return sessionClient;
 		}
 	}
 
     private final AtomicInteger freeSessionId;
 	private final Map<Integer, GameClient> clients = new ConcurrentHashMap<Integer, GameClient>();
-	private final ServerSide serverSide;
+	private final BroadcastService broadcastService;
+    private final ServerService serverService;
 	
 	public GameServer(ServerProperties serverProperties) {
 		super(serverProperties);
 		int id = 0;
-		serverSide = new ServerSide(this, id++);
+		broadcastService = new BroadcastService(this, id++);
+        serverService = new ServerService(this, id++);
 		freeSessionId = new AtomicInteger(id);
 	}
 
-    public ServerSide getServerSide() {
-        return serverSide;
+    public BroadcastService getBroadcastService() {
+        return broadcastService;
+    }
+
+    public ServerService getServerService() {
+        return serverService;
     }
 
     public Map<Integer, GameClient> getClients() {
         return clients;
     }
-
-    public void sendData(GameClient from, GameClient to, ByteBuffer data, boolean skip){
-
-		int packetSize = INT_SIZE  + data.remaining();
-		ByteBuffer sendBuffer = ByteBuffer.allocate(INT_SIZE + packetSize);
-		sendBuffer.putInt(packetSize);
-		sendBuffer.putInt(from.getSessionId());
-		sendBuffer.put(data);
-		sendBuffer.clear();
-
-		to.postData(from, sendBuffer, skip);
-	}
-
-	public void sendDate(GameClient from, GameClient to, ByteBuffer data){
-		sendData(from, to, data, false);
-	}
 
 	@Override
 	protected GameSession createSession() {
@@ -136,7 +149,7 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
 
 	@Override
 	protected void onAccept(GameSession session) {
-		GameClient attachment = session.getGameClient();
+		GameSessionClient attachment = session.getGameClient();
 		int sessionId = attachment.getSessionId();
         log.debug("New client accepted: " + sessionId + "...");
 		attachment.requestSnapshot();
@@ -146,7 +159,7 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
 	@Override
 	protected void onDataReceived(GameSession session) {
 		ByteBuffer inputBuffer = session.getInputBuffer();
-		GameClient from = session.getGameClient();
+		GameSessionClient from = session.getGameClient();
 		log.debug("Reading session id: " + from.getSessionId());
 
 		while (inputBuffer.remaining() > INT_SIZE) {
@@ -163,7 +176,8 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
 	            int receiverID = packetBuffer.getInt();
                 int flag       = packetBuffer.getInt();
 	            GameServer.GameClient receiver = clients.get(receiverID);
-	            sendData(from, receiver, packetBuffer, (flag & SKIP_BIT) != 0);
+
+                receiver.dataReceived(from, packetBuffer, (flag & SKIP_BIT) != 0);
             }else{
 	            inputBuffer.position(oldPosition);
                 return;

@@ -18,26 +18,26 @@ import java.nio.ByteBuffer;
 /**
 * @author: Dmitry Brazhnik (amid.ukr@gmail.com)
 */
-public class ServerSide extends GameServer.GameClient {
+public class BroadcastService extends GameServer.GameClient {
 
-    public ServerSide(GameServer gameServer, int id) {
+    public BroadcastService(GameServer gameServer, int id) {
         super(gameServer, id);
     }
 
     @Override
-    protected void dataReceived(GameServer.GameClient from, ByteBuffer byteBuffer, boolean skipable) {
+    protected void dataReceived(GameServer.GameClient from, ByteBuffer mtByteBuffer, boolean skipable) {
+
+        ByteBuffer packedBuffer =  GameSessionClient.pack(from, mtByteBuffer);
+
         for (GameServer.GameClient receiver : gameServer.getClients().values()) {
             // otherSession can be null if it deatached due to concurrecny
             if(receiver != null
             && receiver != from
             && receiver instanceof GameSessionClient){
-                receiver.postData(from, byteBuffer.slice(), skipable);
+                GameSessionClient sessionClient = (GameSessionClient) receiver;
+
+                sessionClient.postData(from, packedBuffer.slice(), skipable);
             }
         }
-    }
-
-    @Override
-    public void postData(GameServer.GameClient from, ByteBuffer byteBuffer, boolean skip) {
-        dataReceived(from, byteBuffer, skip);
     }
 }

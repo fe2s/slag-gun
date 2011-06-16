@@ -24,7 +24,15 @@ import flash.net.Socket;
 import flash.system.Security;
 import flash.utils.ByteArray;
 
+import mx.logging.Log;
+import mx.utils.object_proxy;
+
 public class GameNetworking extends EventDispatcher {
+
+    public static const MESSAGE_TYPE_ECHO_SERVICE:int     = 0x0;
+    public static const MESSAGE_TYPE_ECHO_ANSWER:int      = 0x1;
+    public static const MESSAGE_TYPE_REQUEST_SNAPSHOT:int = 0x2;
+    public static const MESSAGE_TYPE_AMF_MESSAGE:int      = 0x3;
 
     public static const SKIP_BIT:int = 0x1;
 
@@ -72,21 +80,45 @@ public class GameNetworking extends EventDispatcher {
         }
     }
 
-    public function broadcast(event:NetworkEvent, important:Boolean = true):void {
-        sendEvent(event, BROADCAST_ADDRESS, important);
+    public function ping(recipient:int, message:String):void {
+        sendEvent(MESSAGE_TYPE_ECHO_SERVICE, message, recipient)
+    }
+
+    public function broadcastAMF(event:NetworkEvent, important:Boolean = true):void {
+        broadcast(MESSAGE_TYPE_AMF_MESSAGE , event, important);
+    }
+
+    public function broadcast(messageType:int, event:NetworkEvent, important:Boolean = true):void {
+        sendEvent(messageType, event, BROADCAST_ADDRESS, important);
+    }
+
+    public function sendEventAMF(event:Object, recipient:int, important:Boolean = true):void {
+        sendEvent(MESSAGE_TYPE_AMF_MESSAGE, event, recipient, important);
     }
 
     /**
      * Sends givent event to the server
      * @param event game event
      */
-    public function sendEvent(event:NetworkEvent, recipient:int, important:Boolean = true):void {
+    public function sendEvent(messageType:int, event:Object, recipient:int, important:Boolean = true):void {
         trace("send = " + event);
         if (socket != null && socket.connected) {
             var bytes:ByteArray = new ByteArray();
             bytes.writeInt(recipient);
             bytes.writeInt(important ? 0 : SKIP_BIT);
-            bytes.writeObject(event);
+            bytes.writeInt(messageType);
+
+            if(event is ByteArray){
+                bytes.writeBytes(ByteArray(event));
+            }else if(event is String){
+                bytes.writeUTFBytes(String(event));
+            }else{
+                if(!event is NetworkEvent){
+                    log.warn('Unknow object type  ' + event + ' sent');
+                }
+                bytes.writeObject(event);
+            }
+
             socket.writeInt(bytes.length);
             socket.writeBytes(bytes);
             socket.flush();
@@ -117,21 +149,32 @@ public class GameNetworking extends EventDispatcher {
 
             var event:DataRecievedEvent;
 
-            var sender:int = eventBody.readInt();
-            if(sender == 0){
+            var sender:int      = eventBody.readInt();
+            var messageType:int = eventBody.readInt();
+
+            if(sender == 1 && messageType == MESSAGE_TYPE_REQUEST_SNAPSHOT){
                 event =  DataRecievedEvent.createRequestSnapshot();
-            }else{
+            }else if(messageType == MESSAGE_TYPE_ECHO_SERVICE || messageType == MESSAGE_TYPE_ECHO_ANSWER){
+                var message:String =  eventBody.readUTFBytes(eventBody.bytesAvailable);
+                var status:String  = messageType == MESSAGE_TYPE_ECHO_SERVICE ? 'request':'response'
+                log.warn("Client"+sender + ' echo ' + status  + " : '" + message + "'");
+                if(messageType == MESSAGE_TYPE_ECHO_SERVICE){
+                    sendEvent(MESSAGE_TYPE_ECHO_ANSWER, message, sender, true);
+                }
+            }else if(messageType == MESSAGE_TYPE_AMF_MESSAGE){
                 event  = DataRecievedEvent.createIncoming(sender, eventBody.readObject());
             }
 
-            dispatchEvent(event);
+            if(event != null){
+                dispatchEvent(event);
+            }
 
             return true;
         }else{
             if(bodySize > BODY_SIZE_WARN_LIMIT){
                 log.warn("Network packet is too big,  bodySize: " + bodySize);
             }else{
-                log.warn("Waiting for next data, to build packet: " + bodySize);
+                log.debug("Waiting for next data, to build packet: " + bodySize);
             }
             return false;
         }

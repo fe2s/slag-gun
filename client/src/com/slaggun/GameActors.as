@@ -76,7 +76,7 @@ public class GameActors {
        if(replicatable){
            var event:NewActorSnapshot = actor.createNewSnapshot(_game);
            event.id = actor.id;
-           _game.gameNetworking.broadcast(event);
+           _game.gameNetworking.broadcastAMF(event);
        }
 
         actor.replicable = replicatable;
@@ -195,7 +195,7 @@ public class GameActors {
             return;
 
         LOG.debug("Replicates count" + repl++);
-        _game.gameNetworking.broadcast(buildSnapshot(), false);
+        _game.gameNetworking.broadcastAMF(buildSnapshot(), false);
         mustBeReplicated = false;
         var lastMilsTime:Number = lastReplicateTime.getTime();
         lastReplicateTime = new Date();
