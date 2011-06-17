@@ -84,9 +84,6 @@ public class GameActors {
         return actors == null? null : actors[actorID];
     }
 
-    // actors grouped by owner, key - owner id, value - Array<Actor>
-    private var actorsByOwner:Dictionary = new Dictionary();
-
     // actors which should be replicated only once
     private var toBeReplicated:Array = [];
 
@@ -253,8 +250,6 @@ public class GameActors {
     }
 
     public function handleEvent(sender:int, event:NetworkEvent):void{
-
-        var existingActors:Array = actorsByOwner[sender];
 
         if (event is NewActorSnapshot){
             var newEvent:NewActorSnapshot = NewActorSnapshot(event);
