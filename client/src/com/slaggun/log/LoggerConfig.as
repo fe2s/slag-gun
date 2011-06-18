@@ -10,12 +10,6 @@
  */
 
 package com.slaggun.log {
-import com.slaggun.Game;
-import com.slaggun.LauncherClass;
-import com.slaggun.actor.player.simple.SimplePlayerModel;
-import com.slaggun.actor.player.simple.SimplePlayerPhysics;
-
-import com.slaggun.GameNetworking;
 
 import mx.controls.TextArea;
 

@@ -156,6 +156,16 @@ public class GameActors {
         toBeRemoved = [];
     }
 
+    public function doActorTasks(deltaTime:Number):void {
+        var len:int = _actors.length;
+        for (var i:int = 0; i < len; i++) {
+            var actor:Actor = _actors[i];
+            if(actor.task != null){
+                actor.task.controlActor(actor, deltaTime, _game);
+            }
+        }
+    }
+
     public function live(deltaTime:Number):void{
         var len:int = _actors.length;
         Monitors.actorsCounter.value = len;

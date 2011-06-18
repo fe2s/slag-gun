@@ -31,7 +31,7 @@
 
         import mx.core.Application;
 
-        private var launcher:LauncherClass;
+        private var game:Game;
         private var logScrollTimer:Timer;
 
         private var policyServer:String;
@@ -49,23 +49,21 @@
             policyServer = application.parameters["policyServer"];
 
             LoggerConfig.instance.setTextArea(logOutput);
-            launcher = new LauncherClass();
+            game = new BotShooter();
 
-            launcher.resize(application.width, application.height);
-
-            launcher.inititalize();
+            game.resize(application.width, application.height);
 
             initLogScrollTimer();
         }
 
         private function start():void {
             hookKeyboard();
-            launcher.start();
+            game.start();
         }
 
         private function enterFrame():void {
 
-            launcher.enterFrame(output.graphics);
+            game.enterFrame(output.graphics);
 
             Monitors.commitFrame();
             monitors.refreshMonitors();
@@ -77,29 +75,29 @@
         }
 
         private function keyDown(event:KeyboardEvent):void {
-            launcher.buttonDown(event.keyCode);
+            game.inputStates.pressDown(event.keyCode);
         }
 
         private function keyUp(event:KeyboardEvent):void {
-            launcher.buttonUp(event.keyCode);
+            game.inputStates.pressUp(event.keyCode);
         }
 
         private function mouseDown(event:MouseEvent):void {
-            launcher.buttonDown(InputState.MOUSE_BUTTON_KEY_CODE);
+            game.inputStates.pressDown(InputState.MOUSE_BUTTON_KEY_CODE);
             focusManager.deactivate();
         }
 
         private function mouseUp(event:MouseEvent):void {
-            launcher.buttonUp(InputState.MOUSE_BUTTON_KEY_CODE);
+            game.inputStates.pressUp(InputState.MOUSE_BUTTON_KEY_CODE);
         }
 
         private function mouseMove(event:MouseEvent):void {
-            launcher.mouseMove(event.localX, event.localY);
+            game.inputStates.updateMousePosition(event.localX, event.localY);
         }
 
         private function resize():void {
             if (output != null)
-                launcher.resize(output.width, output.height);
+                game.resize(output.width, output.height);
         }
 
         /**
@@ -137,7 +135,7 @@
 
                 <!--   Use http://mycoputername/Launcher.swf?host=mycoputername&policyServer=policy.org -->
                 <mx:TextInput id="txtHost" text="127.0.0.1"/>
-                <mx:Button label="connect" click="launcher.connect(txtHost.text, policyServer)"/>
+                <mx:Button label="connect" click="game.gameNetworking.connect(txtHost.text, policyServer)"/>
                     <monitor:MonitorListPanel id="monitors"
                                               color="cyan"
                                               horizontalScrollPolicy="off"/>

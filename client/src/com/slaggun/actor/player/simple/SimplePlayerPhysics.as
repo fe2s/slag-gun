@@ -33,54 +33,42 @@ public class SimplePlayerPhysics implements ActorPhysics{
     private var log:Logger = Logger.getLogger(SimplePlayerPhysics);
     private var serverModel:SimplePlayerModel;
 
-    public function liveServer(timePass:Number, actor:Actor, world:Game):void {
-        world.gameActors.replicate(actor);
-        
+    public function lookAt(x:int, y:int, timePass:Number, actor:Actor, world:Game):void {
         var actorModel:SimplePlayerModel = SimplePlayerModel(actor.model);
 
-        var vx:Number = 0;
-        var vy:Number = 0;
+        actorModel.look.x = x - actorModel.position.x;
+        actorModel.look.y = y - actorModel.position.y;
+    }
 
-        var inputState:InputState = world.inputStates;
-
-        // procces key events
-        if (inputState.isPressed(Keyboard.LEFT) || inputState.isPressedChar('A')) {
-            vx -= 1;
-        }
-
-        if (inputState.isPressed(Keyboard.RIGHT) || inputState.isPressedChar('D')) {
-            vx += 1;
-        }
-
-        if (inputState.isPressed(Keyboard.UP) || inputState.isPressedChar('W')) {
-            vy -= 1;
-        }
-
-        if (inputState.isPressed(Keyboard.DOWN) || inputState.isPressedChar('S')) {
-            vy += 1;
-        }
-
-        if (inputState.isMousePressed()) {
-            shoot(actorModel, world);
-        }
-
-        // update actor model
-
-
+    public function moveDirection(vx:Number, vy:Number, timePass:Number, actor:Actor, world:Game):void {
         var v:Number = Math.sqrt(vx * vx + vy * vy) / PlayerConstants.PLAYER_SPEED_PER_MS;
 
-        if (v != 0) {
+        if(v != 0){
             vx /= v;
             vy /= v;
         }
 
+        velocity(vx, vy, timePass, actor, world);
+    }
+
+    public function velocity(vx:Number, vy:Number, timePass:Number, actor:Actor, world:Game):void {
+        var v:Number = Math.sqrt(vx * vx + vy * vy);
+
+        if(v > PlayerConstants.PLAYER_SPEED_PER_MS){
+            v /= PlayerConstants.PLAYER_SPEED_PER_MS;
+            vx /= v;
+            vy /= v;
+        }
+
+        var actorModel:SimplePlayerModel = SimplePlayerModel(actor.model);
+
         actorModel.velocity.x = vx;
         actorModel.velocity.y = vy;
+    }
 
-        live(timePass, actorModel);
-
-        actorModel.look.x = world.inputStates.mousePosition.x - actorModel.position.x;
-        actorModel.look.y = world.inputStates.mousePosition.y - actorModel.position.y;
+    public function liveServer(timePass:Number, actor:Actor, world:Game):void {
+        world.gameActors.replicate(actor);
+        live(timePass, SimplePlayerModel(actor.model));
     }
 
     public function liveClient(timePass:Number, actor:Actor, world:Game):void {
@@ -173,7 +161,7 @@ public class SimplePlayerPhysics implements ActorPhysics{
     }
 
 
-    private function shoot(actorModel:SimplePlayerModel, world:Game):void {
+    public function shoot(actorModel:SimplePlayerModel, world:Game):void {
         const mineActor:Boolean = false;
         const replicatedOnce:Boolean = true;
 

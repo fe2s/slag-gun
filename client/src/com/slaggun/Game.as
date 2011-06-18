@@ -21,7 +21,13 @@ import com.slaggun.log.Priority;
 import com.slaggun.log.Logger;
 import com.slaggun.log.RootCategory;
 
+import com.slaggun.util.AsyncThread;
+
+import flash.display.BitmapData;
+import flash.display.Graphics;
 import flash.events.EventDispatcher;
+import flash.geom.Point;
+import flash.net.registerClassAlias;
 
 /**
  * This is core game engine class
@@ -31,6 +37,15 @@ import flash.events.EventDispatcher;
 public class Game extends EventDispatcher {
 
     private var LOG:Logger = Logger.getLogger(Game);
+
+
+    private static const DESIRABLE_TIME_PER_EVENT:int = 1000/25;
+
+    private var gamePaused:Boolean = true;
+    private var lastTime:Date;
+
+    private var networkThread:AsyncThread = new AsyncThread(DESIRABLE_TIME_PER_EVENT);
+
 
     private var _inputStates:InputState;
     private var _gameNetworking:GameNetworking;
@@ -52,9 +67,17 @@ public class Game extends EventDispatcher {
     }
 
     protected function initialize():void {
+        registerClassAlias("com.slaggun.geom.Point2D", Point);
+
         _gameNetworking.addEventListener(DataRecievedEvent.INCOMING,          _gameActors.onReceive);
         _gameNetworking.addEventListener(DataRecievedEvent.REQUEST_SNAPSHOT,  _gameActors.handleRequestSnapshot);
         _gameNetworking.addEventListener(DataRecievedEvent.DISCONNECTED,      _gameActors.onClientDisconnected);
+
+        onInitialize();
+    }
+
+    protected function onInitialize():void {
+
     }
 
     protected function initLogger():void{
@@ -62,7 +85,6 @@ public class Game extends EventDispatcher {
             new Category(RootCategory, Priority.INFO,        [LoggerConfig.instance.consoleAppender,  LoggerConfig.instance.textAreaAppender]),
             new Category(CommonCategory, Priority.INFO,       [LoggerConfig.instance.consoleAppender,  LoggerConfig.instance.textAreaAppender]),
 
-            new Category(LauncherClass, Priority.ERROR,       [LoggerConfig.instance.consoleAppender,  LoggerConfig.instance.textAreaAppender]),
             new Category(SimplePlayerPhysics, Priority.DEBUG, [LoggerConfig.instance.textAreaAppender]),
             new Category(SimplePlayerModel, Priority.INFO,    [LoggerConfig.instance.textAreaAppender]),
             new Category(GameNetworking, Priority.DEBUG,      [LoggerConfig.instance.consoleAppender]),
@@ -116,16 +138,24 @@ public class Game extends EventDispatcher {
         return _gameNetworking;
     }
 
-    public function enterFrame():Boolean {
-        return _gameNetworking.dataHandler(null);
-    }
-
     public function get mapWidth():Number{
         return _gameRenderer.bitmap.width;
     }
 
     public function get mapHeight():Number{
         return _gameRenderer.bitmap.height;
+    }
+
+    private function networkHandler():Boolean{
+        return _gameNetworking.dataHandler(null);
+    }
+
+    public function onLive(deltaTime:Number):void{
+
+    }
+
+    public function get latency():Number {
+        return _gameActors.latency();
     }
 
     /**
@@ -135,7 +165,9 @@ public class Game extends EventDispatcher {
     public function live(deltaTime:Number):void {
 
       Monitors.physicsTime.startMeasure();
+        onLive(deltaTime);
         _gameActors.prepareActors();
+        _gameActors.doActorTasks(deltaTime);
         _gameActors.live(deltaTime);
       Monitors.physicsTime.stopMeasure();
       Monitors.renderTime.startMeasure();
@@ -146,8 +178,58 @@ public class Game extends EventDispatcher {
         _gameActors.replicateActors();
     }
 
-    public function get latency():Number {
-        return _gameActors.latency();
+    /**
+     * Proccess frame
+     * @param g - graphics
+     * @return time between live cycles
+     *
+     * @author Dmitry Brazhnik
+     */
+    public function enterFrame(g:Graphics):Number {
+        if (!gamePaused) {
+            var nowTime:Date = new Date();
+            var mils:Number = (nowTime.getTime() - lastTime.getTime());
+
+            if (mils > 1)
+            {
+                lastTime = nowTime;
+                live(mils);
+                Monitors.fps.appendValue(1000 / mils);
+            }
+
+            var bitmapData:BitmapData = gameRenderer.bitmap;
+            g.clear();
+            g.beginBitmapFill(bitmapData);
+            g.drawRect(0, 0, bitmapData.rect.width, bitmapData.rect.height);
+            g.endFill();
+
+            Monitors.networkTime.startMeasure();
+            networkThread.invoke(mils, networkHandler);
+            Monitors.networkTime.stopMeasure();
+
+            return mils;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Start game engine simulation
+     */
+    public function start():void {
+        lastTime = new Date();
+        gamePaused = false;
+    }
+
+    /**
+     * Sleep the thread for the specified time
+     * !!!! Must be us only for debug purposes !!!
+     * @param delay
+     * @return
+     */
+    private function sleep(delay:int):void{
+        var nowTime:Number = new Date().getTime();
+        while(delay > (new Date().getTime() - nowTime)){}
     }
 }
 }

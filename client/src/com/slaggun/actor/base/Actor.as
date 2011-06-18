@@ -59,6 +59,9 @@ public interface Actor {
      */
     function apply(action:Action):void;
 
+    function get task():ActorTask;
+    function set task(task:ActorTask):void;
+
     /**
      * Return actor game model
      * @return actor game model

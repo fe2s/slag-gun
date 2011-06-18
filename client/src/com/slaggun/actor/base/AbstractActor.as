@@ -32,6 +32,7 @@ public class AbstractActor implements Actor {
     protected var _physics:ActorPhysics;
     protected var _renderer:ActorRenderer;
     protected var _model:ActorModel;
+    private var _task:ActorTask;
 
     protected var _id:int = NOT_SET_ID;
     protected var _owner:int = NOT_SET_OWNER_ID;
@@ -106,6 +107,14 @@ public class AbstractActor implements Actor {
 
     public function set model(value:ActorModel):void {
         _model = value;
+    }
+
+    public function get task():ActorTask {
+        return _task;
+    }
+
+    public function set task(value:ActorTask):void {
+        _task = value;
     }
 
     public function get id():int {
