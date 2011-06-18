@@ -10,16 +10,9 @@
  */
 
 package com.slaggun {
-import com.slaggun.actor.player.PlayerConstants;
 import com.slaggun.actor.player.simple.SimplePlayer;
-import com.slaggun.actor.player.simple.SimplePlayerModel;
-import com.slaggun.actor.player.simple.SimplePlayerPhysics;
-import com.slaggun.actor.player.simple.bot.BotPhysics;
-
 import com.slaggun.actor.player.simple.tasks.Bot;
 import com.slaggun.actor.player.simple.tasks.UserControlled;
-
-import flash.ui.Keyboard;
 
 /**
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)

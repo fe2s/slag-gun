@@ -52,6 +52,8 @@ public interface Actor {
      */
     function set _online(value:Boolean):void;
 
+    function live(timePass:Number, world:Game):void;
+
     /**
      * Apply the given action on the actor
      *
@@ -90,19 +92,6 @@ public interface Actor {
      * @see ActorRenderer
      */
     function set renderer(renderer:ActorRenderer):void;
-
-    /**
-     * Returns actor physics processor
-     * @return actor physics processor
-     * @see ActorPhysics
-     */
-    function get physics():ActorPhysics;
-
-    /**
-     * Sets given physics processor
-     * @see ActorPhysics
-     */
-    function set physics(physics:ActorPhysics):void;
 
     /**
      * @return owner's id. Owner is the player who created the actor.

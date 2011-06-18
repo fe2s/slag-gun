@@ -14,11 +14,8 @@ import com.slaggun.Game;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorTask;
 import com.slaggun.actor.player.PlayerConstants;
+import com.slaggun.actor.player.simple.SimplePlayer;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
-
-import com.slaggun.actor.player.simple.SimplePlayerPhysics;
-
-import flash.geom.Rectangle;
 
 /**
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
@@ -38,9 +35,9 @@ public class Bot implements ActorTask{
    }
 
 
-    public function controlActor(actor:Actor, deltaTime:Number, game:Game):void {
-        var actorModel:SimplePlayerModel = SimplePlayerModel(actor.model);
-        var physics:SimplePlayerPhysics = SimplePlayerPhysics(actor.physics);
+    public function controlActor(_actor:Actor, deltaTime:Number, game:Game):void {
+        var actorModel:SimplePlayerModel = SimplePlayerModel(_actor.model);
+        var actor:SimplePlayer = SimplePlayer(_actor);
 
         timePass+=deltaTime;
 
@@ -58,9 +55,7 @@ public class Bot implements ActorTask{
             vx = randV() * PlayerConstants.PLAYER_SPEED_PER_MS;
             vy = randV() * PlayerConstants.PLAYER_SPEED_PER_MS;
 
-            var rect:Rectangle = game.gameRenderer.bitmap.rect;
-
-            physics.lookAt(Math.random()*game.mapWidth, Math.random()*game.mapHeight, deltaTime, actor, game);
+            actor.lookAt(Math.random()*game.mapWidth, Math.random()*game.mapHeight, deltaTime, game);
         }
 
         if(x <0 )                    vx =  Math.abs(actorModel.velocity.x);
@@ -70,7 +65,7 @@ public class Bot implements ActorTask{
         else if(y > game.mapHeight) vy = -Math.abs(actorModel.velocity.y);
 
 
-        physics.moveDirection(vx, vy, deltaTime, actor, game);
+        actor.moveDirection(vx, vy, deltaTime, game);
     }
 }
 }

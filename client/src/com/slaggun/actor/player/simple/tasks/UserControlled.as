@@ -14,8 +14,7 @@ import com.slaggun.Game;
 import com.slaggun.InputState;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorTask;
-import com.slaggun.actor.player.simple.SimplePlayerModel;
-import com.slaggun.actor.player.simple.SimplePlayerPhysics;
+import com.slaggun.actor.player.simple.SimplePlayer;
 
 import flash.ui.Keyboard;
 
@@ -24,7 +23,7 @@ import flash.ui.Keyboard;
  */
 public class UserControlled implements ActorTask{
 
-    public function controlActor(actor:Actor, deltaTime:Number, game:Game):void {
+    public function controlActor(_actor:Actor, deltaTime:Number, game:Game):void {
         var vx:Number = 0;
         var vy:Number = 0;
 
@@ -48,14 +47,14 @@ public class UserControlled implements ActorTask{
             vy += 1;
         }
 
-        var physics:SimplePlayerPhysics = SimplePlayerPhysics(actor.physics);
+        var actor:SimplePlayer = SimplePlayer(_actor);
 
         if (inputState.isMousePressed()) {
-            physics.shoot(SimplePlayerModel(actor.model), game);
+            actor.shoot(game);
         }
 
-        physics.moveDirection(vx, vy, deltaTime, actor, game);
-        physics.lookAt(inputState.mousePosition.x, inputState.mousePosition.y, deltaTime, actor, game);
+        actor.moveDirection(vx, vy, deltaTime, game);
+        actor.lookAt(inputState.mousePosition.x, inputState.mousePosition.y, deltaTime, game);
     }
 }
 }

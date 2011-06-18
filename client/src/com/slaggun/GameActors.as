@@ -170,12 +170,7 @@ public class GameActors {
         var len:int = _actors.length;
         Monitors.actorsCounter.value = len;
         for (var i:int = 0; i < len; i++) {
-            var actor:Actor = _actors[i];
-            if(actor.mine){
-                actor.physics.liveServer(deltaTime, actor, _game);
-            }else{
-                actor.physics.liveClient(deltaTime, actor, _game);
-            }
+            _actors[i].live(deltaTime, _game);
         }
     }
 

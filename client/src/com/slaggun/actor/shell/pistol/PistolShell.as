@@ -14,7 +14,6 @@ import com.slaggun.Game;
 import com.slaggun.actor.base.AbstractActor;
 import com.slaggun.actor.base.Action;
 import com.slaggun.actor.base.Actor;
-import com.slaggun.events.ActorSnapshot;
 
 /**
  *
@@ -24,12 +23,38 @@ public class PistolShell extends AbstractActor implements Actor{
 
     public function PistolShell() {
         _model = new PistolShellModel();
-        _physics = new PistolShellPhysics();
         _renderer = new PistolShellRenderer();
     }
 
     override public function apply(action:Action):void {
         action.applyToPistolShell(this);
+    }
+
+    override public function live(timePass:Number, world:Game):void {
+        var shellModel:PistolShellModel = PistolShellModel(model);
+        translateShell(shellModel);
+        hit(world);
+
+        var x:Number = shellModel.position.x;
+        var y:Number = shellModel.position.y;
+
+        if(x<0 || y<0 || x > world.mapWidth || y > world.mapHeight){
+            world.gameActors.remove(this);
+        }
+    }
+
+    private function translateShell(shell:PistolShellModel):void {
+        shell.position.offset(shell.speedVector.x, shell.speedVector.y);
+    }
+
+    private function hit(world:Game):void{
+        var hitAction:PistolShellHitAction = new PistolShellHitAction(this, world);
+        var len:int = world.gameActors.actors.length;
+        var actors:Array = world.gameActors.actors;
+        for(var i:int = 0; i < len; i++){
+            var actor:Actor = actors[i];
+            actor.apply(hitAction);
+        }
     }
 }
 }

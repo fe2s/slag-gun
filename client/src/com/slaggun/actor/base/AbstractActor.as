@@ -29,7 +29,6 @@ public class AbstractActor implements Actor {
     public static var NOT_SET_ID:int = -1;
     public static var NOT_SET_OWNER_ID:int = -1;
 
-    protected var _physics:ActorPhysics;
     protected var _renderer:ActorRenderer;
     protected var _model:ActorModel;
     private var _task:ActorTask;
@@ -75,9 +74,6 @@ public class AbstractActor implements Actor {
 
     public function retrieveUpdateSnapshot(game:Game, snapshot:UpdateActorSnapshot):void {
         this.model = SimpleActorSnapshot(snapshot).model;
-
-        //TODO remove extract physics logic to actor
-        physics.receiveSnapshot(model, this, game);
     }
 
     public function apply(interactAction:Action):void {
@@ -85,12 +81,10 @@ public class AbstractActor implements Actor {
                                           "Probably is not overridden in child");
     }
 
-    public function get physics():ActorPhysics {
-        return _physics;
-    }
 
-    public function set physics(value:ActorPhysics):void {
-        _physics = value;
+    public function live(timePass:Number, world:Game):void {
+        throw new NotImplementedException("AbstractActor.live() method not implemented. " +
+                                                    "Probably is not overridden in child");
     }
 
     public function get renderer():ActorRenderer {

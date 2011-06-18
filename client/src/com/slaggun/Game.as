@@ -11,16 +11,13 @@
 
 package com.slaggun {
 import com.slaggun.actor.player.simple.SimplePlayerModel;
-import com.slaggun.actor.player.simple.SimplePlayerPhysics;
 import com.slaggun.events.DataRecievedEvent;
 import com.slaggun.log.Category;
 import com.slaggun.log.CommonCategory;
+import com.slaggun.log.Logger;
 import com.slaggun.log.LoggerConfig;
 import com.slaggun.log.Priority;
-
-import com.slaggun.log.Logger;
 import com.slaggun.log.RootCategory;
-
 import com.slaggun.util.AsyncThread;
 
 import flash.display.BitmapData;
@@ -85,7 +82,6 @@ public class Game extends EventDispatcher {
             new Category(RootCategory, Priority.INFO,        [LoggerConfig.instance.consoleAppender,  LoggerConfig.instance.textAreaAppender]),
             new Category(CommonCategory, Priority.INFO,       [LoggerConfig.instance.consoleAppender,  LoggerConfig.instance.textAreaAppender]),
 
-            new Category(SimplePlayerPhysics, Priority.DEBUG, [LoggerConfig.instance.textAreaAppender]),
             new Category(SimplePlayerModel, Priority.INFO,    [LoggerConfig.instance.textAreaAppender]),
             new Category(GameNetworking, Priority.DEBUG,      [LoggerConfig.instance.consoleAppender]),
             new Category(Game, Priority.DEBUG,                [LoggerConfig.instance.consoleAppender])
