@@ -250,6 +250,10 @@ public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Sessio
 							continue;
 						}
 
+                        if(serverProperties.getDebugArtificialLags() != 0){
+                            Thread.sleep(serverProperties.getDebugArtificialLags());
+                        }
+
 		                //TODO make read multitasking
 
 						if (key.isAcceptable()) {

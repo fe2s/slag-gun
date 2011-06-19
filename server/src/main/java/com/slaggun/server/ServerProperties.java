@@ -14,6 +14,7 @@ package com.slaggun.server;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -35,6 +36,7 @@ public class ServerProperties {
     private static final String MAX_BUFFER_SIZE_KEY = "max.buffer.size";
     private static final String READ_BUFFER_SIZE_KEY = "read.buffer.size";
     private static final String PACKET_HANDLERS_QUEUE_SIZE_KEY = "packet.handlers.queue.size";
+    private static final String DEBUG_ARTIFICIAL_LAGS = "debug.artificial.lags";
 
     private int gameServerPort;
 	private int flexPolicyPort;
@@ -42,6 +44,7 @@ public class ServerProperties {
     private int readBufferSize;
     private int maxBufferSize;
     private int packetHandlersQueueSize;
+    private int debugArtificialLags;
 
 
     /**
@@ -64,13 +67,13 @@ public class ServerProperties {
      * @throws ServerInitializationException problems with loading
      *                                       property file or reading some properties
      */
-    private void readPropertiesFromFile() throws ServerInitializationException {
+    private void readPropertiesFromFile(){
         // read property file
         InputStream propertiesStream = this.getClass().getResourceAsStream("/" + SERVER_PROPERTIES_FILE_NAME);
         properties = new Properties();
         try {
             properties.load(propertiesStream);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ServerInitializationException("Can't load file " + SERVER_PROPERTIES_FILE_NAME +
                     " from classpath. Probably file not found.", e);
         }
@@ -78,30 +81,36 @@ public class ServerProperties {
 	    log.info("Loading game config");
 
         // get server.port property
-        gameServerPort = Integer.parseInt(findProperty(SERVER_PORT_KEY));
+        gameServerPort = getInt(SERVER_PORT_KEY, 4001);
         log.info(" server port: " + gameServerPort);
 
-	    flexPolicyPort = Integer.parseInt(findProperty(FLEX_POLICY_PORT_KEY));
+	    flexPolicyPort = getInt(FLEX_POLICY_PORT_KEY, 843);
 	    log.info(" flex policy port: " + flexPolicyPort);
 
         // get read buffer size
-        readBufferSize = Integer.parseInt(findProperty(READ_BUFFER_SIZE_KEY));
+        readBufferSize = getInt(READ_BUFFER_SIZE_KEY, 2048);
         log.info(" read buffer size: " + readBufferSize);
 
         // get read buffer size
-        maxBufferSize = Integer.parseInt(findProperty(MAX_BUFFER_SIZE_KEY));
+        maxBufferSize = getInt(MAX_BUFFER_SIZE_KEY, readBufferSize * 10);
         log.info(" read buffer size: " + maxBufferSize);
 
         // get events handlers queue size
-        packetHandlersQueueSize = Integer.parseInt(findProperty(PACKET_HANDLERS_QUEUE_SIZE_KEY));
+        packetHandlersQueueSize = getInt(PACKET_HANDLERS_QUEUE_SIZE_KEY, 100);
         log.info(" packet handlers queue size: " + packetHandlersQueueSize);
+
+        debugArtificialLags = getInt(DEBUG_ARTIFICIAL_LAGS, 0);
+        log.info(" Debug Artificial lags: " + debugArtificialLags);
     }
 
-    private String findProperty(String propertyKey) throws ServerInitializationException {
+    private Integer getInt(String propertyKey, Integer defaultValue) {
+        return Integer.parseInt(get(propertyKey, defaultValue == null? null : defaultValue.toString()));
+    }
+
+    private String get(String propertyKey, String defaultValue) {
         String foundProperty = properties.getProperty(propertyKey);
-        if (StringUtils.isEmpty(foundProperty)) {
-            throw new ServerInitializationException("Can't find property " + propertyKey + " in file " +
-                    SERVER_PROPERTIES_FILE_NAME);
+        if (foundProperty == null || StringUtils.isEmpty(foundProperty)) {
+            return defaultValue;
         }
         return foundProperty;
     }
@@ -152,6 +161,14 @@ public class ServerProperties {
 
     public void setPacketHandlersQueueSize(int packetHandlersQueueSize) {
         this.packetHandlersQueueSize = packetHandlersQueueSize;
+    }
+
+    public int getDebugArtificialLags() {
+        return debugArtificialLags;
+    }
+
+    public void setDebugArtificialLags(int debugArtificialLags) {
+        this.debugArtificialLags = debugArtificialLags;
     }
 
     @Override
