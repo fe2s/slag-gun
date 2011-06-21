@@ -1,4 +1,5 @@
 cd client
+call clean
 call make
 cd ..
 cd server
