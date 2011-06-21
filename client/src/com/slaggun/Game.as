@@ -159,7 +159,6 @@ public class Game extends EventDispatcher {
      * @param deltaTime - time pass
      */
     public function live(deltaTime:Number):void {
-
       Monitors.physicsTime.startMeasure();
         onLive(deltaTime);
         _gameActors.prepareActors();

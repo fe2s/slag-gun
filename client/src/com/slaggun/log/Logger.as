@@ -45,29 +45,34 @@ public class Logger {
         return logger;
     }
 
-    public function debug(msg:String):void {
-        log(msg, Priority.DEBUG);
+    public function debug(msg:String, error:Error = null):void {
+        log(msg, Priority.DEBUG, error);
     }
 
-    public function info(msg:String):void {
-        log(msg, Priority.INFO);
+    public function info(msg:String, error:Error = null):void {
+        log(msg, Priority.INFO, error);
     }
 
-    public function warn(msg:String):void {
-        log(msg, Priority.WARN);
+    public function warn(msg:String, error:Error = null):void {
+        log(msg, Priority.WARN, error);
     }
 
-    public function error(msg:String):void {
-        log(msg, Priority.ERROR);
+    public function error(msg:String, error:Error = null):void {
+        log(msg, Priority.ERROR, error);
     }
 
-    private function log(msg:String, priority:Priority):void {
+    private function log(msg:String, priority:Priority, error:Error = null):void {
         setupCategories();
 
         for each (var category:Category in categories) {
             if (priority.greaterOrEqualThan(category.priority)) {
                 for each (var appender:Appender in category.appenders) {
-                    appender.append(priority.name + ":" + callerClass + ": " + msg + "\n");
+                    var messsage:String = priority.name + ":" + callerClass + ": " + msg + "\n";
+                    var stackTrace:String;
+                    if(error != null && (stackTrace = error.getStackTrace()) != null){
+                        messsage += stackTrace + "\n";
+                    }
+                    appender.append(messsage);
                 }
             }
         }

@@ -125,6 +125,9 @@ public class GameActors {
      * @return
      */
     public function remove(actor:Actor):void {
+        if(actor == null)
+            throw new Error("GameActors::remove actor is null");
+
         toBeRemoved.push(actor);
     }
 
@@ -142,7 +145,11 @@ public class GameActors {
 
         for (i = 0; i < len; i++)
         {
-            __add(toBeAdded[i]);
+            try{
+                __add(toBeAdded[i]);
+            }catch(e:Error){
+                LOG.error("Can't add actor " + toBeRemoved[i], e)
+            }
         }
 
         toBeAdded = [];
@@ -150,7 +157,11 @@ public class GameActors {
         len = toBeRemoved.length;
         for (i = 0; i < len; i++)
         {
-            __remove(toBeRemoved[i])
+            try{
+                __remove(toBeRemoved[i])
+            }catch(e:Error){
+                LOG.error("Can't remove actor " + toBeRemoved[i], e)
+            }
         }
 
         toBeRemoved = [];
@@ -159,9 +170,13 @@ public class GameActors {
     public function doActorTasks(deltaTime:Number):void {
         var len:int = _actors.length;
         for (var i:int = 0; i < len; i++) {
-            var actor:Actor = _actors[i];
-            if(actor.task != null){
-                actor.task.controlActor(actor, deltaTime, _game);
+            try{
+                var actor:Actor = _actors[i];
+                if(actor.task != null){
+                    actor.task.controlActor(actor, deltaTime, _game);
+                }
+            }catch(e:Error){
+                LOG.error("Can't do actor task, actor: " + actor, e);
             }
         }
     }
@@ -170,7 +185,11 @@ public class GameActors {
         var len:int = _actors.length;
         Monitors.actorsCounter.value = len;
         for (var i:int = 0; i < len; i++) {
-            _actors[i].live(deltaTime, _game);
+            try{
+                _actors[i].live(deltaTime, _game);
+            }catch(e:Error){
+                LOG.error("Can't do actor live, actor: " + _actors[i], e)
+            }
         }
     }
 
@@ -179,8 +198,12 @@ public class GameActors {
 
         var len:int = _actors.length;
         for (var i:int = 0; i < len; i++) {
-            var actor:Actor = _actors[i];
-            actor.renderer.draw(deltaTime, actor, bitmap);
+            try{
+                var actor:Actor = _actors[i];
+                actor.renderer.draw(deltaTime, actor, bitmap);
+            }catch(e:Error){
+                LOG.error("Can't render actor: " + _actors[i], e)
+            }
         }
     }
 
@@ -206,17 +229,25 @@ public class GameActors {
         var snapshot:UpdateActorSnapshot;
 
         for each (var actor:Actor in actors) {
-            if(actor.replicable){
-                snapshot = actor.createUpdateSnapshot(_game);
-                snapshot.id = actor.id;
-                actorSnapshots.push(snapshot);
+            try{
+                if(actor.replicable){
+                    snapshot = actor.createUpdateSnapshot(_game);
+                    snapshot.id = actor.id;
+                    actorSnapshots.push(snapshot);
+                }
+            }catch(e:Error){
+                LOG.error("Can't replicate actor: " + actor, e);
             }
         }
 
         for each (var publishOnce:Actor in toBeReplicated) {
-            snapshot = publishOnce.createUpdateSnapshot(_game);
-            snapshot.id = publishOnce.id;
-            actorSnapshots.push(snapshot);
+            try{
+                snapshot = publishOnce.createUpdateSnapshot(_game);
+                snapshot.id = publishOnce.id;
+                actorSnapshots.push(snapshot);
+            }catch(e:Error){
+                LOG.error("Can't replicate actor: " + actor, e);
+            }
         }
 
         toBeReplicated = [];
