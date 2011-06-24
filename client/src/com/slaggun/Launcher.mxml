@@ -26,6 +26,7 @@
     <mx:Script>
 <![CDATA[
         import com.slaggun.monitor.MonitorContainer;
+        import com.slaggun.util.Storage;
         import com.slaggun.util.Utils;
         import com.slaggun.log.LoggerConfig;
 
@@ -119,6 +120,14 @@
         }
         ]]>
 </mx:Script>
+
+<mx:Style>
+    global {
+        color: white;
+        textRollOverColor: #c0fed1;
+        textSelectedColor: #00f4ff;
+    }
+</mx:Style>
     <mx:Canvas x="0" y="0" width="100%" height="100%">
         <mx:Canvas y="0" x="0" id="output" width="100%" height="100%"
                    mouseDown="mouseDown(event)"
@@ -133,9 +142,15 @@
                 backgroundColor="#010101"
                 backgroundAlpha="0.6">
 
-                <!--   Use http://mycoputername/Launcher.swf?host=mycoputername&policyServer=policy.org -->
-                <mx:TextInput id="txtHost" text="127.0.0.1"/>
-                <mx:Button label="connect" click="game.gameNetworking.connect(txtHost.text, policyServer)"/>
+                <mx:HBox width="100%">
+                    <!--   Use http://mycoputername/Launcher.swf?host=mycoputername&policyServer=policy.org -->
+                    <mx:TextInput width="100%" id="txtHost" text="127.0.0.1"/>
+                    <mx:Button label="connect" click="game.gameNetworking.connect(txtHost.text, policyServer)"/>
+                </mx:HBox>
+                <mx:CheckBox label="Crash on errors"
+                             selected="{Storage.rethrowErrors()}"
+                             change="Storage.setRethrowErrors(CheckBox(event.target).selected)"/>
+
                     <monitor:MonitorListPanel id="monitors"
                                               color="cyan"
                                               horizontalScrollPolicy="off"/>

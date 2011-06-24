@@ -10,6 +10,8 @@
  */
 
 package com.slaggun.log {
+import com.slaggun.util.Storage;
+
 import flash.system.Capabilities;
 import flash.utils.getDefinitionByName;
 
@@ -61,6 +63,13 @@ public class Logger {
         log(msg, Priority.ERROR, error);
     }
 
+    public function throwError(msg:String, err:Error):void {
+        error(msg, err);
+        if(Capabilities.isDebugger && Storage.rethrowErrors()){
+            throw err;
+        }
+    }
+
     private function log(msg:String, priority:Priority, error:Error = null):void {
         setupCategories();
 
@@ -69,6 +78,7 @@ public class Logger {
                 for each (var appender:Appender in category.appenders) {
                     var messsage:String = priority.name + ":" + callerClass + ": " + msg + "\n";
                     var stackTrace:String;
+
                     if(error != null && (stackTrace = error.getStackTrace()) != null){
                         messsage += stackTrace + "\n";
                     }

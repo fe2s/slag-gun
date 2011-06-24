@@ -148,7 +148,7 @@ public class GameActors {
             try{
                 __add(toBeAdded[i]);
             }catch(e:Error){
-                LOG.error("Can't add actor " + toBeRemoved[i], e)
+                LOG.throwError("Can't add actor " + toBeRemoved[i], e)
             }
         }
 
@@ -160,7 +160,7 @@ public class GameActors {
             try{
                 __remove(toBeRemoved[i])
             }catch(e:Error){
-                LOG.error("Can't remove actor " + toBeRemoved[i], e)
+                LOG.throwError("Can't remove actor " + toBeRemoved[i], e)
             }
         }
 
@@ -176,7 +176,7 @@ public class GameActors {
                     actor.task.controlActor(actor, deltaTime, _game);
                 }
             }catch(e:Error){
-                LOG.error("Can't do actor task, actor: " + actor, e);
+                LOG.throwError("Can't do actor task, actor: " + actor, e);
             }
         }
     }
@@ -188,7 +188,7 @@ public class GameActors {
             try{
                 _actors[i].live(deltaTime, _game);
             }catch(e:Error){
-                LOG.error("Can't do actor live, actor: " + _actors[i], e)
+                LOG.throwError("Can't do actor live, actor: " + _actors[i], e)
             }
         }
     }
@@ -202,7 +202,7 @@ public class GameActors {
                 var actor:Actor = _actors[i];
                 actor.renderer.draw(deltaTime, actor, bitmap);
             }catch(e:Error){
-                LOG.error("Can't render actor: " + _actors[i], e)
+                LOG.throwError("Can't render actor: " + _actors[i], e)
             }
         }
     }
@@ -236,7 +236,7 @@ public class GameActors {
                     actorSnapshots.push(snapshot);
                 }
             }catch(e:Error){
-                LOG.error("Can't replicate actor: " + actor, e);
+                LOG.throwError("Can't replicate actor: " + actor, e);
             }
         }
 
@@ -246,7 +246,7 @@ public class GameActors {
                 snapshot.id = publishOnce.id;
                 actorSnapshots.push(snapshot);
             }catch(e:Error){
-                LOG.error("Can't replicate actor: " + actor, e);
+                LOG.throwError("Can't replicate actor: " + actor, e);
             }
         }
 
