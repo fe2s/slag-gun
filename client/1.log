@@ -1,0 +1,26 @@
+
+C:\development\slag-gun\trunk\hg\client>..\lib\ant\bin\ant run.tests 
+Buildfile: C:\development\slag-gun\trunk\hg\client\build.xml
+
+init:
+     [echo] Initialize properties ...
+     [echo] FLEX_HOME: ../lib/flex
+
+compile.tests:
+     [echo] Compiling Flex unit tests to TestRunner.swf ...
+    [mxmlc] Загрузка файла конфигурации C:\development\slag-gun\trunk\hg\lib\flex\frameworks\flex-config.xml
+    [mxmlc] C:\development\slag-gun\trunk\hg\client\test\com\slaggun\amf\TestAmfSerializer.as(33): Столбец: 24 Ошибка: Тип не найден или не является константой времени компиляции: AmfSerializer.
+    [mxmlc] 
+    [mxmlc]         var serializer:AmfSerializer = AmfSerializer.instance();
+    [mxmlc]                        ^
+    [mxmlc] 
+    [mxmlc] C:\development\slag-gun\trunk\hg\client\test\com\slaggun\amf\TestAmfSerializer.as(33): Столбец: 40 Ошибка: Обращение несуществующего свойства AmfSerializer.
+    [mxmlc] 
+    [mxmlc]         var serializer:AmfSerializer = AmfSerializer.instance();
+    [mxmlc]                                        ^
+    [mxmlc] 
+    [mxmlc] C:\development\slag-gun\trunk\hg\client\test\com\slaggun\amf\TestAmfSerializer.as(48): Столбец: 56 Ошибка: Обращение несуществующего свойства AmfSerializer.
+    [mxmlc] 
+    [mxmlc]         var bean:SerializeTestBean = SerializeTestBean(AmfSerializer.instance().fromAmfString(amfString));
+    [mxmlc]                                                        ^
+    [mxmlc] 

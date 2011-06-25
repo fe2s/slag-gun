@@ -1,1 +1,0 @@
-..\lib\maven\bin\mvn %*

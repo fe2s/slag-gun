@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2011 SlagGunTeam
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+  ~ Unless required by applicable law or agreed to in writing, software distributed under the
+  ~ License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+  ~ either express or implied. See the License for the specific language governing permissions
+  ~ and limitations under the License.
+  -->
+
+<project name="Slag-Gun client" default="build" basedir=".">
+
+
+    <target name="init" description="Properties and tasks initialisation">
+        <echo>Initialize properties ...</echo>
+        <!-- provides all environment variables as Ant properties prefixed by "env." -->
+        <property environment="env"/>
+        <property name="APP_ROOT" value="."/>
+        <!--<property name="FLEX_HOME" value="${env.FLEX_HOME}"/>-->
+        <property name="FLEX_HOME" value="../lib/flex"/>
+        <property name="BIN_DIR" value="${APP_ROOT}/target"/>
+        <property name="SRC_DIR" value="${APP_ROOT}/src"/>
+        <property name="APPLICATION_FILE" value="${SRC_DIR}/com/slaggun/Launcher.mxml"/>
+        <property name="TEST_DIR" value="${APP_ROOT}/test"/>
+        <property name="LIB_DIR" value="${APP_ROOT}/lib"/>
+        <property name="TEST_REPORTS_DIR" value="${APP_ROOT}/test_reports"/>
+        <property name="OUTPUT_SWF" value="${BIN_DIR}/Launcher.swf"/>
+
+        <echo>FLEX_HOME: ${FLEX_HOME}</echo>
+
+        <!-- Load core flex task definitions -->
+        <taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar"/>
+
+        <!-- Load the flexunit task definition -->
+        <taskdef resource="com/adobe/ac/ant/tasks/tasks.properties" classpath="${LIB_DIR}/FlexAntTasks.jar"/>
+    </target>
+
+    <target name="clean" depends="init" description="Clean up">
+        <echo>Cleaning up ...</echo>
+        <delete failonerror="false" dir="${BIN_DIR}"/>
+    </target>
+
+    <target name="build" depends="init, clean" description="Compile MXML to SWF">
+        <echo>Compile MXML to SWF ...</echo>
+        <java jar="${FLEX_HOME}/lib/mxmlc.jar" fork="true" failonerror="true">
+            <arg line=' -benchmark'/>
+            <arg line=' +flexlib="${FLEX_HOME}/frameworks"'/>
+            <arg line=' -load-config+=./flex-config.xml'/>
+            <arg line=' -sp ${SRC_DIR}'/>
+            <arg line=' -sp ${SRC_DIR}'/>
+            <arg line=' -o ${OUTPUT_SWF}'/>
+            <arg line=' ${APPLICATION_FILE}'/>
+        </java>
+    </target>
+</project>

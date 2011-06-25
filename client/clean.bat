@@ -1,1 +1,1 @@
-mvn clean
+ant clean
