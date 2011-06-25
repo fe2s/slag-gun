@@ -11,6 +11,6 @@
 	    e.printStackTrace();
 	}
 %>
-<a href="Launcher.swf?host=<%=host%>">Run</a>
+<a href="Launcher.swf?host=<%=host%>&autojoin=true">Run</a>
 </body>
 </html> 

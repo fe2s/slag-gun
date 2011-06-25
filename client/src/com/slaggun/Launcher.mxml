@@ -64,6 +64,14 @@
             game.resize(application.width, application.height);
 
             initLogScrollTimer();
+
+            if(application.parameters["autojoin"] == "true"){
+                connect();
+            }
+        }
+
+        private function connect():void {
+            game.gameNetworking.connect(txtHost.text, policyServer)
         }
 
         private function start():void {
@@ -179,7 +187,7 @@
                 <mx:HBox width="100%">
                     <!--   Use http://mycoputername/Launcher.swf?host=mycoputername&policyServer=policy.org -->
                     <mx:TextInput width="100%" id="txtHost" text="127.0.0.1" color="black"/>
-                    <mx:Button label="connect" click="game.gameNetworking.connect(txtHost.text, policyServer)"/>
+                    <mx:Button label="connect" click="connect()"/>
                 </mx:HBox>
                 <mx:CheckBox label="Crash on errors"
                              selected="{Storage.rethrowErrors()}"
