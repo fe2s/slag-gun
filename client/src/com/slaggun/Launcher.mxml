@@ -59,6 +59,7 @@
 
             policyServer = application.parameters["policyServer"];
 
+            //LoggerConfig.instance.setTextArea(logOutput);
             LoggerConfig.instance.setTextArea(logOutput);
             game = new BotShooter();
 
@@ -66,7 +67,7 @@
 
             initLogScrollTimer();
 
-            if(application.parameters["autojoin"] == "true"){
+            if (application.parameters["autojoin"] == "true") {
                 connect();
             }
         }
@@ -98,12 +99,12 @@
         }
 
         private function keyUp(event:KeyboardEvent):void {
-            if(ExternalInterface.available){
-                if(event.keyCode == Keyboard.F5){
+            if (true || ExternalInterface.available) {
+                if (event.keyCode == Keyboard.F5) {
                     var ok:String = Alert.okLabel;
                     Alert.okLabel = "Reload";
-                    var alert:Alert = Alert.show("Reloading this page your current session will be lost.\nAre you sure you want to reload this page?\n", "Reloading page", Alert.OK | Alert.CANCEL, this, function(e:CloseEvent):void{
-                        if(e.detail == Alert.OK){
+                    var alert:Alert = Alert.show("Reloading this page your current session will be lost.\nAre you sure you want to reload this page?\n", "Reloading page", Alert.OK | Alert.CANCEL, this, function(e:CloseEvent):void {
+                        if (e.detail == Alert.OK) {
                             ExternalInterface.call("window.location.reload");
                         }
                     })
@@ -153,7 +154,7 @@
         }
 
         private function changeCursor():void {
-            currentCursor =  CursorManager.setCursor(aimCursor, CursorManagerPriority.HIGH, -16, -16);
+            currentCursor = CursorManager.setCursor(aimCursor, CursorManagerPriority.HIGH, -16, -16);
         }
 
         private function resetCursor():void {
@@ -163,11 +164,17 @@
 </mx:Script>
 
 <mx:Style>
-    /*global {*/
-        /*color: white;*/
-        /*textRollOverColor: #c0fed1;*/
-        /*textSelectedColor: #00f4ff;*/
-    /*}*/
+    @namespace "http://www.adobe.com/2006/mxml";
+
+    Alert{
+        color: black;
+    }
+
+    global {
+        color: white;
+        textRollOverColor: #c0fed1;
+        textSelectedColor: #00f4ff;
+    }
 </mx:Style>
     <mx:Canvas x="0" y="0" width="100%" height="100%">
         <mx:Canvas y="0" x="0" id="output" width="100%" height="100%"
@@ -200,9 +207,9 @@
 
                 </mx:VBox>
             </mx:HDividedBox>
-
             <mx:TextArea id="logOutput"
-                         alpha="0.6"
+                         contentBackgroundAlpha="0.6"
+                         contentBackgroundColor="#010101"
                          width="100%"
                          height="100%"
                          editable="false"
