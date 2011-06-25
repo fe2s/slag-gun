@@ -25,6 +25,7 @@
                 xmlns:monitor="com.slaggun.monitor.*">
     <mx:Script>
 <![CDATA[
+        import com.slaggun.log.Logger;
         import com.slaggun.monitor.MonitorContainer;
         import com.slaggun.util.Storage;
         import com.slaggun.util.Utils;
@@ -33,22 +34,26 @@
         import mx.controls.Alert;
         import mx.controls.TextArea;
         import mx.core.Application;
-        import mx.core.IUITextField;
         import mx.events.CloseEvent;
-        import mx.managers.CursorManager;
-        import mx.managers.CursorManagerPriority;
 
+
+        private var LOG:Logger = Logger.getLogger(Launcher);
         private var game:Game;
         private var logScrollTimer:Timer;
 
         private var policyServer:String;
 
-        [Embed(source="precise.gif")]
-        private var aimCursor:Class;
-        private var currentCursor:int;
-
 
         private function initVariables():void {
+
+
+            callLater(function(){
+                try{
+                    Cursors.registerCursor();
+                }catch(e:Error){
+                    LOG.throwError("Can't register cursors", e);
+                }
+            });
 
             var application:Application = Application(Application.application);
 
@@ -154,11 +159,14 @@
         }
 
         private function changeCursor():void {
-            currentCursor = CursorManager.setCursor(aimCursor, CursorManagerPriority.HIGH, -16, -16);
+            try {
+                Mouse.cursor = Cursors.AIM_CURSOR;
+            } catch(e:Error) {
+            }
         }
 
         private function resetCursor():void {
-            CursorManager.removeCursor(currentCursor);
+            Mouse.cursor = MouseCursor.AUTO;
         }
         ]]>
 </mx:Script>
@@ -213,7 +221,7 @@
                          width="100%"
                          height="100%"
                          editable="false"
-                         text="Version: 0.9.524{'\n'}"/>
+                         text="Version: 0.9.527{'\n'}"/>
         </mx:VDividedBox>
 
     </mx:Canvas>

@@ -27,6 +27,7 @@
         <property name="LIB_DIR" value="${APP_ROOT}/lib"/>
         <property name="TEST_REPORTS_DIR" value="${APP_ROOT}/test_reports"/>
         <property name="OUTPUT_SWF" value="${BIN_DIR}/Launcher.swf"/>
+        <property name="DEPLOY_PATH" value="../web-app/src/main/webapp/Launcher.swf"/>
 
         <echo>FLEX_HOME: ${FLEX_HOME}</echo>
 
@@ -40,6 +41,12 @@
     <target name="clean" depends="init" description="Clean up">
         <echo>Cleaning up ...</echo>
         <delete failonerror="false" dir="${BIN_DIR}"/>
+    </target>
+
+    <target name="deploy" depends="build" description="Compile MXML to SWF">
+        <copy overwrite="true"
+              file   = "${OUTPUT_SWF}"
+              tofile = "${DEPLOY_PATH}"/>
     </target>
 
     <target name="build" depends="init, clean" description="Compile MXML to SWF">
