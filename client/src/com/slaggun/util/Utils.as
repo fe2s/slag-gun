@@ -10,6 +10,12 @@
  */
 
 package com.slaggun.util {
+import flash.text.TextFormat;
+
+import mx.controls.Alert;
+import mx.core.IUITextField;
+import mx.core.mx_internal;
+
 /**
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
@@ -42,6 +48,20 @@ public class Utils {
 
     public static function getDefault(value:*, def:*):*{
         return value != null?value:def;
+    }
+
+    public static function stretchAlert(alert:Alert, alertWidth:int, messageWidth:int):*{
+        alert.width = 350;
+        alert.callLater(function():void {
+            var textField:IUITextField =  IUITextField(alert.mx_internal::alertForm.mx_internal::textField);
+
+            var textFormat:TextFormat = new TextFormat();
+            textFormat.align = "center";
+
+            textField.width = 310;
+            textField.x = 0;
+            textField.setTextFormat(textFormat);
+        });
     }
 }
 }

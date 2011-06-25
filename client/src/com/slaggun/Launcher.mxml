@@ -30,7 +30,10 @@
         import com.slaggun.util.Utils;
         import com.slaggun.log.LoggerConfig;
 
+        import mx.controls.Alert;
         import mx.core.Application;
+        import mx.core.IUITextField;
+        import mx.events.CloseEvent;
 
         private var game:Game;
         private var logScrollTimer:Timer;
@@ -80,6 +83,21 @@
         }
 
         private function keyUp(event:KeyboardEvent):void {
+            if(ExternalInterface.available){
+                if(event.keyCode == Keyboard.F5){
+                    var ok:String = Alert.okLabel;
+                    Alert.okLabel = "Reload";
+                    var alert:Alert = Alert.show("Reloading this page your current session will be lost.\nAre you sure you want to reload this page?\n", "Reloading page", Alert.OK | Alert.CANCEL, this, function(e:CloseEvent):void{
+                        if(e.detail == Alert.OK){
+                            ExternalInterface.call("window.location.reload");
+                        }
+                    })
+                    Utils.stretchAlert(alert, 350, 320);
+                    Alert.okLabel = ok;
+                    return;
+                }
+            }
+
             game.inputStates.pressUp(event.keyCode);
         }
 
@@ -144,7 +162,7 @@
 
                 <mx:HBox width="100%">
                     <!--   Use http://mycoputername/Launcher.swf?host=mycoputername&policyServer=policy.org -->
-                    <mx:TextInput width="100%" id="txtHost" text="127.0.0.1"/>
+                    <mx:TextInput width="100%" id="txtHost" text="127.0.0.1" color="black"/>
                     <mx:Button label="connect" click="game.gameNetworking.connect(txtHost.text, policyServer)"/>
                 </mx:HBox>
                 <mx:CheckBox label="Crash on errors"
