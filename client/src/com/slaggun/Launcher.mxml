@@ -34,11 +34,17 @@
         import mx.core.Application;
         import mx.core.IUITextField;
         import mx.events.CloseEvent;
+        import mx.managers.CursorManager;
+        import mx.managers.CursorManagerPriority;
 
         private var game:Game;
         private var logScrollTimer:Timer;
 
         private var policyServer:String;
+
+        [Embed(source="precise.gif")]
+        private var aimCursor:Class;
+        private var currentCursor:int;
 
 
         private function initVariables():void {
@@ -136,6 +142,14 @@
         private function autoScrollTextArea(target:TextArea):void {
             target.verticalScrollPosition = target.maxVerticalScrollPosition;
         }
+
+        private function changeCursor():void {
+            currentCursor =  CursorManager.setCursor(aimCursor, CursorManagerPriority.HIGH, -16, -16);
+        }
+
+        private function resetCursor():void {
+            CursorManager.removeCursor(currentCursor);
+        }
         ]]>
 </mx:Script>
 
@@ -151,6 +165,8 @@
                    mouseDown="mouseDown(event)"
                    mouseUp="mouseUp(event)"
                    mouseMove="mouseMove(event)"
+                   mouseOver="changeCursor()"
+                   mouseOut="resetCursor()"
                    resize="resize()"
                 />
         <mx:VDividedBox width="100%" height="100%" verticalGap="3">

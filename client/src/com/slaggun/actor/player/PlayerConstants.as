@@ -12,7 +12,7 @@
 package com.slaggun.actor.player {
 public class PlayerConstants {
 
-    public static const DEBUG_SPEED:Number = 1*0.1;
+    public static const DEBUG_SPEED:Number = 1;
     public static const PLAYER_SPEED_PER_MS:Number = 0.3 * DEBUG_SPEED;
     public static const MAX_HEALTH_HP:int = 100;
 
