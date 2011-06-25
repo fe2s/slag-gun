@@ -47,7 +47,7 @@
         private function initVariables():void {
 
 
-            callLater(function(){
+            callLater(function():void{
                 try{
                     Cursors.registerCursor();
                 }catch(e:Error){
@@ -69,8 +69,6 @@
             game = new BotShooter();
 
             game.resize(application.width, application.height);
-
-            initLogScrollTimer();
 
             if (application.parameters["autojoin"] == "true") {
                 connect();
@@ -104,7 +102,7 @@
         }
 
         private function keyUp(event:KeyboardEvent):void {
-            if (true || ExternalInterface.available) {
+            if (ExternalInterface.available) {
                 if (event.keyCode == Keyboard.F5) {
                     var ok:String = Alert.okLabel;
                     Alert.okLabel = "Reload";
@@ -140,24 +138,6 @@
                 game.resize(output.width, output.height);
         }
 
-        /**
-         * Scrolls log's textArea to the bottom every 1 second
-         */
-        private function initLogScrollTimer():void {
-            logScrollTimer = new Timer(1000);
-            logScrollTimer.addEventListener(TimerEvent.TIMER, function():void {
-                callLater(autoScrollTextArea, [logOutput]);
-            });
-            logScrollTimer.start();
-        }
-
-        /**
-         * Scroll textArea to the bottom
-         */
-        private function autoScrollTextArea(target:TextArea):void {
-            target.verticalScrollPosition = target.maxVerticalScrollPosition;
-        }
-
         private function changeCursor():void {
             try {
                 Mouse.cursor = Cursors.AIM_CURSOR;
@@ -176,6 +156,14 @@
 
     Alert{
         color: black;
+    }
+
+    TextInput, Button{
+        color: black;
+    }
+
+    CheckBox{
+        color: white;
     }
 
     global {
@@ -202,7 +190,7 @@
 
                     <mx:HBox width="100%">
                         <!--   Use http://mycoputername/Launcher.swf?host=mycoputername&policyServer=policy.org -->
-                        <mx:TextInput width="100%" id="txtHost" text="127.0.0.1" color="black"/>
+                        <mx:TextInput width="100%" id="txtHost" text="127.0.0.1"/>
                         <mx:Button label="connect" click="connect()"/>
                     </mx:HBox>
                     <mx:CheckBox label="Crash on errors"
