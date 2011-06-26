@@ -18,10 +18,10 @@ import mx.controls.TextArea;
  */
 public class TextAreaAppender implements Appender{
 
-    public static const CONSOLE_BUFFER_SIZE:int = 10 * 1024;
+    public static const CONSOLE_BUFFER_SIZE:int = 30 * 1024;
 
-    private var text1:String = "";
-    private var text2:String = "";
+    private var buffer:Array = ["", ""];
+    private var text:String = "";
 
     private var _textArea:TextArea;
 
@@ -31,23 +31,24 @@ public class TextAreaAppender implements Appender{
 
     public function set textArea(value:TextArea):void {
         _textArea = value;
+        text = value.text + text;
     }
 
     public function append(str:String):void {
 
-        if(text1 + text2 == ""){
-            text2 = _textArea.text;
-        }
-
-        text2 += str;
-        if(text2.length > CONSOLE_BUFFER_SIZE){
-            text1 = text2;
-            text2 = "";
+        text += str;
+        if((buffer.length + 1)*text.length > CONSOLE_BUFFER_SIZE){
+            for(var i:int = 0; i < buffer.length - 1; i++)
+            {
+                buffer[i] = buffer[i + 1];
+            }
+            buffer[i] = text;
+            text = "";
         }
 
         var scrolledDown:Boolean = _textArea.verticalScrollPosition + 10 >= _textArea.maxVerticalScrollPosition;
 
-        _textArea.text = text1 + text2;
+        _textArea.text = buffer.join("") + text;
 
         if(scrolledDown){
             _textArea.callLater(function():void{
