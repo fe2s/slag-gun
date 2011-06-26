@@ -11,6 +11,7 @@
 
 package com.slaggun.log {
 import com.slaggun.util.Storage;
+import com.slaggun.util.Utils;
 
 import flash.system.Capabilities;
 import flash.utils.getDefinitionByName;
@@ -73,16 +74,28 @@ public class Logger {
     private function log(msg:String, priority:Priority, error:Error = null):void {
         setupCategories();
 
+        var appenders:Array = [];
+
         for each (var category:Category in categories) {
             if (priority.greaterOrEqualThan(category.priority)) {
                 for each (var appender:Appender in category.appenders) {
-                    var messsage:String = priority.name + ":" + callerClass + ": " + msg + "\n";
-                    var stackTrace:String;
 
-                    if(error != null && (stackTrace = error.getStackTrace()) != null){
-                        messsage += stackTrace + "\n";
+                    if(appenders.indexOf(appender) != -1)
+                        continue;
+                    appenders.push(appender);
+
+                    var messsage:String = priority.name + ":" + callerClass + ": " + msg;
+
+
+                    if(error != null){
+                        var stackTrace:String = error.getStackTrace();
+                        messsage += ":     " + error.message;
+                        if(stackTrace != null){
+                            messsage += "\n" + stackTrace;
+                        }
                     }
-                    appender.append(messsage);
+
+                    appender.append(messsage + "\n");
                 }
             }
         }
@@ -100,7 +113,7 @@ public class Logger {
             }
         }
 
-        return result;
+        return  result;
     }
 
     private function setupCategories():void {
