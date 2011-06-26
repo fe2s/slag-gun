@@ -1,5 +1,4 @@
-/*
- * Copyright 2009 SlagGunTeam
+/* Copyright 2011 SlagGunTeam
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -8,17 +7,16 @@
  * either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+package com.slaggun.actor.player.simple {
+import flash.display.BitmapData;
 
-package com.slaggun.actor.shell.pistol {
 /**
- *
- * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-public class PistolShellConstants {
+public interface PlayerPresentation {
+    function get maxSpeed():Number;
+    function get hitRadius():Number;
 
-    public static const SPEED:Number = 15;
-    public static const RADIUS:Number = 2;
-    public static const DAMAGE:int = 10; // in hit points
-
+    function render(deltaTime:Number, target:SimplePlayerModel, bitmap:BitmapData):void
 }
 }

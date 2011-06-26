@@ -11,13 +11,12 @@
 
 package com.slaggun.actor.base {
 import com.slaggun.Game;
-import com.slaggun.actor.base.Action;
-import com.slaggun.events.ActorSnapshot;
 import com.slaggun.events.NewActorSnapshot;
 import com.slaggun.events.SimpleActorSnapshot;
 import com.slaggun.events.UpdateActorSnapshot;
 import com.slaggun.util.NotImplementedException;
 
+import flash.display.BitmapData;
 import flash.utils.getQualifiedClassName;
 
 /**
@@ -76,15 +75,21 @@ public class AbstractActor implements Actor {
         this.model = SimpleActorSnapshot(snapshot).model;
     }
 
-    public function apply(interactAction:Action):void {
-        throw new NotImplementedException("AbstractActor.apply() method not implemented. " +
-                                          "Probably is not overridden in child");
-    }
-
 
     public function live(timePass:Number, world:Game):void {
-        throw new NotImplementedException("AbstractActor.live() method not implemented. " +
-                                                    "Probably is not overridden in child");
+        throw NotImplementedException.create(this, "live",  "must be override by children");
+    }
+
+    public function render(timePass:Number, world:Game, bitmap:BitmapData):void {
+        throw NotImplementedException.create(this, "render",  "must be override by children");
+    }
+
+    public function onInit(world:Game):void {
+
+    }
+
+    public final function init(world:Game):void {
+        onInit(world);
     }
 
     public function get renderer():ActorRenderer {

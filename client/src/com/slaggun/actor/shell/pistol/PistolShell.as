@@ -11,29 +11,31 @@
 
 package com.slaggun.actor.shell.pistol {
 import com.slaggun.Game;
+import com.slaggun.Global;
 import com.slaggun.actor.base.AbstractActor;
-import com.slaggun.actor.base.Action;
 import com.slaggun.actor.base.Actor;
+import com.slaggun.shooting.Bullet;
+import com.slaggun.shooting.HitObject;
+
+import flash.display.BitmapData;
+import flash.display.Shape;
+import flash.geom.Point;
 
 /**
  *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public class PistolShell extends AbstractActor implements Actor{
+public class PistolShell extends AbstractActor implements Actor, Bullet{
 
     public function PistolShell() {
         _model = new PistolShellModel();
-        _renderer = new PistolShellRenderer();
-    }
-
-    override public function apply(action:Action):void {
-        action.applyToPistolShell(this);
     }
 
     override public function live(timePass:Number, world:Game):void {
+        world.shootingService.addBullet(this);
+
         var shellModel:PistolShellModel = PistolShellModel(model);
-        translateShell(shellModel);
-        hit(world);
+        shellModel.position.offset(shellModel.speedVector.x, shellModel.speedVector.y);
 
         var x:Number = shellModel.position.x;
         var y:Number = shellModel.position.y;
@@ -43,18 +45,27 @@ public class PistolShell extends AbstractActor implements Actor{
         }
     }
 
-    private function translateShell(shell:PistolShellModel):void {
-        shell.position.offset(shell.speedVector.x, shell.speedVector.y);
+    public function get damage():int {
+        return Global.BULLET_DAMAGE;
     }
 
-    private function hit(world:Game):void{
-        var hitAction:PistolShellHitAction = new PistolShellHitAction(this, world);
-        var len:int = world.gameActors.actors.length;
-        var actors:Array = world.gameActors.actors;
-        for(var i:int = 0; i < len; i++){
-            var actor:Actor = actors[i];
-            actor.apply(hitAction);
-        }
+    public function get position():Point {
+        return PistolShellModel(model).position;
+    }
+
+    public function scored(game:Game, hitObject:HitObject):void {
+        game.gameActors.remove(this);
+    }
+
+    override public function render(timePass:Number, world:Game, bitmap:BitmapData):void {
+        var shellModel:PistolShellModel = PistolShellModel(model);
+
+        var circle:Shape = new Shape();
+        circle.graphics.beginFill(0);
+        circle.graphics.drawCircle(shellModel.position.x, shellModel.position.y, Global.BULLET_RADIUS);
+        circle.graphics.endFill();
+
+        bitmap.draw(circle);
     }
 }
 }

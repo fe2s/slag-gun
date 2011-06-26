@@ -9,7 +9,7 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player.renderer.core {
+package com.slaggun.actor.common {
 import flash.geom.Matrix;
 
 /**

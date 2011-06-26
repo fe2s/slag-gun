@@ -9,7 +9,7 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player.renderer {
+package com.slaggun.actor.player.simple.presentation {
 import com.slaggun.actor.player.simple.*;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorRenderer;
@@ -26,7 +26,7 @@ import flash.geom.Point;
      *
      * @see SimplePlayer
      */
-    public class TrianglesRenderer implements ActorRenderer{
+    public class TrianglesPresentation implements PlayerPresentation{
 
         private var triangleBlue:Shape = new Shape();
         private var triangleRed:Shape = new Shape();
@@ -38,7 +38,24 @@ import flash.geom.Point;
         private static const H:Number = 1.7*SIZE;
         private static const YSTART:Number = SIZE*0.6;
 
-        public function TrianglesRenderer(){
+        //--------------------------------------------------------
+        //-----------------  ACTOR DECLARATION -------------------
+        //--------------------------------------------------------
+
+        public function get maxSpeed():Number {
+            return 0.1;
+        }
+
+        public function get hitRadius():Number {
+            return 5;
+        }
+
+//--------------------------------------------------------
+        //-----------------  ACTOR LOGIC HERE --------------------
+        //--------------------------------------------------------
+
+
+        public function TrianglesPresentation(){
             triangleBlue = new Shape();
             triangleRed = new Shape();
 
@@ -62,16 +79,16 @@ import flash.geom.Point;
         /**
          * Draw foots
          * @param deltaTime - time pasts
-         * @param model     - actor model
+         * @param target     - actor target
          * @param bitmap    - offscreen buffer
          */
-        private function drawLow(deltaTime:Number, model:SimplePlayerModel, bitmap:BitmapData):void {
+        private function drawLow(deltaTime:Number, target:SimplePlayerModel, bitmap:BitmapData):void {
 
-            var x:Number = model.position.x;
-            var y:Number = model.position.y;
+            var x:Number = target.position.x;
+            var y:Number = target.position.y;
 
-            var vx:Number = model.velocity.x;
-            var vy:Number = model.velocity.y;
+            var vx:Number = target.velocity.x;
+            var vy:Number = target.velocity.y;
 
             var matrix:Matrix = new Matrix();
 
@@ -107,18 +124,18 @@ import flash.geom.Point;
         /**
          * Draw body
          * @param deltaTime - time pasts
-         * @param model     - actor model
+         * @param target     - actor target
          * @param bitmap    - offscreen buffer
          * @return
          */
-        private function drawMedium(deltaTime:Number, model:SimplePlayerModel, bitmap:BitmapData):void {
+        private function drawMedium(deltaTime:Number, target:SimplePlayerModel, bitmap:BitmapData):void {
             var matrix:Matrix = new Matrix();
 
-            var x:Number = model.position.x;
-            var y:Number = model.position.y;
+            var x:Number = target.position.x;
+            var y:Number = target.position.y;
 
-            var lx:Number = model.look.x;
-            var ly:Number = model.look.y;
+            var lx:Number = target.look.x;
+            var ly:Number = target.look.y;
 
             // draw triangle
             var point:Point = new Point(lx, ly - (YSTART + SIZE));
@@ -144,11 +161,9 @@ import flash.geom.Point;
             bitmap.draw(gun, matrix);
         }
 
-        public function draw(deltaTime:Number, actor:Actor, bitmap:BitmapData):void {
-            var model:SimplePlayerModel = SimplePlayerModel(actor.model);
-
-            drawLow(deltaTime, model, bitmap);
-            drawMedium(deltaTime, model, bitmap);
+        public function render(deltaTime:Number, target:SimplePlayerModel, bitmap:BitmapData):void {
+            drawLow   (deltaTime, target, bitmap);
+            drawMedium(deltaTime, target, bitmap);
         }
     }
 }

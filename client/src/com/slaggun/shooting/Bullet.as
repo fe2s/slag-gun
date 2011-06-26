@@ -1,5 +1,4 @@
-/*
- * Copyright 2009 SlagGunTeam
+/* Copyright 2011 SlagGunTeam
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,23 +8,18 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.player {
+package com.slaggun.shooting {
+import com.slaggun.Game;
+
+import flash.geom.Point;
+
 /**
- * Actor id generator. Actor id is unique in the scope of owner
- *
- * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-public class ActorIdGenerator {
+public interface Bullet {
 
-    private static var _nextId:int = 1;
-
-    public function ActorIdGenerator() {
-        throw Error("not instanceable");
-    }
-
-    public static function nextId():int {
-        return _nextId++;
-    }
-
+    function get damage():int;
+    function get position():Point;
+    function scored(game:Game, hitObject:HitObject):void;
 }
 }

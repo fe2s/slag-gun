@@ -28,26 +28,25 @@ public class UserControlled implements ActorTask{
         var vy:Number = 0;
 
         var inputState:InputState = game.inputStates;
+        var actor:SimplePlayer = SimplePlayer(_actor);
 
 
         // procces key events
         if (inputState.isPressed(Keyboard.LEFT) || inputState.isPressedChar('A')) {
-            vx -= 1;
+            vx -= actor.maxSpeed;
         }
 
         if (inputState.isPressed(Keyboard.RIGHT) || inputState.isPressedChar('D')) {
-            vx += 1;
+            vx += actor.maxSpeed;
         }
 
         if (inputState.isPressed(Keyboard.UP) || inputState.isPressedChar('W')) {
-            vy -= 1;
+            vy -= actor.maxSpeed;
         }
 
         if (inputState.isPressed(Keyboard.DOWN) || inputState.isPressedChar('S')) {
-            vy += 1;
+            vy += actor.maxSpeed;
         }
-
-        var actor:SimplePlayer = SimplePlayer(_actor);
 
         if (inputState.isMousePressed()) {
             actor.shoot(game);

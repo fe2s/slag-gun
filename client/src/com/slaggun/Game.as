@@ -18,6 +18,8 @@ import com.slaggun.log.Logger;
 import com.slaggun.log.LoggerConfig;
 import com.slaggun.log.Priority;
 import com.slaggun.log.RootCategory;
+import com.slaggun.monitor.Monitor;
+import com.slaggun.shooting.ShootingService;
 import com.slaggun.util.AsyncThread;
 
 import flash.display.BitmapData;
@@ -48,6 +50,9 @@ public class Game extends EventDispatcher {
     private var _gameNetworking:GameNetworking;
     private var _gameActors:GameActors;
     private var _gameRenderer:GameRenderer;
+    private var _shootingService:ShootingService;
+
+    private var _services:Array = [];
 
 
     public function Game() {
@@ -61,9 +66,11 @@ public class Game extends EventDispatcher {
         _gameNetworking = createGameNetworking();
         _gameActors     = createGameActors();
         _gameRenderer   = createGameRenderer();
+
+        registerService(_shootingService = createShootingService());
     }
 
-    protected function initialize():void {
+    protected final function initialize():void {
         registerClassAlias("com.slaggun.geom.Point2D", Point);
 
         _gameNetworking.addEventListener(DataRecievedEvent.INCOMING,          _gameActors.onReceive);
@@ -86,6 +93,14 @@ public class Game extends EventDispatcher {
             new Category(GameNetworking, Priority.DEBUG,      [LoggerConfig.instance.consoleAppender]),
             new Category(Game, Priority.DEBUG,                [LoggerConfig.instance.consoleAppender])
         ];
+    }
+
+    protected final function registerService(service:GameService):void {
+        _services.push(service);
+    }
+
+    protected function createShootingService():ShootingService {
+        return new ShootingService();
     }
 
     protected function createGameRenderer():GameRenderer {
@@ -134,6 +149,10 @@ public class Game extends EventDispatcher {
         return _gameNetworking;
     }
 
+    public function get shootingService():ShootingService {
+        return _shootingService;
+    }
+
     public function get mapWidth():Number{
         return _gameRenderer.bitmap.width;
     }
@@ -154,6 +173,16 @@ public class Game extends EventDispatcher {
         return _gameActors.latency();
     }
 
+    private function invokeServices():void {
+        for(var i:int = 0; i < _services.length; i++){
+            try{
+                _services[i].invoke(this);
+            }catch(e:Error){
+                LOG.throwError("Can't invoke service " + _services[i], e);
+            }
+        }
+    }
+
     /**
      * Process world live iteration
      * @param deltaTime - time pass
@@ -162,9 +191,13 @@ public class Game extends EventDispatcher {
       Monitors.physicsTime.startMeasure();
         onLive(deltaTime);
         _gameActors.prepareActors();
+        _gameActors.initActors();
         _gameActors.doActorTasks(deltaTime);
         _gameActors.live(deltaTime);
       Monitors.physicsTime.stopMeasure();
+      Monitors.servicesTime.startMeasure();
+        invokeServices();
+     Monitors.servicesTime.stopMeasure();
       Monitors.renderTime.startMeasure();
         _gameRenderer.renderBackground();
         _gameRenderer.drawDebugLines();

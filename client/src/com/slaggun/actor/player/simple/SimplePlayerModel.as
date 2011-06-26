@@ -11,7 +11,6 @@
 
 package com.slaggun.actor.player.simple {
 import com.slaggun.actor.base.ActorModel;
-import com.slaggun.actor.player.PlayerConstants;
 import com.slaggun.log.Logger;
 
 import flash.geom.Point;
@@ -31,7 +30,7 @@ public class SimplePlayerModel implements ActorModel{
     private var _position:Point = new Point(50, 50);
     private var _velocity:Point = new Point();
     private var _look:Point = new Point();
-    private var _health:int = PlayerConstants.MAX_HEALTH_HP; // in hit points
+    private var _health:int;
 
     /**
      * Hit player (decrease health)
@@ -44,15 +43,6 @@ public class SimplePlayerModel implements ActorModel{
         log.info("health " + _health);
         _health -= hitPoints;
         return _health > 0;
-    }
-
-    /**
-     * Respawn player
-     */
-    public function respawn():void {
-        log.info("respawned");
-        _health = PlayerConstants.MAX_HEALTH_HP;
-        _position = new Point(50, 50);
     }
 
     /**

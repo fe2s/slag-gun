@@ -10,6 +10,8 @@
  */
 
 package com.slaggun.util {
+import flash.utils.getQualifiedClassName;
+
 /**
  * Indicates that functionality is not currently implemented by developer
  *
@@ -19,6 +21,10 @@ public class NotImplementedException extends Error {
 
     public function NotImplementedException(msg:*="", id:*=0) {
         super(msg, id);
+    }
+
+    public static function create(clazz:Object, methodName:String, message:String = ""):NotImplementedException{
+        return new NotImplementedException(getQualifiedClassName(clazz) + "::" + methodName + " " + message);
     }
 }
 }

@@ -29,6 +29,7 @@ public class Monitors {
 
     public static const actorsCounter : TimeMonitor = new TimeMonitor({name: "Actor count"});
     public static const physicsTime : TimeMonitor = new TimeMonitor({name: "Physics"});
+    public static const servicesTime : TimeMonitor = new TimeMonitor({name: "Services"});
     public static const renderTime  : TimeMonitor = new TimeMonitor({name: "Render"});
 
     public static const monitorTime : TimeMonitor = new TimeMonitor({name: "Monitor",

@@ -52,8 +52,8 @@ public class Bot implements ActorTask{
         if(timePass > 1000){
             timePass-=1000;
 
-            vx = randV() * PlayerConstants.PLAYER_SPEED_PER_MS;
-            vy = randV() * PlayerConstants.PLAYER_SPEED_PER_MS;
+            vx = randV() * actor.maxSpeed;
+            vy = randV() * actor.maxSpeed;
 
             actor.lookAt(Math.random()*game.mapWidth, Math.random()*game.mapHeight, deltaTime, game);
         }

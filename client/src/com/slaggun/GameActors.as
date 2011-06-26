@@ -51,6 +51,7 @@ public class GameActors {
 
         ownerActors[actor.id] = actor;
         ownerActors.actors.push(actor);
+        toInit.push(actor);
     }
 
     private function __remove(actor:Actor):void {
@@ -89,6 +90,8 @@ public class GameActors {
 
     private var toBeAdded:Array = [];
     private var toBeRemoved:Array = [];
+
+    private var toInit:Array = [];
 
     private var mustBeReplicated:Boolean = false;
     private var repl:int = 0;
@@ -167,6 +170,19 @@ public class GameActors {
         toBeRemoved = [];
     }
 
+    public function initActors():void {
+        for (var i:int = 0; i < toInit.length; i++)
+        {
+            try{
+                toInit[i].init(_game);
+            }catch(e:Error){
+                LOG.throwError("Can't init actor " + toInit[i], e)
+            }
+        }
+
+        toInit = [];
+    }
+
     public function doActorTasks(deltaTime:Number):void {
         var len:int = _actors.length;
         for (var i:int = 0; i < len; i++) {
@@ -200,7 +216,7 @@ public class GameActors {
         for (var i:int = 0; i < len; i++) {
             try{
                 var actor:Actor = _actors[i];
-                actor.renderer.draw(deltaTime, actor, bitmap);
+                actor.render(deltaTime, _game, bitmap);
             }catch(e:Error){
                 LOG.throwError("Can't render actor: " + _actors[i], e)
             }

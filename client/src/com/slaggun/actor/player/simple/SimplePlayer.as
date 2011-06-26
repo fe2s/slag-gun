@@ -11,15 +11,20 @@
 
 package com.slaggun.actor.player.simple {
 import com.slaggun.Game;
+import com.slaggun.Global;
 import com.slaggun.actor.base.AbstractActor;
-import com.slaggun.actor.base.Action;
 import com.slaggun.actor.base.Actor;
-import com.slaggun.actor.player.PlayerConstants;
-import com.slaggun.actor.player.renderer.StalkerPlayerResource;
+import com.slaggun.actor.player.simple.presentation.SimplePlayerPresentation;
+import com.slaggun.actor.player.simple.presentation.TrianglesPresentation;
 import com.slaggun.actor.shell.pistol.PistolShellFactory;
 import com.slaggun.events.SimpleActorSnapshot;
 import com.slaggun.events.UpdateActorSnapshot;
+import com.slaggun.geom.Circle;
+import com.slaggun.log.Logger;
+import com.slaggun.shooting.Bullet;
+import com.slaggun.shooting.HitObject;
 
+import flash.display.BitmapData;
 import flash.geom.Point;
 
 /**
@@ -29,17 +34,29 @@ import flash.geom.Point;
  *
  * @see Actor
  */
-public class SimplePlayer extends AbstractActor implements Actor {
+public class SimplePlayer extends AbstractActor implements Actor, HitObject {
+
+    private var log:Logger = Logger.getLogger(SimplePlayerModel);
 
     private var serverModel:SimplePlayerModel;
 
+    private var presentation:PlayerPresentation;
+
     public function SimplePlayer() {
-        _renderer = StalkerPlayerResource.createRenderer();
         _model = new SimplePlayerModel();
     }
 
-    override public function apply(action:Action):void {
-        action.applyToSimplePlayer(this);
+    override public function onInit(world:Game):void {
+        respawn(world);
+    }
+
+    public function boundHit(game:Game, bullet:Bullet):Boolean {
+        var hit:Boolean = new Circle(SimplePlayerModel(model).position, presentation.hitRadius)
+                .isInside(bullet.position);
+        if(hit){
+            this.hit(game, bullet.damage);
+        }
+        return hit;
     }
 
     /**
@@ -47,20 +64,41 @@ public class SimplePlayer extends AbstractActor implements Actor {
      * @param hitPoints
      * @return true if still live, false if person has died  :)
      */
-    public function hit(hitPoints:int):Boolean {
-        return SimplePlayerModel(_model).hit(hitPoints);
+    public function hit(game:Game, hitPoint:int):Boolean {
+        var died:Boolean = SimplePlayerModel(_model).hit(hitPoint);
+        if(died){
+            respawn(game);
+        }
+        return died;
     }
 
     /**
      * Respawn player
      */
-    public function respawn():void{
-        SimplePlayerModel(_model).respawn();
+    public function respawn(game:Game):void{
+        var model:SimplePlayerModel = SimplePlayerModel(_model);
+
+        if(Math.random() > Global.TRIANGLE_RESPAWN_PROBABILITY){
+            presentation = new SimplePlayerPresentation();
+        }
+        else
+        {
+            presentation = new TrianglesPresentation();
+        }
+
+        log.info("respawned");
+        model.health = Global.ACTOR_MAX_HEALTH_HP;
+        model.position = new Point(Math.random() * game.mapWidth * 0.8,
+                                   Math.random() * game.mapHeight / 2);
     }
 
     //--------------------------------------------------------
     //---------------------  ACTOR API -----------------------
     //--------------------------------------------------------
+
+    public function get maxSpeed():Number{
+        return presentation.maxSpeed * Global.DEBUG_SPEED;
+    }
 
     public function lookAt(x:int, y:int, timePass:Number, world:Game):void {
         var actorModel:SimplePlayerModel = SimplePlayerModel(model);
@@ -70,7 +108,7 @@ public class SimplePlayer extends AbstractActor implements Actor {
     }
 
     public function moveDirection(vx:Number, vy:Number, timePass:Number, world:Game):void {
-        var v:Number = Math.sqrt(vx * vx + vy * vy) / PlayerConstants.PLAYER_SPEED_PER_MS;
+        var v:Number = Math.sqrt(vx * vx + vy * vy) / maxSpeed;
 
         if(v != 0){
             vx /= v;
@@ -81,10 +119,11 @@ public class SimplePlayer extends AbstractActor implements Actor {
     }
 
     public function velocity(vx:Number, vy:Number, timePass:Number, world:Game):void {
+
         var v:Number = Math.sqrt(vx * vx + vy * vy);
 
-        if(v > PlayerConstants.PLAYER_SPEED_PER_MS){
-            v /= PlayerConstants.PLAYER_SPEED_PER_MS;
+        if(v > maxSpeed){
+            v /= maxSpeed;
             vx /= v;
             vy /= v;
         }
@@ -93,6 +132,25 @@ public class SimplePlayer extends AbstractActor implements Actor {
 
         actorModel.velocity.x = vx;
         actorModel.velocity.y = vy;
+    }
+
+    public function shoot(world:Game):void {
+        var actorModel:SimplePlayerModel = SimplePlayerModel(model);
+
+        const mineActor:Boolean = false;
+        const replicatedOnce:Boolean = true;
+
+        var shellPosition:Point = actorModel.position.clone();
+        var shellDirection:Point = new Point(actorModel.look.x, actorModel.look.y);
+
+        // to not kill yourself =)
+        shellDirection.normalize(2 * presentation.hitRadius);
+        shellPosition.offset(shellDirection.x, shellDirection.y);
+
+        var shellFactory:PistolShellFactory = new PistolShellFactory();
+        var shell:Actor = shellFactory.create(shellPosition, shellDirection);
+
+        world.gameActors.add(shell);
     }
 
     //--------------------------------------------------------
@@ -104,9 +162,22 @@ public class SimplePlayer extends AbstractActor implements Actor {
             world.gameActors.replicate(this);
         }
 
+        if(mine){
+            world.shootingService.addHitObject(this);
+        }
+
         var actorModel:SimplePlayerModel = SimplePlayerModel(model);
         if(mine){
             iterateModel(timePass, actorModel);
+
+            var radius:int = 15;
+            if(actorModel.position.x < -radius ||
+               actorModel.position.y < -radius ||
+               actorModel.position.x > world.mapWidth  + radius||
+               actorModel.position.y > world.mapHeight + radius){
+                hit(world, 10);
+            }
+
         }else{
             iterateModel(timePass, serverModel);
             clientSpringMove(timePass, serverModel, actorModel);
@@ -128,7 +199,7 @@ public class SimplePlayer extends AbstractActor implements Actor {
             vy/=distance;
 
             var v:Number = distance/10;
-            var minSpeed:Number = timePass*PlayerConstants.PLAYER_SPEED_PER_MS;
+            var minSpeed:Number = timePass*maxSpeed;
 
             if(v < minSpeed){
                 v = minSpeed;
@@ -141,7 +212,7 @@ public class SimplePlayer extends AbstractActor implements Actor {
             actorX = vx*v + actorX;
             actorY = vy*v + actorY;
 
-            if(v > timePass * PlayerConstants.PLAYER_SPEED_PER_MS/2){
+            if(v > timePass * maxSpeed/2){
                 clientModel.velocity.x = v*vx/timePass;
                 clientModel.velocity.y = v*vy/timePass;
             }else{
@@ -196,24 +267,13 @@ public class SimplePlayer extends AbstractActor implements Actor {
         model = actorModel;
     }
 
+    //--------------------------------------------------------
+    //----------------  ACTOR GAME RENDERER -------------------
+    //--------------------------------------------------------
 
-    public function shoot(world:Game):void {
-        var actorModel:SimplePlayerModel = SimplePlayerModel(model);
-
-        const mineActor:Boolean = false;
-        const replicatedOnce:Boolean = true;
-
-        var shellPosition:Point = actorModel.position.clone();
-        var shellDirection:Point = new Point(actorModel.look.x, actorModel.look.y);
-
-        // to not kill yourself =)
-        shellDirection.normalize(PlayerConstants.RADIUS + 1);
-        shellPosition.offset(shellDirection.x, shellDirection.y);
-
-        var shellFactory:PistolShellFactory = new PistolShellFactory();
-        var shell:Actor = shellFactory.create(shellPosition, shellDirection);
-
-        world.gameActors.add(shell);
+    override public function render(timePass:Number, world:Game, bitmap:BitmapData):void {
+        presentation.render(timePass, SimplePlayerModel(model), bitmap);
+        //renderer.draw(timePass, this, bitmap);
     }
 }
 }

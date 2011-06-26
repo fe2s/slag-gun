@@ -22,6 +22,8 @@ import com.slaggun.Game;
 import com.slaggun.events.NewActorSnapshot;
 import com.slaggun.events.UpdateActorSnapshot;
 
+import flash.display.BitmapData;
+
 public interface Actor {
 
 
@@ -54,12 +56,9 @@ public interface Actor {
 
     function live(timePass:Number, world:Game):void;
 
-    /**
-     * Apply the given action on the actor
-     *
-     * @param action action to be applied
-     */
-    function apply(action:Action):void;
+    function render(timePass:Number, world:Game, bitmap:BitmapData):void;
+
+    function init(world:Game):void;
 
     function get task():ActorTask;
     function set task(task:ActorTask):void;

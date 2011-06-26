@@ -1,5 +1,4 @@
-/*
- * Copyright 2009 SlagGunTeam
+/* Copyright 2011 SlagGunTeam
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -8,20 +7,11 @@
  * either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
-package com.slaggun.actor.base {
-import com.slaggun.actor.player.simple.SimplePlayer;
-import com.slaggun.actor.shell.pistol.PistolShell;
-
+package com.slaggun {
 /**
- * How different actors should react on the specified action
- *
- * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-public interface Action {
-
-    function applyToSimplePlayer(player:SimplePlayer):void;
-
-    function applyToPistolShell(shell:PistolShell):void;
+public interface GameService {
+    function invoke(game:Game):void;
 }
 }

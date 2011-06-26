@@ -10,7 +10,7 @@
  */
 
 package com.slaggun.actor.shell.pistol {
-import com.slaggun.actor.player.ActorIdGenerator;
+import com.slaggun.Global;
 
 import flash.geom.Point;
 
@@ -25,7 +25,7 @@ public class PistolShellFactory  {
     }
     
     public function create(startPosition:Point, direction:Point):PistolShell {
-        direction.normalize(PistolShellConstants.SPEED);
+        direction.normalize(Global.BULLET_SPEED);
 
         var pistolShellModel:PistolShellModel = new PistolShellModel();
         pistolShellModel.position = startPosition;

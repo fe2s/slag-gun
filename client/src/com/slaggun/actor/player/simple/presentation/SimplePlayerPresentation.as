@@ -1,5 +1,4 @@
-/*
- * Copyright 2010 SlagGunTeam
+/* Copyright 2011 SlagGunTeam
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -8,21 +7,26 @@
  * either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
-package com.slaggun.actor.player.renderer.core {
-import com.slaggun.actor.base.Actor;
+package com.slaggun.actor.player.simple.presentation {
+import com.slaggun.actor.common.DrawOption;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
+import com.slaggun.actor.player.simple.presentation.BasePlayerPresentation;
 
 import flash.display.BitmapData;
+
+import flash.display.DisplayObject;
 import flash.geom.Matrix;
 
 /**
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-public class SimplePlayerRenderer extends AnimatedRenderer{
-    
-    public function SimplePlayerRenderer(resource:DirectedResource, frameSpeedFactor:Number) {
-        super(resource, frameSpeedFactor);
+public class SimplePlayerPresentation extends BasePlayerPresentation{
+    [Embed(source="stalker.png")]
+    public static var stalkerResourceClass:Class;
+    public static var stalkerResource:DisplayObject = new stalkerResourceClass();
+
+    public function SimplePlayerPresentation() {
+        super(stalkerResource, 1/15);
     }
 
     private function getAngle(x:Number, y:Number):Number {
@@ -34,15 +38,13 @@ public class SimplePlayerRenderer extends AnimatedRenderer{
         return angle;
     }
 
-    protected override function drawFrame(actor:Actor, bitmap:BitmapData, x:int, y:int, xFrame:Number, yFrame:Number):void{
+    protected override function drawFrame(target:SimplePlayerModel, bitmap:BitmapData, x:int, y:int, xFrame:Number, yFrame:Number):void{
 
-        var model:SimplePlayerModel = SimplePlayerModel(actor.model);
+        var vx:Number = target.velocity.x;
+        var vy:Number = target.velocity.y;
 
-        var vx:Number = model.velocity.x;
-        var vy:Number = model.velocity.y;
-
-        var lx:Number = model.look.x;
-        var ly:Number = model.look.y;
+        var lx:Number = target.look.x;
+        var ly:Number = target.look.y;
 
         if (vx == 0 && vy == 0) {
             vx = lx;
@@ -62,9 +64,9 @@ public class SimplePlayerRenderer extends AnimatedRenderer{
 
         var veloMat:Matrix =  new Matrix();
         veloMat.rotate(getAngle(vx, vy));
-        
-        resource.draw(bitmap, x, y, revesrs ? resource.xFramesCount - xFrame : xFrame, 0, DrawOption.create().setMatrix(veloMat));
-        resource.draw(bitmap, x, y, 0,                                                 1, DrawOption.create().setMatrix(lookMat));
+
+        draw(bitmap, x, y, revesrs ? xFramesCount - xFrame : xFrame, 0, DrawOption.create().setMatrix(veloMat));
+        draw(bitmap, x, y, 0,                                                 1, DrawOption.create().setMatrix(lookMat));
     }
 }
 }
