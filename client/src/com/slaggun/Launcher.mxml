@@ -46,31 +46,28 @@
 
         private function initVariables():void {
 
-
             callLater(function():void{
                 try{
-                    Cursors.registerCursor();
+                    Cursors.registerCursors();
                 }catch(e:Error){
-                    LOG.throwError("Can't register cursors", e);
+                    LOG.error("Can't register native cursor. Switching to compatible cursor rendering mode.", e);
                 }
             });
 
-            var application:Application = Application(Application.application);
-
-            var hostParameter:String = application.parameters["host"];
+            var hostParameter:String = this.parameters["host"];
             if (hostParameter != null) {
                 txtHost.text = hostParameter;
             }
 
-            policyServer = application.parameters["policyServer"];
+            policyServer = this.parameters["policyServer"];
 
             //LoggerConfig.instance.setTextArea(logOutput);
             LoggerConfig.instance.setTextArea(logOutput);
             game = new BotShooter();
 
-            game.resize(application.width, application.height);
+            game.resize(this.width, this.height);
 
-            if (application.parameters["autojoin"] == "true") {
+            if (this.parameters["autojoin"] == "true") {
                 connect();
             }
         }
@@ -139,14 +136,11 @@
         }
 
         private function changeCursor():void {
-            try {
-                Mouse.cursor = Cursors.AIM_CURSOR;
-            } catch(e:Error) {
-            }
+            Cursors.showAim();
         }
 
         private function resetCursor():void {
-            Mouse.cursor = MouseCursor.AUTO;
+            Cursors.auto();
         }
         ]]>
 </mx:Script>
