@@ -18,8 +18,8 @@ public class Global {
 
     public static const BULLET_SPEED:Number = 15;
     public static const BULLET_RADIUS:Number = 2;
-    public static const BULLET_DAMAGE:int = 10;
+    public static const BULLET_DAMAGE:int = 10;// in hit points
+
     public static const TRIANGLE_RESPAWN_PROBABILITY:Number = 0.01;
-    // in hit points
 }
 }
