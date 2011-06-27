@@ -103,8 +103,8 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
     public function lookAt(x:int, y:int, timePass:Number, world:Game):void {
         var actorModel:SimplePlayerModel = SimplePlayerModel(model);
 
-        actorModel.look.x = x - actorModel.position.x;
-        actorModel.look.y = y - actorModel.position.y;
+        actorModel.look.x = x;
+        actorModel.look.y = y;
     }
 
     public function moveDirection(vx:Number, vy:Number, timePass:Number, world:Game):void {
@@ -141,10 +141,12 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
         const replicatedOnce:Boolean = true;
 
         var shellPosition:Point = actorModel.position.clone();
-        var shellDirection:Point = new Point(actorModel.look.x, actorModel.look.y);
+        var shellDirection:Point = new Point(actorModel.look.x - shellPosition.x, actorModel.look.y - shellPosition.y);
 
         // to not kill yourself =)
-        shellDirection.normalize(2 * presentation.hitRadius);
+        //shellDirection.normalize(2 * presentation.hitRadius);
+        shellDirection.normalize(presentation.hitRadius + 1);
+
         shellPosition.offset(shellDirection.x, shellDirection.y);
 
         var shellFactory:PistolShellFactory = new PistolShellFactory();
@@ -240,11 +242,6 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
         actorModel.position.x = x + vx * timePass;
         actorModel.position.y = y + vy * timePass;
     }
-
-    public function createSnapshot(actor:Actor, world:Game):Object {
-        return actor.model;
-    }
-
 
     override public function retrieveUpdateSnapshot(game:Game, snapshot:UpdateActorSnapshot):void {
         var receivedModel:SimplePlayerModel = SimplePlayerModel(SimpleActorSnapshot(snapshot).model);

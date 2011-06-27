@@ -170,13 +170,26 @@ public class GameActors {
         toBeRemoved = [];
     }
 
-    public function initActors():void {
+    public function initActors(deltaTime:Number):void {
         for (var i:int = 0; i < toInit.length; i++)
         {
             try{
-                toInit[i].init(_game);
+                Actor(toInit[i]).init(_game);
             }catch(e:Error){
                 LOG.throwError("Can't init actor " + toInit[i], e)
+            }
+        }
+
+        for (var i:int = 0; i < toInit.length; i++)
+        {
+            try{
+                var actor:Actor = toInit[i];
+                if(actor.task != null){
+                    actor.task.initActor(actor, deltaTime, _game);
+                }
+
+            }catch(e:Error){
+                LOG.throwError("Can't run init task for actor " + toInit[i], e)
             }
         }
 

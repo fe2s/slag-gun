@@ -43,8 +43,8 @@ public class SimplePlayerPresentation extends BasePlayerPresentation{
         var vx:Number = target.velocity.x;
         var vy:Number = target.velocity.y;
 
-        var lx:Number = target.look.x;
-        var ly:Number = target.look.y;
+        var lx:Number = target.look.x - target.position.x;
+        var ly:Number = target.look.y - target.position.y;
 
         if (vx == 0 && vy == 0) {
             vx = lx;

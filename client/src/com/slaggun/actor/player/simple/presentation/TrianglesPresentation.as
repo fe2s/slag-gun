@@ -134,8 +134,8 @@ import flash.geom.Point;
             var x:Number = target.position.x;
             var y:Number = target.position.y;
 
-            var lx:Number = target.look.x;
-            var ly:Number = target.look.y;
+            var lx:Number = target.look.x - x;
+            var ly:Number = target.look.y - y;
 
             // draw triangle
             var point:Point = new Point(lx, ly - (YSTART + SIZE));

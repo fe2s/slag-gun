@@ -14,6 +14,7 @@ import com.slaggun.Game;
 import com.slaggun.InputState;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorTask;
+import com.slaggun.actor.base.BaseActorTask;
 import com.slaggun.actor.player.simple.SimplePlayer;
 
 import flash.ui.Keyboard;
@@ -21,9 +22,9 @@ import flash.ui.Keyboard;
 /**
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-public class UserControlled implements ActorTask{
+public class UserControlled extends BaseActorTask{
 
-    public function controlActor(_actor:Actor, deltaTime:Number, game:Game):void {
+    override public function controlActor(_actor:Actor, deltaTime:Number, game:Game):void {
         var vx:Number = 0;
         var vy:Number = 0;
 

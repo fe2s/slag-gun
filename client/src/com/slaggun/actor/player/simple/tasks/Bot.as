@@ -13,6 +13,7 @@ package com.slaggun.actor.player.simple.tasks {
 import com.slaggun.Game;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.ActorTask;
+import com.slaggun.actor.base.BaseActorTask;
 import com.slaggun.actor.player.PlayerConstants;
 import com.slaggun.actor.player.simple.SimplePlayer;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
@@ -20,7 +21,7 @@ import com.slaggun.actor.player.simple.SimplePlayerModel;
 /**
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-public class Bot implements ActorTask{
+public class Bot extends BaseActorTask{
     private var timePass:Number = 1001;
 
     private static function randV():Number{
@@ -35,7 +36,7 @@ public class Bot implements ActorTask{
    }
 
 
-    public function controlActor(_actor:Actor, deltaTime:Number, game:Game):void {
+    override public function controlActor(_actor:Actor, deltaTime:Number, game:Game):void {
         var actorModel:SimplePlayerModel = SimplePlayerModel(_actor.model);
         var actor:SimplePlayer = SimplePlayer(_actor);
 
