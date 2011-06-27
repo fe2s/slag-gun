@@ -53,23 +53,31 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
     public function boundHit(game:Game, bullet:Bullet):Boolean {
         var hit:Boolean = new Circle(SimplePlayerModel(model).position, presentation.hitRadius)
                 .isInside(bullet.position);
-        if(hit){
+        if(hit && mine){
             this.hit(game, bullet.damage);
         }
         return hit;
     }
+
+    //--------------------------------------------------------
+    //---------------------  ACTOR API -----------------------
+    //--------------------------------------------------------
 
     /**
      * Hit player (decrease health)
      * @param hitPoints
      * @return true if still live, false if person has died  :)
      */
-    public function hit(game:Game, hitPoint:int):Boolean {
-        var alive:Boolean = SimplePlayerModel(_model).hit(hitPoint);
-        if(!alive){
+    public function hit(game:Game, hitPoints:int):void {
+        var model:SimplePlayerModel = SimplePlayerModel(_model);
+
+        log.info("damaged " + hitPoints);
+        log.info("health " + model.health);
+
+        model.health -= hitPoints;
+        if(model.health < 0){
             respawn(game);
         }
-        return alive;
     }
 
     /**
@@ -92,9 +100,6 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
                                    Math.random() * game.mapHeight / 2);
     }
 
-    //--------------------------------------------------------
-    //---------------------  ACTOR API -----------------------
-    //--------------------------------------------------------
 
     public function get maxSpeed():Number{
         return presentation.maxSpeed * Global.DEBUG_SPEED;
@@ -160,12 +165,9 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
     //--------------------------------------------------------
 
     override public function live(timePass:Number, world:Game):void {
+        world.shootingService.addHitObject(this);
         if(replicable){
             world.gameActors.replicate(this);
-        }
-
-        if(mine){
-            world.shootingService.addHitObject(this);
         }
 
         var actorModel:SimplePlayerModel = SimplePlayerModel(model);
@@ -270,7 +272,6 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
 
     override public function render(timePass:Number, world:Game, bitmap:BitmapData):void {
         presentation.render(timePass, SimplePlayerModel(model), bitmap);
-        //renderer.draw(timePass, this, bitmap);
     }
 }
 }

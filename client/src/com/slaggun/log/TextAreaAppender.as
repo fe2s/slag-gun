@@ -15,6 +15,7 @@ import mx.controls.TextArea;
 /**
  *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
+ * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
 public class TextAreaAppender implements Appender{
 

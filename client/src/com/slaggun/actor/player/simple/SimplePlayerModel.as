@@ -27,79 +27,11 @@ public class SimplePlayerModel implements ActorModel{
 
     private var log:Logger = Logger.getLogger(SimplePlayerModel);
 
-    private var _position:Point = new Point(50, 50);
-    private var _velocity:Point = new Point();
-    private var _look:Point = new Point();
-    private var _health:int;
+    public var position:Point = new Point(50, 50);
+    public var velocity:Point = new Point();
+    public var look:Point = new Point();
+    public var health:int;
 
-    /**
-     * Hit player (decrease health)
-     * 
-     * @param hitPoints
-     * @return true if still live, false if person has died  :)
-     */
-    public function hit(hitPoints:int):Boolean {
-        log.info("damaged " + hitPoints);
-        log.info("health " + _health);
-        _health -= hitPoints;
-        return _health > 0;
-    }
-
-    /**
-     * Return player position
-     * @return player position
-     */
-    public function get position():Point {
-        return _position;
-    }
-
-    /**
-     * Sets player position
-     * @param value - new position
-     */
-    public function set position(value:Point):void {
-        _position = value;
-    }
-
-    /**
-     * Returns velocity vector.
-     * @return velocity vector.
-     */
-    public function get velocity():Point {
-        return _velocity;
-    }
-
-    /**
-     * Sets velocity vector
-     * @param value - new velocity vector
-     */
-    public function set velocity(value:Point):void {
-        _velocity = value;
-    }
-
-    /**
-     * Return vector where user look
-     * @return coordinate where user look
-     */
-    public function get look():Point {
-        return _look;
-    }
-
-    /**
-     * Sets vector where user looks.
-     * @param value - look coordinate
-     */
-    public function set look(value:Point):void {
-        _look = value;
-    }
-
-    public function get health():int {
-        return _health;
-    }
-
-    public function set health(value:int):void {
-        _health = value;
-    }
 
     /**
      * Copy values from src to dst and returns dst
@@ -108,10 +40,10 @@ public class SimplePlayerModel implements ActorModel{
      * @return
      */
     protected function copyValues(src:SimplePlayerModel, dst:SimplePlayerModel):SimplePlayerModel{
-        dst._position = src._position.clone();
-        dst._velocity = src._velocity.clone();
-        dst._look = src._look.clone();
-        dst._health = src._health;
+        dst.position = src.position.clone();
+        dst.velocity = src.velocity.clone();
+        dst.look = src.look.clone();
+        dst.health = src.health;
 
         return dst;
     }
@@ -121,9 +53,9 @@ public class SimplePlayerModel implements ActorModel{
     }
 
     public function toString():String {
-        return "SimplePlayerModel{_position=" + String(_position) +
-               ",_velocity=" + String(_velocity) +
-               ",_look=" + String(_look) + "}";
+        return "SimplePlayerModel{_position=" + String(position) +
+               ",_velocity=" + String(velocity) +
+               ",_look=" + String(look) + "}";
     }
 }
 }
