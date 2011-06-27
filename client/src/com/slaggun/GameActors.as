@@ -180,7 +180,7 @@ public class GameActors {
             }
         }
 
-        for (var i:int = 0; i < toInit.length; i++)
+        for (i = 0; i < toInit.length; i++)
         {
             try{
                 var actor:Actor = toInit[i];

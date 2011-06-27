@@ -65,11 +65,11 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
      * @return true if still live, false if person has died  :)
      */
     public function hit(game:Game, hitPoint:int):Boolean {
-        var died:Boolean = SimplePlayerModel(_model).hit(hitPoint);
-        if(died){
+        var alive:Boolean = SimplePlayerModel(_model).hit(hitPoint);
+        if(!alive){
             respawn(game);
         }
-        return died;
+        return alive;
     }
 
     /**

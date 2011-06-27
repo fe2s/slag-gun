@@ -12,9 +12,7 @@
 package com.slaggun.actor.player.simple.tasks {
 import com.slaggun.Game;
 import com.slaggun.actor.base.Actor;
-import com.slaggun.actor.base.ActorTask;
 import com.slaggun.actor.base.BaseActorTask;
-import com.slaggun.actor.player.PlayerConstants;
 import com.slaggun.actor.player.simple.SimplePlayer;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
 
