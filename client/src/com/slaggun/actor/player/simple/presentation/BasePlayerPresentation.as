@@ -16,6 +16,7 @@ import com.slaggun.actor.player.simple.SimplePlayerModel;
 
 import flash.display.BitmapData;
 import flash.display.DisplayObject;
+import flash.geom.Point;
 
 /**
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
@@ -45,6 +46,11 @@ public class BasePlayerPresentation extends ImageFramedResource implements Playe
 
     public function get hitRadius():Number {
         return 20;
+    }
+
+
+    public function get weaponMountPoint():Point {
+        return new Point(1, -13);
     }
 
 //--------------------------------------------------------

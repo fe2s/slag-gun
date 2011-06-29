@@ -14,6 +14,7 @@ import com.slaggun.Game;
 import com.slaggun.Global;
 import com.slaggun.actor.base.AbstractActor;
 import com.slaggun.actor.base.Actor;
+import com.slaggun.actor.player.simple.presentation.GunWeapon;
 import com.slaggun.actor.player.simple.presentation.SimplePlayerPresentation;
 import com.slaggun.actor.player.simple.presentation.TrianglesPresentation;
 import com.slaggun.actor.shell.pistol.PistolShellFactory;
@@ -41,9 +42,11 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
     private var serverModel:SimplePlayerModel;
 
     private var presentation:PlayerPresentation;
+    private var weapon:Weapon;
 
     public function SimplePlayer() {
         _model = new SimplePlayerModel();
+        weapon = new GunWeapon();
     }
 
     override public function onInit(world:Game):void {
@@ -271,7 +274,14 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
     //--------------------------------------------------------
 
     override public function render(timePass:Number, world:Game, bitmap:BitmapData):void {
-        presentation.render(timePass, SimplePlayerModel(model), bitmap);
+        var model:SimplePlayerModel = SimplePlayerModel(model);
+        presentation.render(timePass, model, bitmap);
+
+        var weaponMountPoint:Point = presentation.weaponMountPoint;
+        weaponMountPoint.x += model.position.x;
+        weaponMountPoint.y += model.position.y;
+
+        weapon.render(bitmap, timePass, weaponMountPoint, model.look);
     }
 }
 }

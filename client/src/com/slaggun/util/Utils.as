@@ -10,6 +10,8 @@
  */
 
 package com.slaggun.util {
+import flash.geom.Matrix;
+import flash.geom.Point;
 import flash.text.TextFormat;
 
 import mx.controls.Alert;
@@ -62,6 +64,14 @@ public class Utils {
             textField.x = 0;
             textField.setTextFormat(textFormat);
         });
+    }
+
+    public static function getAngle(x:Number, y:Number):Number {
+        var angle:Number = Math.atan(((1.0) * y) / x);
+        angle = x >= 0 ? angle : angle + Math.PI;
+        angle += 2 * Math.PI;
+        angle %= 2 * Math.PI;
+        return angle;
     }
 }
 }

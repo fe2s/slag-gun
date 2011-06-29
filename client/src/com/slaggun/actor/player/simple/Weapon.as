@@ -11,14 +11,12 @@ package com.slaggun.actor.player.simple {
 import flash.display.BitmapData;
 import flash.geom.Point;
 
+import mx.charts.chartClasses.RenderData;
+
 /**
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-public interface PlayerPresentation {
-    function get maxSpeed():Number;
-    function get hitRadius():Number;
-    function get weaponMountPoint():Point;
-
-    function render(deltaTime:Number, target:SimplePlayerModel, bitmap:BitmapData):void
+public interface Weapon {
+    function render(bitmap:BitmapData, timePass:Number, mountPoint:Point, lookAt:Point):void;
 }
 }

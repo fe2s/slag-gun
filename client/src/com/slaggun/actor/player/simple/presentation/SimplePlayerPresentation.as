@@ -11,11 +11,13 @@ package com.slaggun.actor.player.simple.presentation {
 import com.slaggun.actor.common.DrawOption;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
 import com.slaggun.actor.player.simple.presentation.BasePlayerPresentation;
+import com.slaggun.util.Utils;
 
 import flash.display.BitmapData;
 
 import flash.display.DisplayObject;
 import flash.geom.Matrix;
+import flash.geom.Rectangle;
 
 /**
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
@@ -27,15 +29,6 @@ public class SimplePlayerPresentation extends BasePlayerPresentation{
 
     public function SimplePlayerPresentation() {
         super(stalkerResource, 1/15);
-    }
-
-    private function getAngle(x:Number, y:Number):Number {
-
-        var angle:Number = Math.atan(((1.0) * y) / x);
-        angle = x >= 0 ? angle : angle + Math.PI;
-        angle += 2 * Math.PI;
-        angle %= 2 * Math.PI;
-        return angle;
     }
 
     protected override function drawFrame(target:SimplePlayerModel, bitmap:BitmapData, x:int, y:int, xFrame:Number, yFrame:Number):void{
@@ -60,10 +53,10 @@ public class SimplePlayerPresentation extends BasePlayerPresentation{
         }
 
         var lookMat:Matrix =  new Matrix();
-        lookMat.rotate(getAngle(lx, ly));
+        lookMat.rotate(Utils.getAngle(lx, ly));
 
         var veloMat:Matrix =  new Matrix();
-        veloMat.rotate(getAngle(vx, vy));
+        veloMat.rotate(Utils.getAngle(vx, vy));
 
         draw(bitmap, x, y, revesrs ? xFramesCount - xFrame : xFrame, 0, DrawOption.create().setMatrix(veloMat));
         draw(bitmap, x, y, 0,                                                 1, DrawOption.create().setMatrix(lookMat));

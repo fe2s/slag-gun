@@ -11,6 +11,8 @@
 
 package com.slaggun.actor.common {
 
+import com.slaggun.util.Utils;
+
 import flash.display.BitmapData;
 import flash.display.DisplayObject;
 import flash.display.IBitmapDrawable;
@@ -215,15 +217,15 @@ public class ImageFramedResource {
      */
     private function drawRect(dst:BitmapData, matrix:Matrix, dstX: int, dstY:int, src:IBitmapDrawable, srcX:int, srcY:int, srcWidth:int, srcHeight:int):void {
         //var workMatrix:Matrix = matrix.clone();
-        var workMatrix:Matrix = new Matrix();
+         var workMatrix:Matrix = new Matrix();
         workMatrix.translate(- srcX, - srcY);
-        workMatrix.translate(-srcWidth/2, -srcHeight/2);
-        workMatrix.concat(matrix);//.concat(matrix);
-        workMatrix.translate(srcWidth/2, srcHeight/2);
+        workMatrix.translate(- _frameCentexPointX, -_frameCentexPointY);
+        workMatrix.concat(matrix);
+        workMatrix.translate(_frameCentexPointX, _frameCentexPointY);
         workMatrix.translate(dstX,
                              dstY);
 
-        dst.draw(src, workMatrix, null, null, new Rectangle(dstX, dstY, srcWidth, srcHeight));
+        dst.draw(src, workMatrix);
     }
 
     /**
