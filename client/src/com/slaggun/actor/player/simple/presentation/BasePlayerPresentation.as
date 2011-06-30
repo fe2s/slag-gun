@@ -13,6 +13,7 @@ package com.slaggun.actor.player.simple.presentation {
 import com.slaggun.actor.common.ImageFramedResource;
 import com.slaggun.actor.player.simple.PlayerPresentation;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
+import com.slaggun.util.NotImplementedException;
 
 import flash.display.BitmapData;
 import flash.display.DisplayObject;
@@ -40,17 +41,24 @@ public class BasePlayerPresentation extends ImageFramedResource implements Playe
 
 
     public function get maxSpeed():Number {
-        return 0.3;
+        throw NotImplementedException.create(this, "maxSpeed");
     }
 
 
     public function get hitRadius():Number {
-        return 20;
+        throw NotImplementedException.create(this, "hitRadius");
     }
 
+    public function weaponMountPoint(target:SimplePlayerModel):Point{
+        throw NotImplementedException.create(this, "weaponMountPoint");
+    }
 
-    public function get weaponMountPoint():Point {
-        return new Point(1, -13);
+    public function weaponDirection(target:SimplePlayerModel):Point {
+        throw NotImplementedException.create(this, "weaponDirection");
+    }
+
+    public function bulletStartPoint(target:SimplePlayerModel):Point {
+        throw NotImplementedException.create(this, "bulletStartPoint");
     }
 
 //--------------------------------------------------------

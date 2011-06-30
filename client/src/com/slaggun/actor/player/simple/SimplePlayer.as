@@ -145,20 +145,10 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
     public function shoot(world:Game):void {
         var actorModel:SimplePlayerModel = SimplePlayerModel(model);
 
-        const mineActor:Boolean = false;
-        const replicatedOnce:Boolean = true;
+        var shellPosition:Point = presentation.bulletStartPoint(actorModel);
+        var shellDirection:Point = presentation.weaponDirection(actorModel);
 
-        var shellPosition:Point = actorModel.position.clone();
-        var shellDirection:Point = new Point(actorModel.look.x - shellPosition.x, actorModel.look.y - shellPosition.y);
-
-        // to not kill yourself =)
-        //shellDirection.normalize(2 * presentation.hitRadius);
-        shellDirection.normalize(presentation.hitRadius + 1);
-
-        shellPosition.offset(shellDirection.x, shellDirection.y);
-
-        var shellFactory:PistolShellFactory = new PistolShellFactory();
-        var shell:Actor = shellFactory.create(shellPosition, shellDirection);
+        var shell:Actor = new PistolShellFactory().create(shellPosition, shellDirection);
 
         world.gameActors.add(shell);
     }
@@ -277,11 +267,13 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
         var model:SimplePlayerModel = SimplePlayerModel(model);
         presentation.render(timePass, model, bitmap);
 
-        var weaponMountPoint:Point = presentation.weaponMountPoint;
+        var weaponMountPoint:Point = presentation.weaponMountPoint(model);
         weaponMountPoint.x += model.position.x;
         weaponMountPoint.y += model.position.y;
 
-        weapon.render(bitmap, timePass, weaponMountPoint, model.look);
+        var weaponDirection:Point = presentation.weaponDirection(model);
+
+        weapon.render(bitmap, timePass, weaponMountPoint, weaponDirection);
     }
 }
 }

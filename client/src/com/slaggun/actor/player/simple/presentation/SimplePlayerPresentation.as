@@ -13,10 +13,15 @@ import com.slaggun.actor.player.simple.SimplePlayerModel;
 import com.slaggun.actor.player.simple.presentation.BasePlayerPresentation;
 import com.slaggun.util.Utils;
 
+import flash.display.Bitmap;
+
 import flash.display.BitmapData;
 
 import flash.display.DisplayObject;
+import flash.display.Shape;
+import flash.display.Sprite;
 import flash.geom.Matrix;
+import flash.geom.Point;
 import flash.geom.Rectangle;
 
 /**
@@ -27,8 +32,52 @@ public class SimplePlayerPresentation extends BasePlayerPresentation{
     public static var stalkerResourceClass:Class;
     public static var stalkerResource:DisplayObject = new stalkerResourceClass();
 
+    private const GUN_LENGTH:Number = 100;
+    private const MOUNT_POINT:Point = new Point(1, 13);
+
+    private var _mountPoint:Point;
+    private var _weaponDirection:Point;
+
     public function SimplePlayerPresentation() {
         super(stalkerResource, 1/15);
+    }
+
+    public override function get maxSpeed():Number {
+        return 0.3;
+    }
+
+
+    public override function get hitRadius():Number {
+        return 20;
+    }
+
+    override public function weaponDirection(target:SimplePlayerModel):Point {
+        return _weaponDirection;
+    }
+
+    override public function weaponMountPoint(target:SimplePlayerModel):Point {
+        return _mountPoint;
+
+    }
+
+    protected function lookDirection(a:Number, position:Point, look:Point):Point{
+        var pv:Point = look.subtract(position);
+        var p:Number = pv.length;
+
+        if(a >= p){
+            p = a + 1;
+            pv.normalize(p);
+        }
+
+        var b:Number = Math.sqrt(p*p - a*a);
+
+        var pt:Number = a / b * p;
+        var ptv:Point = new Point(-pv.y, pv.x);
+        ptv.normalize(pt);
+
+        var bv:Point = pv.subtract(ptv);
+        bv.normalize(1);
+        return bv;
     }
 
     protected override function drawFrame(target:SimplePlayerModel, bitmap:BitmapData, x:int, y:int, xFrame:Number, yFrame:Number):void{
@@ -36,8 +85,9 @@ public class SimplePlayerPresentation extends BasePlayerPresentation{
         var vx:Number = target.velocity.x;
         var vy:Number = target.velocity.y;
 
-        var lx:Number = target.look.x - target.position.x;
-        var ly:Number = target.look.y - target.position.y;
+        var lookDirection:Point = this.lookDirection(MOUNT_POINT.y, target.position, target.look);
+        var lx:Number = lookDirection.x;
+        var ly:Number = lookDirection.y;
 
         if (vx == 0 && vy == 0) {
             vx = lx;
@@ -59,7 +109,20 @@ public class SimplePlayerPresentation extends BasePlayerPresentation{
         veloMat.rotate(Utils.getAngle(vx, vy));
 
         draw(bitmap, x, y, revesrs ? xFramesCount - xFrame : xFrame, 0, DrawOption.create().setMatrix(veloMat));
-        draw(bitmap, x, y, 0,                                                 1, DrawOption.create().setMatrix(lookMat));
+        draw(bitmap, x, y, 0,                                        1, DrawOption.create().setMatrix(lookMat));
+
+        _mountPoint = lookMat.transformPoint(MOUNT_POINT);
+        _weaponDirection = lookDirection;
+    }
+
+
+    override public function bulletStartPoint(target:SimplePlayerModel):Point {
+        var start:Point = weaponMountPoint(target);
+        var direction:Point = weaponDirection(target);
+        direction.normalize(GUN_LENGTH)
+        start = start.add(direction);
+
+        return start;
     }
 }
 }

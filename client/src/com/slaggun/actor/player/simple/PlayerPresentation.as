@@ -17,8 +17,11 @@ import flash.geom.Point;
 public interface PlayerPresentation {
     function get maxSpeed():Number;
     function get hitRadius():Number;
-    function get weaponMountPoint():Point;
 
-    function render(deltaTime:Number, target:SimplePlayerModel, bitmap:BitmapData):void
+    function weaponDirection(target:SimplePlayerModel):Point;
+    function weaponMountPoint(target:SimplePlayerModel):Point;
+    function bulletStartPoint(target:SimplePlayerModel):Point;
+
+    function render(deltaTime:Number, target:SimplePlayerModel, bitmap:BitmapData):void;
 }
 }

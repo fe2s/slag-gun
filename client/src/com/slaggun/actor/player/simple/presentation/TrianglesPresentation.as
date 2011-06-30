@@ -51,8 +51,20 @@ import flash.geom.Point;
         }
 
 
-        public function get weaponMountPoint():Point {
+        public function weaponMountPoint(target:SimplePlayerModel):Point {
             return new Point(0, 0);
+        }
+
+        public function weaponDirection(target:SimplePlayerModel):Point {
+            return target.look.subtract(target.position);
+        }
+
+        public function bulletStartPoint(target:SimplePlayerModel):Point {
+            var start:Point = weaponMountPoint(target);
+            var direction:Point = weaponDirection(target);
+            direction.normalize(hitRadius + 1)
+            start = start.add(direction);
+            return start;
         }
 
 //--------------------------------------------------------

@@ -47,9 +47,9 @@ public class GunWeapon extends ImageFramedResource implements Weapon{
         return super.getFrameCentexPointY();
     }
 
-    public function render(bitmap:BitmapData, timePass:Number, mountPoint:Point, lookAt:Point):void {
+    public function render(bitmap:BitmapData, timePass:Number, mountPoint:Point, direction:Point):void {
         var mat:Matrix =  new Matrix();
-        mat.rotate(Utils.getAngle(lookAt.x - mountPoint.x, lookAt.y - mountPoint.y));
+        mat.rotate(Utils.getAngle(direction.x, direction.y));
 
         draw(bitmap, mountPoint.x,  mountPoint.y, 0, 0, DrawOption.create().setMatrix(mat));
     }
