@@ -94,7 +94,9 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
         }
         else
         {
-            presentation = new TrianglesPresentation();
+            var trianglesPresentation:TrianglesPresentation = new TrianglesPresentation();
+            presentation = trianglesPresentation;
+            weapon       = trianglesPresentation;
         }
 
         log.info("respawned");
@@ -145,8 +147,13 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
     public function shoot(world:Game):void {
         var actorModel:SimplePlayerModel = SimplePlayerModel(model);
 
-        var shellPosition:Point = presentation.bulletStartPoint(actorModel);
-        var shellDirection:Point = presentation.weaponDirection(actorModel);
+
+        var shellPosition:Point = presentation.weaponMountPoint(actorModel).add(actorModel.position);
+        var shellDirection:Point = presentation.weaponDirection(actorModel).clone();
+        shellDirection.normalize(weapon.weaponLength);
+
+        shellPosition = shellPosition.add(shellDirection);
+
 
         var shell:Actor = new PistolShellFactory().create(shellPosition, shellDirection);
 
@@ -265,15 +272,14 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
 
     override public function render(timePass:Number, world:Game, bitmap:BitmapData):void {
         var model:SimplePlayerModel = SimplePlayerModel(model);
-        presentation.render(timePass, model, bitmap);
+        presentation.renderPlayer(timePass, model, bitmap);
 
         var weaponMountPoint:Point = presentation.weaponMountPoint(model);
-        weaponMountPoint.x += model.position.x;
-        weaponMountPoint.y += model.position.y;
+        weaponMountPoint = weaponMountPoint.add(model.position);
+        var weaponDirection:Point = presentation.weaponDirection(model).clone();
+        weaponDirection.normalize(1);
 
-        var weaponDirection:Point = presentation.weaponDirection(model);
-
-        weapon.render(bitmap, timePass, weaponMountPoint, weaponDirection);
+        weapon.renderWeapon(bitmap, timePass, weaponMountPoint, weaponDirection);
     }
 }
 }

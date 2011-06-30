@@ -20,8 +20,7 @@ public interface PlayerPresentation {
 
     function weaponDirection(target:SimplePlayerModel):Point;
     function weaponMountPoint(target:SimplePlayerModel):Point;
-    function bulletStartPoint(target:SimplePlayerModel):Point;
 
-    function render(deltaTime:Number, target:SimplePlayerModel, bitmap:BitmapData):void;
+    function renderPlayer(deltaTime:Number, target:SimplePlayerModel, bitmap:BitmapData):void;
 }
 }

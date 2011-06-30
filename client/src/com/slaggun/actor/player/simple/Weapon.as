@@ -17,6 +17,7 @@ import mx.charts.chartClasses.RenderData;
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
 public interface Weapon {
-    function render(bitmap:BitmapData, timePass:Number, mountPoint:Point, direction:Point):void;
+    function get weaponLength():Number;
+    function renderWeapon(bitmap:BitmapData, timePass:Number, mountPoint:Point, direction:Point):void;
 }
 }

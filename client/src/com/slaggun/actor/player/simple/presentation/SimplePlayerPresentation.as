@@ -10,19 +10,12 @@
 package com.slaggun.actor.player.simple.presentation {
 import com.slaggun.actor.common.DrawOption;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
-import com.slaggun.actor.player.simple.presentation.BasePlayerPresentation;
 import com.slaggun.util.Utils;
 
-import flash.display.Bitmap;
-
 import flash.display.BitmapData;
-
 import flash.display.DisplayObject;
-import flash.display.Shape;
-import flash.display.Sprite;
 import flash.geom.Matrix;
 import flash.geom.Point;
-import flash.geom.Rectangle;
 
 /**
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
@@ -32,7 +25,6 @@ public class SimplePlayerPresentation extends BasePlayerPresentation{
     public static var stalkerResourceClass:Class;
     public static var stalkerResource:DisplayObject = new stalkerResourceClass();
 
-    private const GUN_LENGTH:Number = 100;
     private const MOUNT_POINT:Point = new Point(1, 13);
 
     private var _mountPoint:Point;
@@ -108,21 +100,13 @@ public class SimplePlayerPresentation extends BasePlayerPresentation{
         var veloMat:Matrix =  new Matrix();
         veloMat.rotate(Utils.getAngle(vx, vy));
 
+
+
         draw(bitmap, x, y, revesrs ? xFramesCount - xFrame : xFrame, 0, DrawOption.create().setMatrix(veloMat));
         draw(bitmap, x, y, 0,                                        1, DrawOption.create().setMatrix(lookMat));
 
         _mountPoint = lookMat.transformPoint(MOUNT_POINT);
         _weaponDirection = lookDirection;
-    }
-
-
-    override public function bulletStartPoint(target:SimplePlayerModel):Point {
-        var start:Point = weaponMountPoint(target);
-        var direction:Point = weaponDirection(target);
-        direction.normalize(GUN_LENGTH)
-        start = start.add(direction);
-
-        return start;
     }
 }
 }

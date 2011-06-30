@@ -30,7 +30,6 @@ public class GunWeapon extends ImageFramedResource implements Weapon{
 
     public function GunWeapon() {
         super(stalkerResource);
-
     }
 
 
@@ -47,7 +46,11 @@ public class GunWeapon extends ImageFramedResource implements Weapon{
         return super.getFrameCentexPointY();
     }
 
-    public function render(bitmap:BitmapData, timePass:Number, mountPoint:Point, direction:Point):void {
+    public function get weaponLength():Number {
+        return 100;
+    }
+
+    public function renderWeapon(bitmap:BitmapData, timePass:Number, mountPoint:Point, direction:Point):void {
         var mat:Matrix =  new Matrix();
         mat.rotate(Utils.getAngle(direction.x, direction.y));
 

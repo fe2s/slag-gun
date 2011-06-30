@@ -57,10 +57,6 @@ public class BasePlayerPresentation extends ImageFramedResource implements Playe
         throw NotImplementedException.create(this, "weaponDirection");
     }
 
-    public function bulletStartPoint(target:SimplePlayerModel):Point {
-        throw NotImplementedException.create(this, "bulletStartPoint");
-    }
-
 //--------------------------------------------------------
     //---------------------  RENDER API -----------------------
     //--------------------------------------------------------
@@ -110,7 +106,7 @@ public class BasePlayerPresentation extends ImageFramedResource implements Playe
         draw(bitmap, x, y, xFrame, yFrame);
     }
 
-    public function render(deltaTime:Number, target:SimplePlayerModel, bitmap:BitmapData):void {
+    public function renderPlayer(deltaTime:Number, target:SimplePlayerModel, bitmap:BitmapData):void {
 
 
         var x:Number = target.position.x;

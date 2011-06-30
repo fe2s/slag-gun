@@ -26,7 +26,7 @@ import flash.geom.Point;
      *
      * @see SimplePlayer
      */
-    public class TrianglesPresentation implements PlayerPresentation{
+    public class TrianglesPresentation implements PlayerPresentation, Weapon{
 
         private var triangleBlue:Shape = new Shape();
         private var triangleRed:Shape = new Shape();
@@ -52,22 +52,23 @@ import flash.geom.Point;
 
 
         public function weaponMountPoint(target:SimplePlayerModel):Point {
-            return new Point(0, 0);
+            return new Point(0, -YSTART - SIZE);
         }
 
         public function weaponDirection(target:SimplePlayerModel):Point {
             return target.look.subtract(target.position);
         }
 
-        public function bulletStartPoint(target:SimplePlayerModel):Point {
-            var start:Point = weaponMountPoint(target);
-            var direction:Point = weaponDirection(target);
-            direction.normalize(hitRadius + 1)
-            start = start.add(direction);
-            return start;
+        //--------------------------------------------------------
+        //-----------------  WEAPON --------------------
+        //--------------------------------------------------------
+
+
+        public function get weaponLength():Number {
+            return 2*SIZE;
         }
 
-//--------------------------------------------------------
+        //--------------------------------------------------------
         //-----------------  ACTOR LOGIC HERE --------------------
         //--------------------------------------------------------
 
@@ -164,23 +165,30 @@ import flash.geom.Point;
             matrix.translate(x , y - YSTART - SIZE);
 
             bitmap.draw(triangleBlue, matrix);
+        }
+
+        public function renderPlayer(deltaTime:Number, target:SimplePlayerModel, bitmap:BitmapData):void {
+            drawLow   (deltaTime, target, bitmap);
+            drawMedium(deltaTime, target, bitmap);
+        }
+
+        public function renderWeapon(bitmap:BitmapData, timePass:Number, mountPoint:Point, direction:Point):void {
+
+            var point:Point = new Point(direction.x, direction.y - (YSTART + SIZE));
 
             var gun:Shape = new Shape();
 
+            direction.normalize(weaponLength);
+
             gun.graphics.lineStyle(3, 0);
             gun.graphics.moveTo(0,0);
-            gun.graphics.lineTo(2*SIZE*point.x, 2*SIZE*point.y);
+            gun.graphics.lineTo(direction.x, direction.y);
 
             // draw cannon
-            matrix = new Matrix();
+            var matrix:Matrix = new Matrix();
 
-            matrix.translate(x , y - YSTART - SIZE);
+            matrix.translate(mountPoint.x , mountPoint.y);
             bitmap.draw(gun, matrix);
-        }
-
-        public function render(deltaTime:Number, target:SimplePlayerModel, bitmap:BitmapData):void {
-            drawLow   (deltaTime, target, bitmap);
-            drawMedium(deltaTime, target, bitmap);
         }
     }
 }
