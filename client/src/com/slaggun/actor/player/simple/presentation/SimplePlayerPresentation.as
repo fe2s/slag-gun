@@ -25,7 +25,7 @@ public class SimplePlayerPresentation extends BasePlayerPresentation{
     public static var stalkerResourceClass:Class;
     public static var stalkerResource:DisplayObject = new stalkerResourceClass();
 
-    private const MOUNT_POINT:Point = new Point(1, 13);
+    private const MOUNT_POINT:Point = new Point(-1, 15);
 
     private var _mountPoint:Point;
     private var _weaponDirection:Point;
