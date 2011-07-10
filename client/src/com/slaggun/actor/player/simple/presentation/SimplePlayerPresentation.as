@@ -94,13 +94,8 @@ public class SimplePlayerPresentation extends BasePlayerPresentation{
             revesrs = true
         }
 
-        var lookMat:Matrix =  new Matrix();
-        lookMat.rotate(Utils.getAngle(lx, ly));
-
-        var veloMat:Matrix =  new Matrix();
-        veloMat.rotate(Utils.getAngle(vx, vy));
-
-
+        var lookMat:Matrix =  Utils.roateMatrix(lx, ly);
+        var veloMat:Matrix =  Utils.roateMatrix(vx, vy);
 
         draw(bitmap, x, y, revesrs ? xFramesCount - xFrame : xFrame, 0, DrawOption.create().setMatrix(veloMat));
         draw(bitmap, x, y, 0,                                        1, DrawOption.create().setMatrix(lookMat));

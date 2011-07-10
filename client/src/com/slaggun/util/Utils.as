@@ -12,6 +12,7 @@
 package com.slaggun.util {
 import flash.geom.Matrix;
 import flash.geom.Point;
+import flash.geom.Point;
 import flash.text.TextFormat;
 
 import mx.controls.Alert;
@@ -64,6 +65,12 @@ public class Utils {
             textField.x = 0;
             textField.setTextFormat(textFormat);
         });
+    }
+
+    public static function roateMatrix(x:Number, y:Number):Matrix {
+        var point:Point = new Point(x,  y);
+        point.normalize(1);
+        return new Matrix(x, y, -y, x);
     }
 
     public static function getAngle(x:Number, y:Number):Number {

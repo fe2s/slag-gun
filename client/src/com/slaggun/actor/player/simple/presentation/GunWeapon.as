@@ -52,10 +52,7 @@ public class GunWeapon extends ImageFramedResource implements Weapon{
     }
 
     public function renderWeapon(event:GameEvent, mountPoint:Point, direction:Point):void {
-        var mat:Matrix =  new Matrix();
-        mat.rotate(Utils.getAngle(direction.x, direction.y));
-
-        draw(event.bitmap, mountPoint.x,  mountPoint.y, 0, 0, DrawOption.create().setMatrix(mat));
+        draw(event.bitmap, mountPoint.x,  mountPoint.y, 0, 0, DrawOption.create().setMatrix(Utils.roateMatrix(direction.x,  direction.y)));
     }
 }
 }

@@ -17,10 +17,12 @@ import com.slaggun.actor.base.AbstractActor;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.shooting.Bullet;
 import com.slaggun.shooting.HitObject;
+import com.slaggun.util.Utils;
 
 import flash.display.BitmapData;
 import flash.display.DisplayObject;
 import flash.display.Shape;
+import flash.geom.Matrix;
 import flash.geom.Point;
 
 /**
@@ -30,8 +32,8 @@ import flash.geom.Point;
 public class PistolBullet extends AbstractActor implements Actor, Bullet{
 
     [Embed(source="bullet.png")]
-    public static var stalkerResourceClass:Class;
-    public static var stalkerResource:DisplayObject = new stalkerResourceClass();
+    public static var bulletResourceClass:Class;
+    public static var bulletResource:DisplayObject = new bulletResourceClass();
 
     public function PistolBullet() {
         _model = new PistolBulletModel();
@@ -67,12 +69,25 @@ public class PistolBullet extends AbstractActor implements Actor, Bullet{
     override public function render(event:GameEvent):void {
         var shellModel:PistolBulletModel = PistolBulletModel(model);
 
-        var circle:Shape = new Shape();
-        circle.graphics.beginFill(0);
-        circle.graphics.drawCircle(shellModel.position.x, shellModel.position.y, Global.BULLET_RADIUS);
-        circle.graphics.endFill();
+        var speedVector:Point = shellModel.speedVector;
+        var position:Point = shellModel.position;
 
-        event.bitmap.draw(circle);
+        var matrix:Matrix = new Matrix();
+        matrix.translate(-bulletResource.width, -bulletResource.height /2);
+        matrix.scale(0.3, 0.3)
+        matrix.rotate(Utils.getAngle(speedVector.x, speedVector.y));
+
+
+        matrix.translate(position.x, position.y);
+
+        event.bitmap.draw(bulletResource, matrix);
+
+//        var circle:Shape = new Shape();
+//        circle.graphics.beginFill(0);
+//        circle.graphics.drawCircle(shellModel.position.x, shellModel.position.y, Global.BULLET_RADIUS);
+//        circle.graphics.endFill();
+//
+//        event.bitmap.draw(circle);
     }
 }
 }
