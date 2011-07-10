@@ -19,6 +19,7 @@ import com.slaggun.shooting.Bullet;
 import com.slaggun.shooting.HitObject;
 
 import flash.display.BitmapData;
+import flash.display.DisplayObject;
 import flash.display.Shape;
 import flash.geom.Point;
 
@@ -27,6 +28,10 @@ import flash.geom.Point;
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
 public class PistolBullet extends AbstractActor implements Actor, Bullet{
+
+    [Embed(source="bullet.png")]
+    public static var stalkerResourceClass:Class;
+    public static var stalkerResource:DisplayObject = new stalkerResourceClass();
 
     public function PistolBullet() {
         _model = new PistolBulletModel();
@@ -37,7 +42,7 @@ public class PistolBullet extends AbstractActor implements Actor, Bullet{
         world.shootingService.addBullet(this);
 
         var shellModel:PistolBulletModel = PistolBulletModel(model);
-        shellModel.position.offset(shellModel.speedVector.x, shellModel.speedVector.y);
+        shellModel.position.offset(event.elapsedTime * shellModel.speedVector.x, event.elapsedTime * shellModel.speedVector.y);
 
         var x:Number = shellModel.position.x;
         var y:Number = shellModel.position.y;

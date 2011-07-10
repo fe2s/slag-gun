@@ -16,7 +16,7 @@ public class Global {
     public static const ACTOR_MAX_HEALTH_HP:int = 100;
 
 
-    public static const BULLET_SPEED:Number = 15;
+    public static const BULLET_SPEED:Number = 0.4;
     public static const BULLET_RADIUS:Number = 2;
     public static const BULLET_DAMAGE:int = 10;// in hit points
 
