@@ -19,7 +19,7 @@ import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.player.simple.presentation.GunWeapon;
 import com.slaggun.actor.player.simple.presentation.SimplePlayerPresentation;
 import com.slaggun.actor.player.simple.presentation.TrianglesPresentation;
-import com.slaggun.actor.shell.pistol.PistolShellFactory;
+import com.slaggun.actor.bullet.pistol.PistolBulletFactory;
 import com.slaggun.events.SimpleActorSnapshot;
 import com.slaggun.events.UpdateActorSnapshot;
 import com.slaggun.geom.Circle;
@@ -157,7 +157,7 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
         shellPosition = shellPosition.add(shellDirection);
 
 
-        var shell:Actor = new PistolShellFactory().create(shellPosition, shellDirection);
+        var shell:Actor = new PistolBulletFactory().create(shellPosition, shellDirection);
 
         event.game.gameActors.add(shell);
     }

@@ -9,8 +9,8 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.shell.pistol {
-import com.slaggun.Global;
+package com.slaggun.actor.bullet.pistol {
+import com.slaggun.actor.base.ActorModel;
 
 import flash.geom.Point;
 
@@ -18,24 +18,26 @@ import flash.geom.Point;
  *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public class PistolShellFactory  {
+[RemoteClass(alias="com.slaggun.actor.bullet.pistol.PistolShellModel")]
+public class PistolBulletModel implements ActorModel{
 
-    public function createNew():PistolShell {
-        return new PistolShell();
-    }
-    
-    public function create(startPosition:Point, direction:Point):PistolShell {
-        direction.normalize(Global.BULLET_SPEED);
+    private var _position:Point;
+    private var _speedVector:Point;
 
-        var pistolShellModel:PistolShellModel = new PistolShellModel();
-        pistolShellModel.position = startPosition;
-        pistolShellModel.speedVector = direction;
-
-        var pistolShell:PistolShell = createNew();
-        pistolShell.model = pistolShellModel;
-
-        return pistolShell;
+    public function get position():Point {
+        return _position;
     }
 
+    public function get speedVector():Point {
+        return _speedVector;
+    }
+
+    public function set position(value:Point):void {
+        _position = value;
+    }
+
+    public function set speedVector(value:Point):void {
+        _speedVector = value;
+    }
 }
 }

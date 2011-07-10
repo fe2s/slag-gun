@@ -9,7 +9,7 @@
  * and limitations under the License.
  */
 
-package com.slaggun.actor.shell.pistol {
+package com.slaggun.actor.bullet.pistol {
 import com.slaggun.Game;
 import com.slaggun.GameEvent;
 import com.slaggun.Global;
@@ -26,17 +26,17 @@ import flash.geom.Point;
  *
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
  */
-public class PistolShell extends AbstractActor implements Actor, Bullet{
+public class PistolBullet extends AbstractActor implements Actor, Bullet{
 
-    public function PistolShell() {
-        _model = new PistolShellModel();
+    public function PistolBullet() {
+        _model = new PistolBulletModel();
     }
 
     override public function live(event:GameEvent):void {
         var world:Game = event.game;
         world.shootingService.addBullet(this);
 
-        var shellModel:PistolShellModel = PistolShellModel(model);
+        var shellModel:PistolBulletModel = PistolBulletModel(model);
         shellModel.position.offset(shellModel.speedVector.x, shellModel.speedVector.y);
 
         var x:Number = shellModel.position.x;
@@ -52,7 +52,7 @@ public class PistolShell extends AbstractActor implements Actor, Bullet{
     }
 
     public function get position():Point {
-        return PistolShellModel(model).position;
+        return PistolBulletModel(model).position;
     }
 
     public function scored(event:GameEvent, hitObject:HitObject):void {
@@ -60,7 +60,7 @@ public class PistolShell extends AbstractActor implements Actor, Bullet{
     }
 
     override public function render(event:GameEvent):void {
-        var shellModel:PistolShellModel = PistolShellModel(model);
+        var shellModel:PistolBulletModel = PistolBulletModel(model);
 
         var circle:Shape = new Shape();
         circle.graphics.beginFill(0);
