@@ -27,7 +27,7 @@ public class BotShooter extends Game{
 
         //world.gameRenderer.drawAnimationCalibrateGrid = true;
         //addBots(350);
-        addBots(2);
+        //addBots(2);
     }
 
     /**
