@@ -12,6 +12,6 @@ package com.slaggun {
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
 public interface GameService {
-    function invoke(game:Game):void;
+    function invoke(event:GameEvent):void;
 }
 }

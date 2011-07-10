@@ -18,7 +18,6 @@ import com.slaggun.log.Logger;
 import com.slaggun.log.LoggerConfig;
 import com.slaggun.log.Priority;
 import com.slaggun.log.RootCategory;
-import com.slaggun.monitor.Monitor;
 import com.slaggun.shooting.ShootingService;
 import com.slaggun.util.AsyncThread;
 
@@ -42,6 +41,7 @@ public class Game extends EventDispatcher {
 
     private var gamePaused:Boolean = true;
     private var lastTime:Date;
+    private var previousGameTime:Timestamp;
 
     private var networkThread:AsyncThread = new AsyncThread(DESIRABLE_TIME_PER_EVENT);
 
@@ -165,7 +165,7 @@ public class Game extends EventDispatcher {
         return _gameNetworking.dataHandler(null);
     }
 
-    public function onLive(deltaTime:Number):void{
+    public function onLive(event:GameEvent):void{
 
     }
 
@@ -173,35 +173,46 @@ public class Game extends EventDispatcher {
         return _gameActors.latency();
     }
 
-    private function invokeServices():void {
+    private function invokeServices(event:GameEvent):void {
         for(var i:int = 0; i < _services.length; i++){
             try{
-                _services[i].invoke(this);
+                GameService(_services[i]).invoke(event);
             }catch(e:Error){
                 LOG.throwError("Can't invoke service " + _services[i], e);
             }
         }
     }
 
+    protected function createGameEvent(now:Date):GameEvent{
+        var gameEvent:GameEvent = new GameEvent(this);
+        gameEvent._time = previousGameTime;
+        gameEvent._elapsedTime = previousGameTime.setDate(now, this);
+        gameEvent._bitmap = _gameRenderer.bitmap;
+        return gameEvent;
+    }
+
     /**
      * Process world live iteration
      * @param deltaTime - time pass
      */
-    public function live(deltaTime:Number):void {
-      _gameActors.doActorTasks(deltaTime);
+    public function live(now:Date):void {
+
+      var gameEvent:GameEvent = createGameEvent(now);
+
+      _gameActors.doActorTasks(gameEvent);
       Monitors.physicsTime.startMeasure();
-        onLive(deltaTime);
+        onLive(gameEvent);
         _gameActors.prepareActors();
-        _gameActors.initActors(deltaTime);
-        _gameActors.live(deltaTime);
+        _gameActors.initActors(gameEvent);
+        _gameActors.live(gameEvent);
       Monitors.physicsTime.stopMeasure();
       Monitors.servicesTime.startMeasure();
-        invokeServices();
+        invokeServices(gameEvent);
      Monitors.servicesTime.stopMeasure();
       Monitors.renderTime.startMeasure();
         _gameRenderer.renderBackground();
         _gameRenderer.drawDebugLines();
-        _gameActors.render(deltaTime);
+        _gameActors.render(gameEvent);
       Monitors.renderTime.stopMeasure();
         _gameActors.replicateActors();
     }
@@ -221,7 +232,7 @@ public class Game extends EventDispatcher {
             if (mils > 1)
             {
                 lastTime = nowTime;
-                live(mils);
+                live(nowTime);
                 Monitors.fps.appendValue(1000 / mils);
             }
 
@@ -246,6 +257,8 @@ public class Game extends EventDispatcher {
      */
     public function start():void {
         lastTime = new Date();
+        previousGameTime = new Timestamp(this)
+        previousGameTime .setDate(lastTime, this);
         gamePaused = false;
     }
 

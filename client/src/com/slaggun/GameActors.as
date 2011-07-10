@@ -170,11 +170,11 @@ public class GameActors {
         toBeRemoved = [];
     }
 
-    public function initActors(deltaTime:Number):void {
+    public function initActors(event:GameEvent):void {
         for (var i:int = 0; i < toInit.length; i++)
         {
             try{
-                Actor(toInit[i]).init(_game);
+                Actor(toInit[i]).init(event);
             }catch(e:Error){
                 LOG.throwError("Can't init actor " + toInit[i], e)
             }
@@ -185,7 +185,7 @@ public class GameActors {
             try{
                 var actor:Actor = toInit[i];
                 if(actor.task != null){
-                    actor.task.initActor(actor, deltaTime, _game);
+                    actor.task.initActor(actor, event);
                 }
 
             }catch(e:Error){
@@ -196,13 +196,13 @@ public class GameActors {
         toInit = [];
     }
 
-    public function doActorTasks(deltaTime:Number):void {
+    public function doActorTasks(event:GameEvent):void {
         var len:int = _actors.length;
         for (var i:int = 0; i < len; i++) {
             try{
                 var actor:Actor = _actors[i];
                 if(actor.task != null){
-                    actor.task.controlActor(actor, deltaTime, _game);
+                    actor.task.controlActor(actor, event);
                 }
             }catch(e:Error){
                 LOG.throwError("Can't do actor task, actor: " + actor, e);
@@ -210,26 +210,26 @@ public class GameActors {
         }
     }
 
-    public function live(deltaTime:Number):void{
+    public function live(event:GameEvent):void{
         var len:int = _actors.length;
         Monitors.actorsCounter.value = len;
         for (var i:int = 0; i < len; i++) {
             try{
-                _actors[i].live(deltaTime, _game);
+                Actor(_actors[i]).live(event);
             }catch(e:Error){
                 LOG.throwError("Can't do actor live, actor: " + _actors[i], e)
             }
         }
     }
 
-    public function render(deltaTime:Number):void{
+    public function render(event:GameEvent):void{
         var bitmap:BitmapData = _game.gameRenderer.bitmap;
 
         var len:int = _actors.length;
         for (var i:int = 0; i < len; i++) {
             try{
                 var actor:Actor = _actors[i];
-                actor.render(deltaTime, _game, bitmap);
+                actor.render(event);
             }catch(e:Error){
                 LOG.throwError("Can't render actor: " + _actors[i], e)
             }

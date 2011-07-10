@@ -11,6 +11,7 @@
 
 package com.slaggun.actor.player.simple.tasks {
 import com.slaggun.Game;
+import com.slaggun.GameEvent;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.BaseActorTask;
 import com.slaggun.actor.player.simple.SimplePlayer;
@@ -34,11 +35,12 @@ public class Bot extends BaseActorTask{
    }
 
 
-    override public function controlActor(_actor:Actor, deltaTime:Number, game:Game):void {
+    override public function controlActor(_actor:Actor, event:GameEvent):void {
         var actorModel:SimplePlayerModel = SimplePlayerModel(_actor.model);
         var actor:SimplePlayer = SimplePlayer(_actor);
+        var game:Game = event.game;
 
-        timePass+=deltaTime;
+        timePass+=event.elapsedTime;
 
         var vx:Number = actorModel.velocity.x;
         var vy:Number = actorModel.velocity.y;
@@ -54,7 +56,7 @@ public class Bot extends BaseActorTask{
             vx = randV() * actor.maxSpeed;
             vy = randV() * actor.maxSpeed;
 
-            actor.lookAt(Math.random()*game.mapWidth, Math.random()*game.mapHeight, deltaTime, game);
+            actor.lookAt(Math.random()*game.mapWidth, Math.random()*game.mapHeight, event);
         }
 
         if(x <0 )                    vx =  Math.abs(actorModel.velocity.x);
@@ -64,7 +66,7 @@ public class Bot extends BaseActorTask{
         else if(y > game.mapHeight) vy = -Math.abs(actorModel.velocity.y);
 
 
-        actor.moveDirection(vx, vy, deltaTime, game);
+        actor.moveDirection(vx, vy, event);
     }
 }
 }

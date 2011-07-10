@@ -7,15 +7,37 @@
  * either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-package com.slaggun.shooting {
-import com.slaggun.Game;
-import com.slaggun.GameEvent;
+package com.slaggun {
+import flash.display.BitmapData;
 
 /**
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
-public interface HitObject {
+public class GameEvent {
 
-function boundHit(event:GameEvent, bullet:Bullet):Boolean;
+    private var _game:Game;
+    internal var _time:Timestamp;
+    internal var _elapsedTime:Number;
+    internal var _bitmap:BitmapData;
+
+    public function GameEvent(game:Game) {
+        this._game = game;
+    }
+
+    public function get game():Game {
+        return _game;
+    }
+
+    public function get elapsedTime():Number {
+        return _elapsedTime;
+    }
+
+    public function now():Timestamp{
+        return _time.clone(_game);
+    }
+
+    public function get bitmap():BitmapData {
+        return _bitmap;
+    }
 }
 }

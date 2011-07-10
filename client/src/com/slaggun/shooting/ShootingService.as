@@ -30,12 +30,12 @@ public class ShootingService implements GameService{
         hitObjects.push(hitObject);
     }
 
-    private final function processBullet(game:Game, bullet:Bullet):void {
+    private final function processBullet(event:GameEvent, bullet:Bullet):void {
         for (var j:int = 0; j < hitObjects.length; j++) {
             try {
                 var hitObject:HitObject = hitObjects[j];
-                if (hitObject.boundHit(game, bullet)) {
-                    bullet.scored(game, hitObject);
+                if (hitObject.boundHit(event, bullet)) {
+                    bullet.scored(event, hitObject);
                     return;
                 }
             } catch(e:Error) {
@@ -44,11 +44,11 @@ public class ShootingService implements GameService{
         }
     }
 
-    public function invoke(game:Game):void {
+    public function invoke(event:GameEvent):void {
 
         for(var i:int = 0; i < bullets.length; i++)
         {
-            processBullet(game, bullets[i]);
+            processBullet(event, bullets[i]);
         }
 
         bullets.length    = 0;

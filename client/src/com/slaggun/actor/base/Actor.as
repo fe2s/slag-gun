@@ -19,6 +19,7 @@
  */
 package com.slaggun.actor.base {
 import com.slaggun.Game;
+import com.slaggun.GameEvent;
 import com.slaggun.events.NewActorSnapshot;
 import com.slaggun.events.UpdateActorSnapshot;
 
@@ -54,11 +55,11 @@ public interface Actor {
      */
     function set _online(value:Boolean):void;
 
-    function live(timePass:Number, world:Game):void;
+    function live(event:GameEvent):void;
 
-    function render(timePass:Number, world:Game, bitmap:BitmapData):void;
+    function render(event:GameEvent):void;
 
-    function init(world:Game):void;
+    function init(event:GameEvent):void;
 
     function get task():ActorTask;
     function set task(task:ActorTask):void;

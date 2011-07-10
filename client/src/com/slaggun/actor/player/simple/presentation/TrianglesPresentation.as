@@ -10,16 +10,16 @@
  */
 
 package com.slaggun.actor.player.simple.presentation {
+import com.slaggun.GameEvent;
 import com.slaggun.actor.player.simple.*;
-import com.slaggun.actor.base.Actor;
-import com.slaggun.actor.base.ActorRenderer;
 
 import flash.display.BitmapData;
 import flash.display.Shape;
+import flash.events.Event;
 import flash.geom.Matrix;
 import flash.geom.Point;
 
-    /**
+/**
      * This is triangle renderer
      *
      * Author Dmitry Brazhnik (amid.ukr@gmail.com)
@@ -100,7 +100,7 @@ import flash.geom.Point;
          * @param target     - actor target
          * @param bitmap    - offscreen buffer
          */
-        private function drawLow(deltaTime:Number, target:SimplePlayerModel, bitmap:BitmapData):void {
+        private function drawLow(event:GameEvent, target:SimplePlayerModel):void {
 
             var x:Number = target.position.x;
             var y:Number = target.position.y;
@@ -110,8 +110,8 @@ import flash.geom.Point;
 
             var matrix:Matrix = new Matrix();
 
-            xFrame+=vx*deltaTime*0.1;
-            yFrame+=vy*deltaTime*0.1;
+            xFrame+=vx*event.elapsedTime*0.1;
+            yFrame+=vy*event.elapsedTime*0.1;
 
             if(yFrame > 2*Math.PI )
             {
@@ -136,7 +136,7 @@ import flash.geom.Point;
             matrix.scale(0.2*Math.sin(-yFrame)+1.0, 1);
             matrix.translate(x, y - YSTART);
 
-            bitmap.draw(triangleShape, matrix);
+            event.bitmap.draw(triangleShape, matrix);
         }
 
         /**
@@ -146,7 +146,7 @@ import flash.geom.Point;
          * @param bitmap    - offscreen buffer
          * @return
          */
-        private function drawMedium(deltaTime:Number, target:SimplePlayerModel, bitmap:BitmapData):void {
+        private function drawMedium(event:GameEvent, target:SimplePlayerModel):void {
             var matrix:Matrix = new Matrix();
 
             var x:Number = target.position.x;
@@ -164,15 +164,15 @@ import flash.geom.Point;
             matrix.scale(Math.cos(angle),1);
             matrix.translate(x , y - YSTART - SIZE);
 
-            bitmap.draw(triangleBlue, matrix);
+            event.bitmap.draw(triangleBlue, matrix);
         }
 
-        public function renderPlayer(deltaTime:Number, target:SimplePlayerModel, bitmap:BitmapData):void {
-            drawLow   (deltaTime, target, bitmap);
-            drawMedium(deltaTime, target, bitmap);
+        public function renderPlayer(event:GameEvent, target:SimplePlayerModel):void {
+            drawLow   (event, target);
+            drawMedium(event, target);
         }
 
-        public function renderWeapon(bitmap:BitmapData, timePass:Number, mountPoint:Point, direction:Point):void {
+        public function renderWeapon(event:GameEvent, mountPoint:Point, direction:Point):void {
 
             var point:Point = new Point(direction.x, direction.y - (YSTART + SIZE));
 
@@ -188,7 +188,7 @@ import flash.geom.Point;
             var matrix:Matrix = new Matrix();
 
             matrix.translate(mountPoint.x , mountPoint.y);
-            bitmap.draw(gun, matrix);
+            event.bitmap.draw(gun, matrix);
         }
     }
 }

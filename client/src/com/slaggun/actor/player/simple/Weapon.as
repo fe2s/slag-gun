@@ -8,6 +8,8 @@
  * and limitations under the License.
  */
 package com.slaggun.actor.player.simple {
+import com.slaggun.GameEvent;
+
 import flash.display.BitmapData;
 import flash.geom.Point;
 
@@ -18,6 +20,6 @@ import mx.charts.chartClasses.RenderData;
  */
 public interface Weapon {
     function get weaponLength():Number;
-    function renderWeapon(bitmap:BitmapData, timePass:Number, mountPoint:Point, direction:Point):void;
+    function renderWeapon(event:GameEvent, mountPoint:Point, direction:Point):void;
 }
 }

@@ -10,6 +10,7 @@
  */
 
 package com.slaggun.actor.player.simple.presentation {
+import com.slaggun.GameEvent;
 import com.slaggun.actor.common.ImageFramedResource;
 import com.slaggun.actor.player.simple.PlayerPresentation;
 import com.slaggun.actor.player.simple.SimplePlayerModel;
@@ -106,14 +107,14 @@ public class BasePlayerPresentation extends ImageFramedResource implements Playe
         draw(bitmap, x, y, xFrame, yFrame);
     }
 
-    public function renderPlayer(deltaTime:Number, target:SimplePlayerModel, bitmap:BitmapData):void {
+    public function renderPlayer(event:GameEvent, target:SimplePlayerModel):void {
 
 
         var x:Number = target.position.x;
         var y:Number = target.position.y;
 
-        drawFrame(target, bitmap, x, y, getTimeFrame(deltaTime, target),
-                                              getRow(deltaTime, target));
+        drawFrame(target, event.bitmap, x, y, getTimeFrame(event.elapsedTime, target),
+                                              getRow(event.elapsedTime      , target));
      }
 }
 }

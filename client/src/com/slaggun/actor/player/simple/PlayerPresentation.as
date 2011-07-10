@@ -8,7 +8,8 @@
  * and limitations under the License.
  */
 package com.slaggun.actor.player.simple {
-import flash.display.BitmapData;
+import com.slaggun.GameEvent;
+
 import flash.geom.Point;
 
 /**
@@ -21,6 +22,6 @@ public interface PlayerPresentation {
     function weaponDirection(target:SimplePlayerModel):Point;
     function weaponMountPoint(target:SimplePlayerModel):Point;
 
-    function renderPlayer(deltaTime:Number, target:SimplePlayerModel, bitmap:BitmapData):void;
+    function renderPlayer(event:GameEvent, target:SimplePlayerModel):void;
 }
 }

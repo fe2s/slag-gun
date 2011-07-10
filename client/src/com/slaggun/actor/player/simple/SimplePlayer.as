@@ -11,6 +11,8 @@
 
 package com.slaggun.actor.player.simple {
 import com.slaggun.Game;
+import com.slaggun.GameEvent;
+import com.slaggun.GameEvent;
 import com.slaggun.Global;
 import com.slaggun.actor.base.AbstractActor;
 import com.slaggun.actor.base.Actor;
@@ -49,15 +51,15 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
         weapon = new GunWeapon();
     }
 
-    override public function onInit(world:Game):void {
-        respawn(world);
+    override public function onInit(event:GameEvent):void {
+        respawn(event);
     }
 
-    public function boundHit(game:Game, bullet:Bullet):Boolean {
+    public function boundHit(event:GameEvent, bullet:Bullet):Boolean {
         var hit:Boolean = new Circle(SimplePlayerModel(model).position, presentation.hitRadius)
                 .isInside(bullet.position);
         if(hit && mine){
-            this.hit(game, bullet.damage);
+            this.hit(event, bullet.damage);
         }
         return hit;
     }
@@ -71,7 +73,7 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
      * @param hitPoints
      * @return true if still live, false if person has died  :)
      */
-    public function hit(game:Game, hitPoints:int):void {
+    public function hit(event:GameEvent, hitPoints:int):void {
         var model:SimplePlayerModel = SimplePlayerModel(_model);
 
         log.info("damaged " + hitPoints);
@@ -79,14 +81,14 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
 
         model.health -= hitPoints;
         if(model.health < 0){
-            respawn(game);
+            respawn(event);
         }
     }
 
     /**
      * Respawn player
      */
-    public function respawn(game:Game):void{
+    public function respawn(event:GameEvent):void{
         var model:SimplePlayerModel = SimplePlayerModel(_model);
 
         if(Math.random() > Global.TRIANGLE_RESPAWN_PROBABILITY){
@@ -101,8 +103,8 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
 
         log.info("respawned");
         model.health = Global.ACTOR_MAX_HEALTH_HP;
-        model.position = new Point(Math.random() * game.mapWidth * 0.8,
-                                   Math.random() * game.mapHeight / 2);
+        model.position = new Point(Math.random() * event.game.mapWidth * 0.8,
+                                   Math.random() * event.game.mapHeight / 2);
     }
 
 
@@ -110,14 +112,14 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
         return presentation.maxSpeed * Global.DEBUG_SPEED;
     }
 
-    public function lookAt(x:int, y:int, timePass:Number, world:Game):void {
+    public function lookAt(x:int, y:int, event:GameEvent):void {
         var actorModel:SimplePlayerModel = SimplePlayerModel(model);
 
         actorModel.look.x = x;
         actorModel.look.y = y;
     }
 
-    public function moveDirection(vx:Number, vy:Number, timePass:Number, world:Game):void {
+    public function moveDirection(vx:Number, vy:Number, event:GameEvent):void {
         var v:Number = Math.sqrt(vx * vx + vy * vy) / maxSpeed;
 
         if(v != 0){
@@ -125,10 +127,10 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
             vy /= v;
         }
 
-        velocity(vx, vy, timePass, world);
+        velocity(vx, vy, event);
     }
 
-    public function velocity(vx:Number, vy:Number, timePass:Number, world:Game):void {
+    public function velocity(vx:Number, vy:Number, event:GameEvent):void {
 
         var v:Number = Math.sqrt(vx * vx + vy * vy);
 
@@ -144,7 +146,7 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
         actorModel.velocity.y = vy;
     }
 
-    public function shoot(world:Game):void {
+    public function shoot(event:GameEvent):void {
         var actorModel:SimplePlayerModel = SimplePlayerModel(model);
 
 
@@ -157,14 +159,15 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
 
         var shell:Actor = new PistolShellFactory().create(shellPosition, shellDirection);
 
-        world.gameActors.add(shell);
+        event.game.gameActors.add(shell);
     }
 
     //--------------------------------------------------------
     //----------------  ACTOR GAME METHODS -------------------
     //--------------------------------------------------------
 
-    override public function live(timePass:Number, world:Game):void {
+    override public function live(event:GameEvent):void {
+        var world:Game = event.game;
         world.shootingService.addHitObject(this);
         if(replicable){
             world.gameActors.replicate(this);
@@ -172,19 +175,19 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
 
         var actorModel:SimplePlayerModel = SimplePlayerModel(model);
         if(mine){
-            iterateModel(timePass, actorModel);
+            iterateModel(event.elapsedTime, actorModel);
 
             var radius:int = 15;
             if(actorModel.position.x < -radius ||
                actorModel.position.y < -radius ||
                actorModel.position.x > world.mapWidth  + radius||
                actorModel.position.y > world.mapHeight + radius){
-                hit(world, 10);
+                hit(event, 10);
             }
 
         }else{
-            iterateModel(timePass, serverModel);
-            clientSpringMove(timePass, serverModel, actorModel);
+            iterateModel(event.elapsedTime, serverModel);
+            clientSpringMove(event.elapsedTime, serverModel, actorModel);
         }
     }
 
@@ -270,16 +273,16 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
     //----------------  ACTOR GAME RENDERER -------------------
     //--------------------------------------------------------
 
-    override public function render(timePass:Number, world:Game, bitmap:BitmapData):void {
+    override public function render(event:GameEvent):void {
         var model:SimplePlayerModel = SimplePlayerModel(model);
-        presentation.renderPlayer(timePass, model, bitmap);
+        presentation.renderPlayer(event, model);
 
         var weaponMountPoint:Point = presentation.weaponMountPoint(model);
         weaponMountPoint = weaponMountPoint.add(model.position);
         var weaponDirection:Point = presentation.weaponDirection(model).clone();
         weaponDirection.normalize(1);
 
-        weapon.renderWeapon(bitmap, timePass, weaponMountPoint, weaponDirection);
+        weapon.renderWeapon(event, weaponMountPoint, weaponDirection);
     }
 }
 }

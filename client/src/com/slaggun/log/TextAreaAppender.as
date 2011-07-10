@@ -21,7 +21,7 @@ public class TextAreaAppender implements Appender{
 
     public static const CONSOLE_BUFFER_SIZE:int = 30 * 1024;
 
-    private var buffer:Array = ["", ""];
+    private var buffer:Array = [""];
     private var text:String = "";
 
     private var _textArea:TextArea;

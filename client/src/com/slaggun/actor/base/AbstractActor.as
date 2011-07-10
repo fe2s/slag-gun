@@ -11,6 +11,7 @@
 
 package com.slaggun.actor.base {
 import com.slaggun.Game;
+import com.slaggun.GameEvent;
 import com.slaggun.events.NewActorSnapshot;
 import com.slaggun.events.SimpleActorSnapshot;
 import com.slaggun.events.UpdateActorSnapshot;
@@ -76,20 +77,20 @@ public class AbstractActor implements Actor {
     }
 
 
-    public function live(timePass:Number, world:Game):void {
+    public function live(event:GameEvent):void {
         throw NotImplementedException.create(this, "live",  "must be override by children");
     }
 
-    public function render(timePass:Number, world:Game, bitmap:BitmapData):void {
+    public function render(event:GameEvent):void {
         throw NotImplementedException.create(this, "render",  "must be override by children");
     }
 
-    public function onInit(world:Game):void {
+    public function onInit(event:GameEvent):void {
 
     }
 
-    public final function init(world:Game):void {
-        onInit(world);
+    public final function init(event:GameEvent):void {
+        onInit(event);
     }
 
     public function get renderer():ActorRenderer {

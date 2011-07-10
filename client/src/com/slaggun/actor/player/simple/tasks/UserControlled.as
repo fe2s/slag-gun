@@ -11,6 +11,7 @@
 
 package com.slaggun.actor.player.simple.tasks {
 import com.slaggun.Game;
+import com.slaggun.GameEvent;
 import com.slaggun.InputState;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.BaseActorTask;
@@ -23,11 +24,11 @@ import flash.ui.Keyboard;
  */
 public class UserControlled extends BaseActorTask{
 
-    override public function controlActor(_actor:Actor, deltaTime:Number, game:Game):void {
+    override public function controlActor(_actor:Actor, event:GameEvent):void {
         var vx:Number = 0;
         var vy:Number = 0;
 
-        var inputState:InputState = game.inputStates;
+        var inputState:InputState = event.game.inputStates;
         var actor:SimplePlayer = SimplePlayer(_actor);
 
 
@@ -49,11 +50,11 @@ public class UserControlled extends BaseActorTask{
         }
 
         if (inputState.isMousePressed()) {
-            actor.shoot(game);
+            actor.shoot(event);
         }
 
-        actor.moveDirection(vx, vy, deltaTime, game);
-        actor.lookAt(inputState.mousePosition.x, inputState.mousePosition.y, deltaTime, game);
+        actor.moveDirection(vx, vy, event);
+        actor.lookAt(inputState.mousePosition.x, inputState.mousePosition.y, event);
     }
 }
 }

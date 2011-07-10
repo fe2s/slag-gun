@@ -11,6 +11,7 @@
 
 package com.slaggun.actor.shell.pistol {
 import com.slaggun.Game;
+import com.slaggun.GameEvent;
 import com.slaggun.Global;
 import com.slaggun.actor.base.AbstractActor;
 import com.slaggun.actor.base.Actor;
@@ -31,7 +32,8 @@ public class PistolShell extends AbstractActor implements Actor, Bullet{
         _model = new PistolShellModel();
     }
 
-    override public function live(timePass:Number, world:Game):void {
+    override public function live(event:GameEvent):void {
+        var world:Game = event.game;
         world.shootingService.addBullet(this);
 
         var shellModel:PistolShellModel = PistolShellModel(model);
@@ -53,11 +55,11 @@ public class PistolShell extends AbstractActor implements Actor, Bullet{
         return PistolShellModel(model).position;
     }
 
-    public function scored(game:Game, hitObject:HitObject):void {
-        game.gameActors.remove(this);
+    public function scored(event:GameEvent, hitObject:HitObject):void {
+        event.game.gameActors.remove(this);
     }
 
-    override public function render(timePass:Number, world:Game, bitmap:BitmapData):void {
+    override public function render(event:GameEvent):void {
         var shellModel:PistolShellModel = PistolShellModel(model);
 
         var circle:Shape = new Shape();
@@ -65,7 +67,7 @@ public class PistolShell extends AbstractActor implements Actor, Bullet{
         circle.graphics.drawCircle(shellModel.position.x, shellModel.position.y, Global.BULLET_RADIUS);
         circle.graphics.endFill();
 
-        bitmap.draw(circle);
+        event.bitmap.draw(circle);
     }
 }
 }

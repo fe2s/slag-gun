@@ -8,6 +8,7 @@
  * and limitations under the License.
  */
 package com.slaggun.actor.player.simple.presentation {
+import com.slaggun.GameEvent;
 import com.slaggun.actor.common.DrawOption;
 import com.slaggun.actor.common.ImageFramedResource;
 import com.slaggun.actor.player.simple.Weapon;
@@ -50,11 +51,11 @@ public class GunWeapon extends ImageFramedResource implements Weapon{
         return 100;
     }
 
-    public function renderWeapon(bitmap:BitmapData, timePass:Number, mountPoint:Point, direction:Point):void {
+    public function renderWeapon(event:GameEvent, mountPoint:Point, direction:Point):void {
         var mat:Matrix =  new Matrix();
         mat.rotate(Utils.getAngle(direction.x, direction.y));
 
-        draw(bitmap, mountPoint.x,  mountPoint.y, 0, 0, DrawOption.create().setMatrix(mat));
+        draw(event.bitmap, mountPoint.x,  mountPoint.y, 0, 0, DrawOption.create().setMatrix(mat));
     }
 }
 }

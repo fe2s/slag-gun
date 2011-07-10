@@ -10,6 +10,7 @@
 
 package com.slaggun.shooting {
 import com.slaggun.Game;
+import com.slaggun.GameEvent;
 
 import flash.geom.Point;
 
@@ -20,6 +21,6 @@ public interface Bullet {
 
     function get damage():int;
     function get position():Point;
-    function scored(game:Game, hitObject:HitObject):void;
+    function scored(event:GameEvent, hitObject:HitObject):void;
 }
 }

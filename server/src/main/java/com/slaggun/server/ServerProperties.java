@@ -101,6 +101,9 @@ public class ServerProperties {
 
         debugArtificialLags = getInt(DEBUG_ARTIFICIAL_LAGS, 0);
         log.info(" Debug Artificial lags: " + debugArtificialLags);
+        if(debugArtificialLags != 0){
+            log.warn("Debug Artificial lags is enabled. Set" + DEBUG_ARTIFICIAL_LAGS + " to zero.");
+        }
     }
 
     private Integer getInt(String propertyKey, Integer defaultValue) {

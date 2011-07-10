@@ -9,19 +9,20 @@
  */
 package com.slaggun.actor.base {
 import com.slaggun.Game;
+import com.slaggun.GameEvent;
 
 /**
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
 public class BaseActorTask implements ActorTask{
 
-    public function controlActor(actor:Actor, deltaTime:Number, game:Game):void {
+    public function controlActor(actor:Actor, event:GameEvent):void {
 
     }
 
 
-    public function initActor(actor:Actor, deltaTime:Number, game:Game):void {
-        controlActor(actor, deltaTime, game);
+    public function initActor(actor:Actor, event:GameEvent):void {
+        controlActor(actor, event);
     }
 }
 }
