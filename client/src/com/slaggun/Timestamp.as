@@ -18,6 +18,10 @@ public class Timestamp {
         setDate(new Date(), game);
     }
 
+    public function elapsedTime(event:GameEvent):Number {
+        return event.nowTime() - time;
+    }
+
     public final function setDate(date:Date, game:Game):Number{
         var oldTime:Number = time;
         this.time = date.getTime();

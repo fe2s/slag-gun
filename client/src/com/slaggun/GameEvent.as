@@ -28,13 +28,18 @@ public class GameEvent {
         return _game;
     }
 
-    public function get elapsedTime():Number {
-        return _elapsedTime;
+    public function nowTime():Number{
+        return _time.time;
     }
 
     public function now():Timestamp{
         return _time.clone(_game);
     }
+
+    public function get elapsedTime():Number {
+        return _elapsedTime;
+    }
+
 
     public function get bitmap():BitmapData {
         return _bitmap;
