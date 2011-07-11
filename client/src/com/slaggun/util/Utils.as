@@ -73,6 +73,10 @@ public class Utils {
         return new Matrix(x, y, -y, x);
     }
 
+    public static function scalarMull(a:Point, b:Point):Number {
+        return a.x * b.x + a.y * b.y;
+    }
+
     public static function getAngle(x:Number, y:Number):Number {
         var angle:Number = Math.atan(((1.0) * y) / x);
         angle = x >= 0 ? angle : angle + Math.PI;

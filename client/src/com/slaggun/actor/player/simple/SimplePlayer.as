@@ -26,9 +26,11 @@ import com.slaggun.geom.Circle;
 import com.slaggun.log.Logger;
 import com.slaggun.shooting.Bullet;
 import com.slaggun.shooting.HitObject;
+import com.slaggun.util.Utils;
 
 import flash.display.BitmapData;
 import flash.geom.Point;
+import flash.geom.Utils3D;
 
 /**
  * This is the first implementation of user controlled game character
@@ -55,13 +57,38 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
         respawn(event);
     }
 
-    public function boundHit(event:GameEvent, bullet:Bullet):Boolean {
-        var hit:Boolean = new Circle(SimplePlayerModel(model).position, presentation.hitRadius)
-                .isInside(bullet.position);
-        if(hit && mine){
+    public function boundHit(event:GameEvent, bullet:Bullet):Point {
+        var model:SimplePlayerModel = SimplePlayerModel(this.model);
+
+        var startPosition:Point = bullet.previousPosition;
+        var endPosition:Point   = bullet.position;
+
+        var moveVector:Point = endPosition.subtract(startPosition);
+        var actorStartVector:Point = model.position.subtract(startPosition);
+
+        var bulletTraceLength:Number = moveVector.length;
+        moveVector.normalize(1);
+
+        var crossPointLength:Number = Utils.scalarMull(moveVector, actorStartVector);
+
+        if(crossPointLength  < 0 || crossPointLength > bulletTraceLength){
+            return null;
+        }
+
+        moveVector.normalize(crossPointLength);
+
+        var radius:Point = moveVector.subtract(actorStartVector);
+
+        if(radius.length > presentation.hitRadius )
+        {
+            return null;
+        }
+
+        if(mine){
             this.hit(event, bullet.damage);
         }
-        return hit;
+
+        return moveVector.add(startPosition);
     }
 
     //--------------------------------------------------------

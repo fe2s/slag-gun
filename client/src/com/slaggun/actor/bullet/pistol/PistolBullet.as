@@ -35,6 +35,8 @@ public class PistolBullet extends AbstractActor implements Actor, Bullet{
     public static var bulletResourceClass:Class;
     public static var bulletResource:DisplayObject = new bulletResourceClass();
 
+    private var _previousPosition:Point = null;
+
     public function PistolBullet() {
         _model = new PistolBulletModel();
     }
@@ -44,6 +46,8 @@ public class PistolBullet extends AbstractActor implements Actor, Bullet{
         world.shootingService.addBullet(this);
 
         var shellModel:PistolBulletModel = PistolBulletModel(model);
+
+        _previousPosition = shellModel.position.clone();
         shellModel.position.offset(event.elapsedTime * shellModel.speedVector.x, event.elapsedTime * shellModel.speedVector.y);
 
         var x:Number = shellModel.position.x;
@@ -58,12 +62,17 @@ public class PistolBullet extends AbstractActor implements Actor, Bullet{
         return Global.BULLET_DAMAGE;
     }
 
+    public function get previousPosition():Point {
+        return _previousPosition;
+    }
+
     public function get position():Point {
         return PistolBulletModel(model).position;
     }
 
-    public function scored(event:GameEvent, hitObject:HitObject):void {
+    public function scored(event:GameEvent, hitObject:HitObject, hitPoint:Point):void {
         event.game.gameActors.remove(this);
+        PistolBulletModel(model).position = hitPoint;
     }
 
     override public function render(event:GameEvent):void {

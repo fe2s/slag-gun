@@ -21,23 +21,7 @@ import flash.geom.Point;
 [RemoteClass(alias="com.slaggun.actor.bullet.pistol.PistolShellModel")]
 public class PistolBulletModel implements ActorModel{
 
-    private var _position:Point;
-    private var _speedVector:Point;
-
-    public function get position():Point {
-        return _position;
-    }
-
-    public function get speedVector():Point {
-        return _speedVector;
-    }
-
-    public function set position(value:Point):void {
-        _position = value;
-    }
-
-    public function set speedVector(value:Point):void {
-        _speedVector = value;
-    }
+    public var position:Point;
+    public var speedVector:Point;
 }
 }

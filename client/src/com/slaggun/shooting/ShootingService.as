@@ -11,6 +11,8 @@ package com.slaggun.shooting {
 import com.slaggun.*;
 import com.slaggun.log.Logger;
 
+import flash.geom.Point;
+
 import mx.logging.Log;
 
 /**
@@ -34,8 +36,9 @@ public class ShootingService implements GameService{
         for (var j:int = 0; j < hitObjects.length; j++) {
             try {
                 var hitObject:HitObject = hitObjects[j];
-                if (hitObject.boundHit(event, bullet)) {
-                    bullet.scored(event, hitObject);
+                var hitPoint:Point = null;
+                if ((hitPoint = hitObject.boundHit(event, bullet)) != null) {
+                    bullet.scored(event, hitObject, hitPoint);
                     return;
                 }
             } catch(e:Error) {

@@ -11,11 +11,13 @@ package com.slaggun.shooting {
 import com.slaggun.Game;
 import com.slaggun.GameEvent;
 
+import flash.geom.Point;
+
 /**
  * @author Dmitry Brazhnik (amid.ukr@gmail.com)
  */
 public interface HitObject {
 
-function boundHit(event:GameEvent, bullet:Bullet):Boolean;
+function boundHit(event:GameEvent, bullet:Bullet):Point;
 }
 }

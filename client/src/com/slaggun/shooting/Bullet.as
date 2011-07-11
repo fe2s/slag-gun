@@ -20,7 +20,8 @@ import flash.geom.Point;
 public interface Bullet {
 
     function get damage():int;
+    function get previousPosition():Point;
     function get position():Point;
-    function scored(event:GameEvent, hitObject:HitObject):void;
+    function scored(event:GameEvent, hitObject:HitObject, hitPoint:Point):void;
 }
 }
