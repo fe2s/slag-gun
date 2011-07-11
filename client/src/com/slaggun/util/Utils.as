@@ -70,7 +70,7 @@ public class Utils {
     public static function roateMatrix(x:Number, y:Number):Matrix {
         var point:Point = new Point(x,  y);
         point.normalize(1);
-        return new Matrix(x, y, -y, x);
+        return new Matrix(point.x, point.y, -point.y, point.x);
     }
 
     public static function scalarMull(a:Point, b:Point):Number {
