@@ -69,14 +69,17 @@ public class GameActors {
 
     private function __removeOwner(ownerID:int):void {
         var ownerActors:Object = _actorsByOwner[ownerID];
-        var len:int = ownerActors.actors.length;
-        while(ownerActors.actors.length > 0){
-            __remove(ownerActors.actors[0]);
-            len--;
-            if(len != ownerActors.actors.length){
-                LOG.warn("Unexpected actor length, while removing owner actors. Breaking loop....");
-                break;
+        var actors:Array = ownerActors.actors.concat();
+        for(var i:int = 0; i < actors.length; i++){
+            try{
+                __remove(actors[i]);
+            }catch(e:Error){
+                LOG.throwError("Can't disconnect actor", e);
             }
+        }
+
+        if(ownerActors.actors.length != 0){
+            LOG.warn("Assertion fail, ownerActors.actors.length isn't zero");
         }
     }
 
