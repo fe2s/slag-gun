@@ -59,6 +59,12 @@ public class GameNetworking extends EventDispatcher {
     public function connect(host:String, policyServer:String):void {
         trace("Connecting to game server");
 
+        var oldSocket:Socket = socket;
+        socket = null;
+        if(oldSocket != null){
+            oldSocket.close();
+        }
+
         if(policyServer == null){
             policyServer = host;
         }
