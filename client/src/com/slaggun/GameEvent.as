@@ -15,6 +15,11 @@ import flash.display.BitmapData;
  */
 public class GameEvent {
 
+    //TBD: synchronize this with game iterations and server
+    public static function get time():Number{
+        return new Date().time;
+    }
+
     private var _game:Game;
     internal var _time:Timestamp;
     internal var _elapsedTime:Number;
