@@ -34,6 +34,8 @@ public class GameNetworking extends EventDispatcher {
     public static const MESSAGE_TYPE_REQUEST_SNAPSHOT:int    = 0x2;
     public static const MESSAGE_TYPE_AMF_MESSAGE:int         = 0x3;
     public static const MESSAGE_TYPE_CLIENT_DISCONNECTED:int = 0x4;
+    public static const MESSAGE_TYPE_GET_TIME:int            = 0x5;
+    public static const MESSAGE_TYPE_GET_TIME_ANSWER:int     = 0x5;
 
     public static const SKIP_BIT:int = 0x1;
 
@@ -52,6 +54,10 @@ public class GameNetworking extends EventDispatcher {
     private const BODY_SIZE_WARN_LIMIT:int = 1024*1024;
 
     private var _gameID:int = Math.random() * 0xFFFF;
+
+    private var _serverTimeDifference:Number = 0;
+    private var _pingTime:Number             = -1;
+
 
     /**
      * Connect to the game server
@@ -102,6 +108,24 @@ public class GameNetworking extends EventDispatcher {
 
     public function sendEventAMF(event:Object, recipient:int, important:Boolean = true):void {
         sendEvent(MESSAGE_TYPE_AMF_MESSAGE, event, recipient, important);
+    }
+
+    private function writeULong(byteArray:ByteArray, number:Number):void{
+        byteArray.writeUnsignedInt(((number - uint(number)) / 0x100000000));
+        byteArray.writeUnsignedInt(uint(number));
+    }
+
+    private function readULong(byteArray:ByteArray):Number{
+        var result:Number = byteArray.readUnsignedInt();
+        result = 0x100000000 * result + byteArray.readUnsignedInt();
+        return result;
+    }
+
+    private function requestServerTime():void{
+        var byteArray:ByteArray = new ByteArray();
+        var time:Number = new Date().time;
+        writeULong(byteArray, time);
+        sendEvent(MESSAGE_TYPE_GET_TIME, byteArray, SERVER_ADDRESS)
     }
 
     /**
@@ -173,6 +197,21 @@ public class GameNetworking extends EventDispatcher {
                 event  = DataRecievedEvent.createDisconnected(sender, eventBody.readInt());
             }else if(messageType == MESSAGE_TYPE_AMF_MESSAGE){
                 event  = DataRecievedEvent.createIncoming(sender, eventBody.readObject());
+            }else if(sender == SERVER_ADDRESS && messageType == MESSAGE_TYPE_GET_TIME_ANSWER){
+                var sendTime:Number = readULong(eventBody);
+                var serverTime:Number = readULong(eventBody);
+                var currentTime:Number = new Date().time;
+
+                _pingTime = currentTime - sendTime;
+                _serverTimeDifference = serverTime - sendTime - uint(_pingTime /2);
+
+                log.debug("sendTime: " + sendTime);
+                log.debug("serverTime: " + serverTime);
+
+                log.debug("_serverTimeDifference: " + _serverTimeDifference);
+                log.debug("_pingTime: " + _pingTime);
+                log.debug("Mine time is: " + currentTime);
+                log.debug("Assuming server time is: " + (currentTime+ _serverTimeDifference));
             }else{
                 log.warn("Skipping event from client" + sender + " with message type " + messageType)
             }
@@ -208,6 +247,8 @@ public class GameNetworking extends EventDispatcher {
         if (socket.connected) {
             log.info("connected...");
             dispatchEvent(DataRecievedEvent.createConnectedSnapshot());
+            _pingTime = -1;
+            requestServerTime();
         } else {
             log.info("unable to connect");
         }

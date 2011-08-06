@@ -17,6 +17,8 @@ import com.slaggun.server.GameServer;
 import com.slaggun.policy.FlexPolicy;
 import org.apache.log4j.Logger;
 
+import java.util.TimeZone;
+
 
 /**
  * @author Oleksiy Dyagilev (aka.fe2s@gmail.com)
@@ -35,6 +37,8 @@ public class Main {
     }
 
     public void start() throws Exception {
+
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
         GameServer server;
 	    FlexPolicy flexPolicy = null;

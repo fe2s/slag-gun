@@ -32,6 +32,8 @@ public class GameServer extends BaseUnblockingServer<GameServer.GameSession> {
     public static final int MESSAGE_TYPE_REQUEST_SNAPSHOT = 0x2;
     public static final int MESSAGE_TYPE_AMF_MESSAGE = 0x3; // Reserved for client interactions
     public static final int MESSAGE_TYPE_CLIENT_DISCONNECTED = 0x4;
+    public static final int MESSAGE_TYPE_GET_TIME = 0x5;
+    public static final int MESSAGE_TYPE_GET_TIME_ANSWER = 0x5;
 
 
     public static final int SKIP_BIT = 0x1;
