@@ -81,19 +81,6 @@ public interface Actor {
     function set model(model:ActorModel):void;
 
     /**
-     * Returns actor renderer
-     * @return actor renderer
-     * @see ActorRenderer
-     */
-    function get renderer():ActorRenderer;
-
-    /**
-     * Sets given actor renderer
-     * @see ActorRenderer
-     */
-    function set renderer(renderer:ActorRenderer):void;
-
-    /**
      * @return owner's id. Owner is the player who created the actor.
      * Unique in the scope of world.
      * For now owner id is generated on the server side.

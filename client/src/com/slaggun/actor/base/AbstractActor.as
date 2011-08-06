@@ -29,7 +29,6 @@ public class AbstractActor implements Actor {
     public static var NOT_SET_ID:int = -1;
     public static var NOT_SET_OWNER_ID:int = -1;
 
-    protected var _renderer:ActorRenderer;
     protected var _model:ActorModel;
     private var _task:ActorTask;
 
@@ -91,14 +90,6 @@ public class AbstractActor implements Actor {
 
     public final function init(event:GameEvent):void {
         onInit(event);
-    }
-
-    public function get renderer():ActorRenderer {
-        return _renderer;
-    }
-
-    public function set renderer(value:ActorRenderer):void {
-        _renderer = value;
     }
 
     public function get model():ActorModel {
