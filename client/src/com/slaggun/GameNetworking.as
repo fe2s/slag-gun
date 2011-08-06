@@ -35,7 +35,7 @@ public class GameNetworking extends EventDispatcher {
     public static const MESSAGE_TYPE_AMF_MESSAGE:int         = 0x3;
     public static const MESSAGE_TYPE_CLIENT_DISCONNECTED:int = 0x4;
     public static const MESSAGE_TYPE_GET_TIME:int            = 0x5;
-    public static const MESSAGE_TYPE_GET_TIME_ANSWER:int     = 0x5;
+    public static const MESSAGE_TYPE_GET_TIME_ANSWER:int     = 0x6;
 
     public static const SKIP_BIT:int = 0x1;
 
