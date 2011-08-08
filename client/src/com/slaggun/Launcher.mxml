@@ -26,30 +26,27 @@
     <mx:Script>
 <![CDATA[
         import com.slaggun.log.Logger;
-        import com.slaggun.monitor.MonitorContainer;
+        import com.slaggun.log.LoggerConfig;
         import com.slaggun.util.Storage;
         import com.slaggun.util.Utils;
-        import com.slaggun.log.LoggerConfig;
 
         import mx.controls.Alert;
         import mx.controls.TextArea;
-        import mx.core.Application;
         import mx.events.CloseEvent;
-
 
         private var LOG:Logger = Logger.getLogger(Launcher);
         private var game:Game;
-        private var logScrollTimer:Timer;
+        private var logScrollTimer:flash.utils.Timer;
 
         private var policyServer:String;
 
 
         private function initVariables():void {
 
-            callLater(function():void{
-                try{
+            callLater(function():void {
+                try {
                     Cursors.registerCursors();
-                }catch(e:Error){
+                } catch(e:Error) {
                     LOG.error("Can't register native cursor. Switching to compatible cursor rendering mode.", e);
                 }
             });

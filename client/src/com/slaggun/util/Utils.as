@@ -13,6 +13,7 @@ package com.slaggun.util {
 import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Point;
+import flash.geom.Rectangle;
 import flash.text.TextFormat;
 
 import mx.controls.Alert;
@@ -83,6 +84,21 @@ public class Utils {
         angle += 2 * Math.PI;
         angle %= 2 * Math.PI;
         return angle;
+    }
+
+    public static function removeItem(array:Array, item:*):Boolean{
+        var index:int = array.indexOf(item);
+        if(index == -1){
+            return false;
+        }
+
+        array.splice(index, 1);
+        return true;
+    }
+
+    public static function rectangle(start:Point, end:Point):Rectangle{
+        return new Rectangle(Math.min(start.x,  end.x), Math.min(start.y,  end.y),
+                             Math.abs(end.x - start.x), Math.abs(end.y - start.y));
     }
 }
 }

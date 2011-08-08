@@ -15,13 +15,7 @@ import flash.display.BitmapData;
  */
 public class GameEvent {
 
-    //TBD: synchronize this with game iterations and server
-    public static function get time():Number{
-        return new Date().time;
-    }
-
     private var _game:Game;
-    internal var _time:Timestamp;
     internal var _elapsedTime:Number;
     internal var _bitmap:BitmapData;
 
@@ -33,18 +27,9 @@ public class GameEvent {
         return _game;
     }
 
-    public function nowTime():Number{
-        return _time.time;
-    }
-
-    public function now():Timestamp{
-        return _time.clone(_game);
-    }
-
     public function get elapsedTime():Number {
         return _elapsedTime;
     }
-
 
     public function get bitmap():BitmapData {
         return _bitmap;

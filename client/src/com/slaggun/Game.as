@@ -18,6 +18,7 @@ import com.slaggun.log.Logger;
 import com.slaggun.log.LoggerConfig;
 import com.slaggun.log.Priority;
 import com.slaggun.log.RootCategory;
+import com.slaggun.monitor.Monitor;
 import com.slaggun.shooting.ShootingService;
 import com.slaggun.util.AsyncThread;
 
@@ -36,12 +37,14 @@ public class Game extends EventDispatcher {
 
     private var LOG:Logger = Logger.getLogger(Game);
 
+    public static var time:Number = new Date().time;
+
 
     private static const DESIRABLE_TIME_PER_EVENT:int = 1000/25;
 
     private var gamePaused:Boolean = true;
     private var lastTime:Date;
-    private var previousGameTime:Timestamp;
+    private var timer:Timer = new Timer();
 
     private var networkThread:AsyncThread = new AsyncThread(DESIRABLE_TIME_PER_EVENT);
 
@@ -184,10 +187,11 @@ public class Game extends EventDispatcher {
     }
 
     protected function createGameEvent(now:Date):GameEvent{
+
         var gameEvent:GameEvent = new GameEvent(this);
-        gameEvent._time = previousGameTime;
-        gameEvent._elapsedTime = previousGameTime.setDate(now, this);
+        gameEvent._elapsedTime = timer.elapsedTime();
         gameEvent._bitmap = _gameRenderer.bitmap;
+
         return gameEvent;
     }
 
@@ -196,6 +200,8 @@ public class Game extends EventDispatcher {
      * @param deltaTime - time pass
      */
     public function live(now:Date):void {
+      Game.time = now.time + _gameNetworking.serverTimeDifference;
+      Monitors.serverTime.value = Game.time;
 
       var gameEvent:GameEvent = createGameEvent(now);
 
@@ -257,8 +263,6 @@ public class Game extends EventDispatcher {
      */
     public function start():void {
         lastTime = new Date();
-        previousGameTime = new Timestamp(this)
-        previousGameTime .setDate(lastTime, this);
         gamePaused = false;
     }
 

@@ -205,13 +205,7 @@ public class GameNetworking extends EventDispatcher {
                 _pingTime = currentTime - sendTime;
                 _serverTimeDifference = serverTime - sendTime - uint(_pingTime /2);
 
-                log.debug("sendTime: " + sendTime);
-                log.debug("serverTime: " + serverTime);
-
-                log.debug("_serverTimeDifference: " + _serverTimeDifference);
-                log.debug("_pingTime: " + _pingTime);
-                log.debug("Mine time is: " + currentTime);
-                log.debug("Assuming server time is: " + (currentTime+ _serverTimeDifference));
+                log.debug("Server click time: " + (sendTime + _serverTimeDifference));
             }else{
                 log.warn("Skipping event from client" + sender + " with message type " + messageType)
             }
@@ -229,6 +223,14 @@ public class GameNetworking extends EventDispatcher {
             }
             return false;
         }
+    }
+
+    public function get serverTimeDifference():Number {
+        return _serverTimeDifference;
+    }
+
+    public function get pingTime():Number {
+        return _pingTime;
     }
 
     public function get gameID():int {

@@ -36,6 +36,8 @@ public class Monitors {
                                                                      color: "green",
                                                                      commitOnFrame:false});
 
+    public static const serverTime : TimeMonitor = new TimeMonitor({name: "Time",color:"white"})
+
 
     public static function commitFrame():void{
         monitorTime.startMeasure();

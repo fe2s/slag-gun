@@ -8,14 +8,13 @@
  * and limitations under the License.
  */
 package com.slaggun.actor.hint {
+import com.slaggun.Game;
 import com.slaggun.GameEvent;
 import com.slaggun.actor.base.AbstractActor;
 
 import flash.display.BitmapData;
-import flash.display.Shape;
 import flash.geom.ColorTransform;
 import flash.geom.Matrix;
-
 import flash.geom.Point;
 import flash.text.TextField;
 
@@ -24,7 +23,7 @@ import flash.text.TextField;
  */
 public class Hint extends AbstractActor{
 
-    private const initTime:Number = GameEvent.time;
+    private const initTime:Number = Game.time;
     private const expiration:Number = 1000;
 
     public function Hint(message:String = null, point:Point = null) {
@@ -35,7 +34,7 @@ public class Hint extends AbstractActor{
         var model:HintModel = HintModel(this.model);
         model.point.y -= event.elapsedTime*0.1;
 
-        if(GameEvent.time - initTime > expiration){
+        if(Game.time - initTime > expiration){
             event.game.gameActors.remove(this);
         }
     }
@@ -52,7 +51,7 @@ public class Hint extends AbstractActor{
         matrix.translate(model.point.x, model.point.y);
 
         var colorTransform:ColorTransform = new ColorTransform();
-        colorTransform.alphaMultiplier = 1 - (GameEvent.time - initTime) / expiration;
+        colorTransform.alphaMultiplier = 1 - (Game.time - initTime) / expiration;
 
         bitmap.draw(text, matrix, colorTransform);
     }
