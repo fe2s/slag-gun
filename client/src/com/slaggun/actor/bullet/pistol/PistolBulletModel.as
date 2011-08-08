@@ -10,6 +10,7 @@
  */
 
 package com.slaggun.actor.bullet.pistol {
+import com.slaggun.Timer;
 import com.slaggun.actor.base.ActorModel;
 
 import flash.geom.Point;
@@ -21,6 +22,9 @@ import flash.geom.Point;
 [RemoteClass(alias="com.slaggun.actor.bullet.pistol.PistolShellModel")]
 public class PistolBulletModel implements ActorModel{
 
+    public var timer:Timer= new Timer();
+
+    public var firePoint:Point;
     public var position:Point;
     public var speedVector:Point;
 }

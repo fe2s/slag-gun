@@ -10,6 +10,7 @@
  */
 
 package com.slaggun.actor.player.simple {
+import com.slaggun.Timer;
 import com.slaggun.actor.base.ActorModel;
 import com.slaggun.log.Logger;
 
@@ -26,6 +27,8 @@ import flash.geom.Point;
 public class SimplePlayerModel implements ActorModel{
 
     private var log:Logger = Logger.getLogger(SimplePlayerModel);
+
+    public var timer:Timer = new Timer();
 
     public var position:Point = new Point(50, 50);
     public var velocity:Point = new Point();
@@ -44,6 +47,8 @@ public class SimplePlayerModel implements ActorModel{
         dst.velocity = src.velocity.clone();
         dst.look = src.look.clone();
         dst.health = src.health;
+        dst.timer = src.timer.clone();
+
 
         return dst;
     }

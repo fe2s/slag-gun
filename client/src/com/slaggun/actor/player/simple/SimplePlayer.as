@@ -12,25 +12,23 @@
 package com.slaggun.actor.player.simple {
 import com.slaggun.Game;
 import com.slaggun.GameEvent;
-import com.slaggun.GameEvent;
 import com.slaggun.Global;
+import com.slaggun.Timer;
 import com.slaggun.actor.base.AbstractActor;
 import com.slaggun.actor.base.Actor;
+import com.slaggun.actor.bullet.pistol.PistolBulletFactory;
+import com.slaggun.actor.hint.Hint;
 import com.slaggun.actor.player.simple.presentation.GunWeapon;
 import com.slaggun.actor.player.simple.presentation.SimplePlayerPresentation;
 import com.slaggun.actor.player.simple.presentation.TrianglesPresentation;
-import com.slaggun.actor.bullet.pistol.PistolBulletFactory;
 import com.slaggun.events.SimpleActorSnapshot;
 import com.slaggun.events.UpdateActorSnapshot;
-import com.slaggun.geom.Circle;
 import com.slaggun.log.Logger;
 import com.slaggun.shooting.Bullet;
 import com.slaggun.shooting.HitObject;
 import com.slaggun.util.Utils;
 
-import flash.display.BitmapData;
 import flash.geom.Point;
-import flash.geom.Utils3D;
 
 /**
  * This is the first implementation of user controlled game character
@@ -48,8 +46,12 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
     private var presentation:PlayerPresentation;
     private var weapon:Weapon;
 
+    private var shootTimer:Timer = new Timer();
+    private const RECOIL_TIME:Number = 500;
+
     public function SimplePlayer() {
         _model = new SimplePlayerModel();
+        serverModel = SimplePlayerModel(_model);
         weapon = new GunWeapon();
     }
 
@@ -85,6 +87,7 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
         }
 
         if(mine){
+            event.game.gameActors.add(new Hint("Hit", moveVector.add(startPosition)));
             this.hit(event, bullet.damage);
         }
 
@@ -120,6 +123,7 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
 
         if(Math.random() > Global.TRIANGLE_RESPAWN_PROBABILITY){
             presentation = new SimplePlayerPresentation();
+            weapon       = new GunWeapon();
         }
         else
         {
@@ -177,8 +181,21 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
         var actorModel:SimplePlayerModel = SimplePlayerModel(model);
 
 
+        var timeDelta:Number = shootTimer.elapsedTime();
+
+        if(timeDelta > RECOIL_TIME){
+            timeDelta = 0;
+        }
+        else
+        {
+            timeDelta = (RECOIL_TIME - timeDelta)/RECOIL_TIME;
+        }
+
+        var randomization:Point = new Point(0.1*(Math.random()-0.5) * timeDelta, 0.1*(Math.random()-0.5) * timeDelta);
+
+
         var shellPosition:Point = presentation.weaponMountPoint(actorModel).add(actorModel.position);
-        var shellDirection:Point = presentation.weaponDirection(actorModel).clone();
+        var shellDirection:Point = presentation.weaponDirection(actorModel).add(randomization);
         shellDirection.normalize(weapon.weaponLength);
 
         shellPosition = shellPosition.add(shellDirection);
@@ -194,15 +211,17 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
     //--------------------------------------------------------
 
     override public function live(event:GameEvent):void {
+        var actorModel:SimplePlayerModel = SimplePlayerModel(model);
+
         var world:Game = event.game;
         world.shootingService.addHitObject(this);
         if(replicable){
             world.gameActors.replicate(this);
         }
 
-        var actorModel:SimplePlayerModel = SimplePlayerModel(model);
+
         if(mine){
-            iterateModel(event.elapsedTime, actorModel);
+            iterateModel(actorModel);
 
             var radius:int = 15;
             if(actorModel.position.x < -radius ||
@@ -213,7 +232,7 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
             }
 
         }else{
-            iterateModel(event.elapsedTime, serverModel);
+            iterateModel(serverModel);
             clientSpringMove(event.elapsedTime, serverModel, actorModel);
         }
     }
@@ -260,7 +279,8 @@ public class SimplePlayer extends AbstractActor implements Actor, HitObject {
         }
     }
 
-    protected function iterateModel(timePass:Number, actorModel:SimplePlayerModel):void{
+    protected function iterateModel(actorModel:SimplePlayerModel):void{
+        var timePass:Number = actorModel.timer.elapsedTime();
         var vx:Number = actorModel.velocity.x;
         var vy:Number = actorModel.velocity.y;
 

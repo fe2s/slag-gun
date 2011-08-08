@@ -28,8 +28,9 @@ public class PistolBulletFactory  {
         direction.normalize(Global.BULLET_SPEED);
 
         var pistolShellModel:PistolBulletModel = new PistolBulletModel();
-        pistolShellModel.position = startPosition;
-        pistolShellModel.speedVector = direction;
+        pistolShellModel.firePoint = startPosition.clone();
+        pistolShellModel.position  = startPosition.clone();
+        pistolShellModel.speedVector = direction.clone();
 
         var pistolShell:PistolBullet = createNew();
         pistolShell.model = pistolShellModel;

@@ -19,9 +19,7 @@ import com.slaggun.shooting.Bullet;
 import com.slaggun.shooting.HitObject;
 import com.slaggun.util.Utils;
 
-import flash.display.BitmapData;
 import flash.display.DisplayObject;
-import flash.display.Shape;
 import flash.geom.Matrix;
 import flash.geom.Point;
 
@@ -42,18 +40,21 @@ public class PistolBullet extends AbstractActor implements Actor, Bullet{
     }
 
     override public function live(event:GameEvent):void {
+        var shellModel:PistolBulletModel = PistolBulletModel(model);
+
+        var elapsedTime:Number = shellModel.timer.elapsedTime();
+
         var world:Game = event.game;
         world.shootingService.addBullet(this);
 
-        var shellModel:PistolBulletModel = PistolBulletModel(model);
-
         _previousPosition = shellModel.position.clone();
-        shellModel.position.offset(event.elapsedTime * shellModel.speedVector.x, event.elapsedTime * shellModel.speedVector.y);
+        shellModel.position.offset(elapsedTime * shellModel.speedVector.x, elapsedTime * shellModel.speedVector.y);
 
         var x:Number = shellModel.position.x;
         var y:Number = shellModel.position.y;
 
-        if(x<0 || y<0 || x > world.mapWidth || y > world.mapHeight){
+        if(        x < -world.mapWidth   || y < -world.mapHeight
+                || x > 2*world.mapWidth  || y > 2*world.mapHeight){
             world.gameActors.remove(this);
         }
     }
@@ -80,16 +81,18 @@ public class PistolBullet extends AbstractActor implements Actor, Bullet{
 
         var speedVector:Point = shellModel.speedVector;
         var position:Point = shellModel.position;
+        var firePoint:Point = shellModel.firePoint;
+
+        var len:Number = position.subtract(firePoint).length;
 
         var matrix:Matrix = new Matrix();
         matrix.translate(-bulletResource.width, -bulletResource.height /2);
-        matrix.scale(0.3, 0.3)
+        matrix.scale(len/bulletResource.width, 0.3)
         matrix.rotate(Utils.getAngle(speedVector.x, speedVector.y));
 
 
         matrix.translate(position.x, position.y);
-
-        event.bitmap.draw(bulletResource, matrix);
+        event.bitmap.draw(bulletResource, matrix, null, null, Utils.rectangle(firePoint, position));
 
 //        var circle:Shape = new Shape();
 //        circle.graphics.beginFill(0);
