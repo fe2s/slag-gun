@@ -10,10 +10,8 @@
  */
 
 package com.slaggun.actor.player.simple.tasks {
-import com.slaggun.Game;
 import com.slaggun.GameEvent;
 import com.slaggun.InputState;
-import com.slaggun.Timestamp;
 import com.slaggun.actor.base.Actor;
 import com.slaggun.actor.base.BaseActorTask;
 import com.slaggun.actor.player.simple.SimplePlayer;

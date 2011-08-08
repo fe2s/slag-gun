@@ -19,6 +19,7 @@ import com.slaggun.events.NewActorSnapshot;
 import com.slaggun.events.PackedEvents;
 import com.slaggun.events.UpdateActorSnapshot;
 import com.slaggun.log.Logger;
+import com.slaggun.util.Utils;
 
 import flash.display.BitmapData;
 import flash.utils.Dictionary;
@@ -39,6 +40,13 @@ public class GameActors {
     private var nextID:int = 0;
 
     private function __add(actor:Actor):void {
+
+        if(findActorByID(actor.owner, actor.id) != null){
+            throw Error("This actor have been added already");
+        }
+
+        LOG.warn("Adding actor: [id: " + actor.id + ", owner: " + actor.owner + "]; " + actor);
+
         _actors.push(actor);
 
         var ownerActors:Object = _actorsByOwner[actor.owner];
@@ -55,12 +63,13 @@ public class GameActors {
     }
 
     private function __remove(actor:Actor):void {
-        _actors.splice(_actors.indexOf(actor), 1);
+        LOG.warn("Removing actor [id: " + actor.id + ", owner: " + actor.owner + "]; " + actor);
+        Utils.removeItem(_actors, actor)
 
         var ownerActors:Object = _actorsByOwner[actor.owner];
 
         delete ownerActors[actor.id];
-        ownerActors.actors.splice(ownerActors.actors.indexOf(actor), 1);
+        Utils.removeItem(ownerActors.actors, actor);
 
         if(ownerActors.actors.length == 0){
             delete _actorsByOwner[actor.owner];
@@ -146,6 +155,12 @@ public class GameActors {
      */
     public function prepareActors():void {
 
+        var toBeAdded:Array   = this.toBeAdded;
+        var toBeRemoved:Array = this.toBeRemoved;
+
+        this.toBeAdded = [];
+        this.toBeRemoved = [];
+
         var len:int = toBeAdded.length;
         var i:int;
 
@@ -158,8 +173,6 @@ public class GameActors {
             }
         }
 
-        toBeAdded = [];
-
         len = toBeRemoved.length;
         for (i = 0; i < len; i++)
         {
@@ -169,8 +182,6 @@ public class GameActors {
                 LOG.throwError("Can't remove actor " + toBeRemoved[i], e)
             }
         }
-
-        toBeRemoved = [];
     }
 
     public function initActors(event:GameEvent):void {
