@@ -37,7 +37,7 @@ public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Sessio
 		private SelectionKey clientKey;
 		private ByteBuffer inputBuffer = ByteBuffer.allocate(serverProperties.getReadBufferSize());
 		private ConcurrentLinkedQueue<ByteBuffer> outputQueue = new ConcurrentLinkedQueue<ByteBuffer>();
-		private boolean closed = false;
+		boolean closed = false;
 
         public ByteBuffer getInputBuffer(){
 			return inputBuffer;
@@ -105,11 +105,11 @@ public abstract class BaseUnblockingServer<S extends BaseUnblockingServer.Sessio
 			}
 		}
 
-		private void setClientKey(SelectionKey clientKey) {
+		void setClientKey(SelectionKey clientKey) {
 			this.clientKey = clientKey;
 		}
 
-		private void updateBuffer(){
+		void updateBuffer(){
 			SocketChannel socketChannel = (SocketChannel) clientKey.channel();
 
 			int numRead;
