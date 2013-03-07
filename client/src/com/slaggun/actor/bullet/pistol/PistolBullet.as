@@ -89,10 +89,11 @@ public class PistolBullet extends AbstractActor implements Actor, Bullet{
         matrix.translate(-bulletResource.width, -bulletResource.height /2);
         matrix.scale(len/bulletResource.width, 0.3)
         matrix.rotate(Utils.getAngle(speedVector.x, speedVector.y));
-
+        
+        var cutStartPoint:Point = Point.interpolate(position, firePoint, 0.5);
 
         matrix.translate(position.x, position.y);
-        event.bitmap.draw(bulletResource, matrix, null, null, Utils.rectangle(firePoint, position));
+        event.bitmap.draw(bulletResource, matrix, null, null, Utils.rectangle(cutStartPoint, position), true);
 
 //        var circle:Shape = new Shape();
 //        circle.graphics.beginFill(0);
