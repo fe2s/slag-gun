@@ -224,8 +224,8 @@ public class ImageFramedResource {
         workMatrix.translate(_frameCentexPointX, _frameCentexPointY);
         workMatrix.translate(dstX,
                              dstY);
-
-        dst.draw(src, workMatrix);
+        
+        dst.draw(src, workMatrix, null, null, null, true);
     }
 
     /**
